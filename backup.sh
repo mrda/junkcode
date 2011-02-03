@@ -32,7 +32,11 @@ for FILE; do
     # not just the contents
     LFILE=`basename ${FILE}`
     DFILE=${LFILE}-`date +%Y%m%d-%H%M%S`
-    echo "Copying \"${LFILE}\" to ${BDIR}/${DFILE}";
-    cp -rp ${LFILE} ${BDIR}/${DFILE};
+    if [ -d ${FILE} ]; then
+        echo "Copying directory \"${FILE}\" to ${BDIR}/${DFILE}/...";
+    else
+        echo "Copying \"${FILE}\" to ${BDIR}/${DFILE}";
+    fi
+    cp -rp ${FILE} ${BDIR}/${DFILE};
 done
 
