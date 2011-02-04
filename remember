@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+#  remember - a simple commandline-based memory jogger
+#             See also remindme and remindedit
+#             Original author unknown
+#
+REMEMBERFILE="${HOME}/.remember"
+ECHO=/bin/echo
+CAT=/bin/cat
+if [ $# -eq 0 ] ; then
+  ${ECHO} "Enter reminder note, end with ^D: "
+  ${CAT} - >> ${REMEMBERFILE}
+else
+  ${ECHO} "$@" >> ${REMEMBERFILE}
+fi
+exit 0

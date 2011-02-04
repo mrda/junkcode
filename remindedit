@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# remindedit - edit a remember datafile.  See also remindme and remember
+# Original author unknown.
+#
+REMEMBERFILE="${HOME}/.remember"
+${EDITOR:-/usr/bin/vi} ${REMEMBERFILE}
+exit 0

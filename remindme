@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# remindme - search a datafile for matching lines, or show the contents
+#            of the datafile if no arg is specified
+#            Original author unknown
+#
+REMEMBERFILE="${HOME}/.remember"
+GREP=/usr/bin/grep
+TOUCH=/usr/bin/touch
+
+# Handle first run cleanly
+if ! [ -a ${REMEMBERFILE} ]; then
+    ${TOUCH} ${REMEMBERFILE};
+fi
+
+if [ $# -eq 0 ] ; then
+    ${PAGER:-/usr/bin/more} ${REMEMBERFILE}
+else
+    ${GREP} -i "$@" ${REMEMBERFILE} | ${PAGER:-/usr/bin/more}
+fi
+exit 0
