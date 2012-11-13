@@ -28,6 +28,9 @@
 function repost_to_remote_host($user, $password, $url) {
     print "<html>\n";
     print "    <head>\n";
+    print "        <meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate' />";
+    print "        <meta http-equiv='Pragma' content='no-cache' />";
+    print "        <meta http-equiv='Expires' content="0' />";
     print "        <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js' type='text/javascript'></script>\n";
     print "        <script type='text/javascript'>\n";
     print "                function post_to_url(path, params, method) {\n";
