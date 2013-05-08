@@ -34,7 +34,7 @@ Available Commands
 remember <string> - Remember <string> as a task to do later
 remhelp           - Display this help documentation
 remindedit        - Use \$EDITOR to edit your TODO list
-remindme          - Display your TODO list
+remindme [string] - Display your TODO list, optionally grepping for [string]
 
 EOF
 
