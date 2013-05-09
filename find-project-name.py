@@ -32,9 +32,14 @@ if __name__ == "__main__":
         reg = "(.)*?".join(ch for ch in list(sys.argv[1]))
         regexp = "(.)*?"+reg+"(.)*?"
         p = re.compile(regexp)
+        matches = []
         for line in open('/usr/share/dict/words', 'r'):
             m = p.match(line)
             if m:
                 line = line.rstrip()
-                print line
+                matches.append(line)
+        # Already in alpha order, now sort by length
+        matches.sort(key=len)
+        for item in matches:
+            print item
 
