@@ -1,0 +1,120 @@
+<!doctype html>
+<!--
+
+  websitedown.html - placeholder template for a website down
+
+  This is free and unencumbered software released into the public domain.
+
+  Anyone is free to copy, modify, publish, use, compile, sell, or
+  distribute this software, either in source code form or as a compiled
+  binary, for any purpose, commercial or non-commercial, and by any
+  means.
+
+  In jurisdictions that recognize copyright laws, the author or authors
+  of this software dedicate any and all copyright interest in the
+  software to the public domain. We make this dedication for the benefit
+  of the public at large and to the detriment of our heirs and
+  successors. We intend this dedication to be an overt act of
+  relinquishment in perpetuity of all present and future rights to this
+  software under copyright law.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
+
+  For more information, please refer to <http://unlicense.org/>
+
+  Michael Davies <michael@the-davies.net>
+
+-->
+<html>
+<head>
+<title>my website</title>
+<style type="text/css">
+html {
+background: #111;
+}
+body {
+color: #090;
+margin: 50px auto;
+font-family: Courier New, Courier, monospace;
+font-size: 32px;
+-webkit-font-smoothing: antialiased;
+}
+#cursor {
+display: inline-block;
+background: #111;
+margin-left: 1px;
+-webkit-animation: blink 2s linear 0s infinite;
+-moz-animation: blink 2s linear 0s infinite;
+-ms-animation: blink 2s linear 0s infinite;
+-o-animation: blink 2s linear 0s infinite;
+}
+@-webkit-keyframes blink {
+0%   { background: #0a0 }
+47%  { background: #090 }
+50%  { background: #111 }
+97%  { background: #111 }
+100% { background: #090 }
+}
+@-moz-keyframes blink {
+0%   { background: #0a0 }
+47%  { background: #090 }
+50%  { background: #111 }
+97%  { background: #111 }
+100% { background: #090 }
+}
+@-ms-keyframes blink {
+0%   { background: #0a0 }
+47%  { background: #090 }
+50%  { background: #111 }
+97%  { background: #111 }
+100% { background: #090 }
+}
+@-o-keyframes blink {
+0%   { background: #0a0 }
+47%  { background: #090 }
+50%  { background: #111 }
+97%  { background: #111 }
+100% { background: #090 }
+}
+#container{
+position: absolute;
+top: 50%;
+margin-top: -50px;
+left: 0;
+width: 100%;
+}
+#content {
+width: 700px;
+margin-left: auto;
+margin-right: auto;
+height: 100px;
+}
+#hostname {
+font-weight: bold;
+display: inline-block;
+}
+#footer {
+width: 300px;
+font-size: 10px;
+font-family: Helvetica, Arial, sans-serif;
+color: grey;
+float: right;
+}
+</style>
+</head>
+<body>
+<div id="container">
+<div id="content">
+<div id="hostname">my website</div> is down, sorry...<div id="cursor">&nbsp;</div>
+<!-- #insert <witty-commentary-here> -->
+</div>
+</div>
+</div>
+</body>
+</html>
