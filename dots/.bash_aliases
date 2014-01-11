@@ -68,6 +68,17 @@ __git_ps1 ()
     fi
 }
 
+# ssh agent
+if test -x /usr/bin/ssh-agent; then
+    sock=`netstat -l 2>/dev/null|grep ssh-|cut -c 58-|head -n 1`
+    if test -n "$sock"; then
+            export SSH_AUTH_SOCK=$sock
+    else
+            eval `ssh-agent`
+    fi
+fi
+
+
 export EDITOR=vim
 export VISUAL=vim
 export PS1="${PS1//\\w/\\w\$(__git_ps1)}"
