@@ -9,9 +9,11 @@ alias freq_commands="history|awk '{a[$2]++} END{for(i in a){printf \"%5d\t%s \n\
 alias cleanmail='sqlite3 ~/Library/Mail/Envelope\ Index vacuum;'
 alias changed_today='find ~ -type f -mtime 0'
 alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
+alias list-packages='dpkg --get-selections | grep -v deinstall'
+alias remove-package-fully='sudo apt-get --purge remove $@'
 
 # I loves my pips
-if [ ! -d "${HOME}/.pipcache ]; then
+if [ ! -d ${HOME}/.pipcache ]; then
     # Control will enter here if $DIRECTORY doesn't exist.
     mkdir ${HOME}/.pipcache
 fi
