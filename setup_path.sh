@@ -28,6 +28,11 @@ SCRIPTS=`ls -1 ${JUNKCODE}/*.py ${JUNKCODE}/*.sh ${JUNKCODE}/*.pl \
 
 LN=`which ln`
 
+if [ ! -d ${NOARCH} ]; then
+  # Control will enter here if $DIRECTORY doesn't exist.
+  mkdir -p ${NOARCH}
+fi
+
 for FILE in ${SCRIPTS}
 do
     # -f is required because some links may already exist

@@ -10,6 +10,13 @@ alias cleanmail='sqlite3 ~/Library/Mail/Envelope\ Index vacuum;'
 alias changed_today='find ~ -type f -mtime 0'
 alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
 
+# I loves my pips
+if [ ! -d "${HOME}/.pipcache ]; then
+    # Control will enter here if $DIRECTORY doesn't exist.
+    mkdir ${HOME}/.pipcache
+fi
+export PIP_DOWNLOAD_CACHE=${HOME}/.pipcache
+
 # Set up path correctly
 export PATH=${HOME}/bin/noarch:${HOME}/bin/`arch`/`uname`:${PATH}
 
