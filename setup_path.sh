@@ -27,6 +27,7 @@ SCRIPTS=`ls -1 ${JUNKCODE}/*.py ${JUNKCODE}/*.sh ${JUNKCODE}/*.pl \
          ${JUNKCODE}/rem*`
 
 LN=`which ln`
+CP=`which cp`
 
 if [ ! -d ${NOARCH} ]; then
   # Control will enter here if $DIRECTORY doesn't exist.
@@ -38,3 +39,7 @@ do
     # -f is required because some links may already exist
     ${LN} -s -f ${FILE} ${NOARCH}
 done
+
+${CP} ${JUNKCODE}/dots/.[a-z]* ${HOME}
+
+
