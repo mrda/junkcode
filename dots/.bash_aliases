@@ -83,5 +83,6 @@ export EDITOR=vim
 export VISUAL=vim
 export PS1="${PS1//\\w/\\w\$(__git_ps1)}"
 export LESS="-R" # so we get colour
+export LESSOPEN='|~/.lessfilter %s'
 export ACK_OPTIONS="--color" # so we get color
 
