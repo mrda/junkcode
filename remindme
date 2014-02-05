@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # remindme - search a datafile for matching lines, or show the contents
 #            of the datafile if no arg is specified
@@ -16,6 +16,6 @@ fi
 if [ $# -eq 0 ] ; then
     ${PAGER:-/usr/bin/more} ${REMEMBERFILE}
 else
-    ${GREP} -i "$@" ${REMEMBERFILE} | ${PAGER:-/usr/bin/more}
+    ${GREP} -i "$@" ${REMEMBERFILE} | ${PAGER:-/bin/more}
 fi
 exit 0
