@@ -86,3 +86,5 @@ export LESS="-R" # so we get colour
 export LESSOPEN='|~/.lessfilter %s'
 export ACK_OPTIONS="--color" # so we get color
 
+alias pycheck="python -m py_compile $@"
+
