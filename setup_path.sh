@@ -40,6 +40,13 @@ do
     ${LN} -s -f ${FILE} ${NOARCH}
 done
 
-${CP} ${JUNKCODE}/dots/.[a-z]* ${HOME}
+for DOT in ${JUNKCODE}/dots/.[a-z]*
+do
+    # -f is required because some links may already exist
+    ${LN} -s -f ${DOT} ${HOME}
+done
+
+# one last hack for different OSes
+${LN} -s -f ${HOME}/.bash_aliases ${HOME}/.bash_profile
 
 
