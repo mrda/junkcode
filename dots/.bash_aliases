@@ -87,4 +87,5 @@ export LESSOPEN='|~/.lessfilter %s'
 export ACK_OPTIONS="--color" # so we get color
 
 alias pycheck="python -m py_compile $@"
+alias tox="check-status.sh /usr/local/bin/tox $@"
 
