@@ -20,5 +20,26 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+USAGE="$(basename $0): Please specify one search criteria"
 BDIR=${HOME}/backup-`date +%Y`
-find ${BDIR} -print | grep $@ | tail -1
+
+if [ $# -eq 0 ]; then
+  echo ${USAGE}
+  exit 2
+fi
+
+if [ $# -eq 1 ]; then
+    find ${BDIR} -print | grep "$@" | tail -1
+    exit 0
+fi
+
+if [ $# -eq 2 ]; then
+    if [ $1 = '-a' ]; then
+        shift
+        find ${BDIR} -print | grep "$@"
+        exit 0
+    fi
+fi
+
+echo ${USAGE}
+exit 2
