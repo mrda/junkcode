@@ -29,14 +29,14 @@ if [ $# -eq 0 ]; then
 fi
 
 if [ $# -eq 1 ]; then
-    find ${BDIR} -print | grep "$@" | tail -1
+    find ${BDIR} -print | grep "$@" | sort | tail -1
     exit 0
 fi
 
 if [ $# -eq 2 ]; then
     if [ $1 = '-a' ]; then
         shift
-        find ${BDIR} -print | grep "$@"
+        find ${BDIR} -print | sort | grep "$@"
         exit 0
     fi
 fi
