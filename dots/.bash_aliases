@@ -78,6 +78,14 @@ if test -x /usr/bin/ssh-agent; then
     fi
 fi
 
+# virtualenvwrapper
+if test -x /usr/local/bin/virtualenvwrapper.sh; then
+    # Standard python installation location
+    source /usr/local/bin/virtualenvwrapper.sh
+elif test -x /etc/bash_completion.d/virtualenvwrapper; then
+    # Ubuntu borkedness
+    source /usr/local/bin/virtualenvwrapper.sh
+fi
 
 export EDITOR=vim
 export VISUAL=vim
@@ -89,4 +97,5 @@ export ACK_OPTIONS="--color" # so we get color
 alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh /usr/local/bin/tox $@"
 alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
+alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 
