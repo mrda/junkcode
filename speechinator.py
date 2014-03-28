@@ -31,6 +31,11 @@ phrases = [ "%s, sing us a song!",
             "%s: What's happenin' in the hood, dawg?",
             "Tell us a story, %s",
             "Yo %s, what's going down, dude?",
+            "Earth to %s, copy?",
+            "%s, Engage!",
+            "What's up, %s?",
+            "%s: What's shakin'?",
+            "%s, S'Up?",
           ]
 
 idx = 0
