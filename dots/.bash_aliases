@@ -98,4 +98,6 @@ alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh /usr/local/bin/tox $@"
 alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
 alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
+alias re-auth="eval `ssh-agent -s`"
+alias jsondecode='python -mjson.tool'
 
