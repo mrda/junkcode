@@ -100,4 +100,5 @@ alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
 alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 alias re-auth="eval `ssh-agent -s`"
 alias jsondecode='python -mjson.tool'
+alias standup='speechinator.py mikal mrda jhesketh loquacities mattoliverau asettle neillc Darren JRobinson gus'
 
