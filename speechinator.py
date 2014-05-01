@@ -20,8 +20,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+import os
 import random
 import sys
+
 
 phrases = ["%s, sing us a song!",
            "Come, spin us a yarn, %s",
@@ -46,7 +48,22 @@ phrases = ["%s, sing us a song!",
            "%s, Why are there so many songs about rainbows?",
            "Nobody puts %s in a corner"]
 
-names = sys.argv[1:]
+
+filename = os.environ.get('HOME')
+if filename is None:
+    print "%s: Can't find home directory" % os.path.basename(sys.argv[0])
+    print "Exiting..."
+    sys.exit(1)
+filename += "/.team_nicks"
+
+names = None
+try:
+    fd = open(filename, 'r')
+    names = [line.strip() for line in fd]
+except (OSError, IOError) as e:
+    print "%s: %s" % (os.path.basename(sys.argv[0]), e)
+    print "Exiting..."
+    sys.exit(2)
 
 random.shuffle(phrases)
 random.shuffle(names)
