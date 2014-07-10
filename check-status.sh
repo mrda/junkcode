@@ -34,5 +34,9 @@ else
     ${CHECK_STATUS_FAILURE:-blink1-tool --red} >/dev/null 2>&1
 fi
 
+# Keep track of when we run check_status
+TMPFILE=${CHECK_STATUS_TIMESTAMP:-/tmp/.check_status_timestamp}
+date '+%s' > ${TMPFILE}
+
 return ${status}
 
