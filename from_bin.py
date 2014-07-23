@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-# to_bin.py - A very simple script to turn strings into
-#             an 8-bit ASCII binary representation
+# from_bin.py - A very simple script to turn 8-bit binary
+#               strings into ACSII strings
 #
 # Copyright (C) 2014 Michael Davies (michael@the-davies.net)
 #
@@ -23,9 +23,9 @@
 import sys
 
 
-def to_bin(strings):
+def from_bin(strings):
     inp = ' '.join(strings)
-    return ''.join(format(ord(ch), '08b') for ch in inp)
+    return ''.join(chr(int(inp[i:i+8], 2)) for i in xrange(0, len(inp), 8))
 
 if __name__ == "__main__":
-    print to_bin(sys.argv[1:])
+    print from_bin(sys.argv[1:])
