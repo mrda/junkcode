@@ -20,7 +20,7 @@ fi
 export PIP_DOWNLOAD_CACHE=${HOME}/.pipcache
 
 # Set up path correctly
-export PATH=${HOME}/bin/noarch:${HOME}/bin/`arch`/`uname`:${PATH}
+export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}
 
 # Handy functions
 function profile-perl()
