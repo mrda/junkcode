@@ -31,6 +31,14 @@ nytprofhtml nytprof.out
 open nytprof/index.html
 }
 
+
+# Are we in a screen session?
+__screen_ps1 ()
+{
+    if [ -n "${STY}" ]; then
+        printf "(${STY})"
+    fi
+}
 # Git me harder!
 __git_ps1 ()
 {
@@ -89,7 +97,7 @@ fi
 
 export EDITOR=vim
 export VISUAL=vim
-export PS1="${PS1//\\w/\\w\$(__git_ps1)}"
+export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
 export LESS="-R" # so we get colour
 export LESSOPEN='|~/.lessfilter %s'
 export ACK_OPTIONS="--color" # so we get color
