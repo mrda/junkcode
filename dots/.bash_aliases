@@ -95,6 +95,14 @@ elif test -x /etc/bash_completion.d/virtualenvwrapper; then
     source /usr/local/bin/virtualenvwrapper.sh
 fi
 
+# Add to path in we're in a screen session
+__screen_ps1 ()
+{
+    if [ -n "${STY}" ]; then
+        printf "(${STY})"
+    fi
+}
+
 export EDITOR=vim
 export VISUAL=vim
 export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
