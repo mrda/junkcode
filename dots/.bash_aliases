@@ -1,36 +1,114 @@
-# Michael's aliases :-)
+#
+# Michael's bash profile/aliases
+#
+# Copyright (C) 1989-2014 Michael Davies <michael@the-davies.net>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+
+# Shell things
+export EDITOR=vim
+export VISUAL=vim
+export LESS="-R" # so we get colour
+export LESSOPEN='|~/.lessfilter %s'
+export ACK_OPTIONS="--color" # so we get color
+
 alias l="ls -la $@"  # args quoted
 alias cls="clear"
-alias tstamp="date +%Y%m%d-%H%M%S"
-alias timestamp="date +%Y%m%d-%H%M%S"
-alias removedones="find . -name \*.done -exec rm {} \;"
 alias tac="perl -e 'print reverse <> '"
 alias freq_commands="history|awk '{a[$2]++} END{for(i in a){printf \"%5d\t%s \n\",a[i],i}}'|sort -rn|head"
+
+# timestamp things
+alias tstamp="date +%Y%m%d-%H%M%S"
+alias timestamp="date +%Y%m%d-%H%M%S"
+
+# file things
+alias removedones="find . -name \*.done -exec rm {} \;"
 alias cleanmail='sqlite3 ~/Library/Mail/Envelope\ Index vacuum;'
 alias changed_today='find ~ -type f -mtime 0'
-alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
+
+# apt things
 alias list-packages='dpkg --get-selections | grep -v deinstall'
 alias remove-package-fully='sudo apt-get --purge remove $@'
 
-# I loves my pips
-if [ ! -d ${HOME}/.pipcache ]; then
-    # Control will enter here if $DIRECTORY doesn't exist.
-    mkdir ${HOME}/.pipcache
-fi
+# Mac things
+alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
+alias minecraft_server='java -Xmx1024M -Xms1024M -jar ~/Downloads/minecraft_server.jar nogui'
+
+# VirtualBox things
+alias list-packages='dpkg --get-selections | grep -v deinstall'
+alias listvms='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage list vms'
+alias startweb='VBoxManage startvm --type headless michaeldavies.org'
+
+# Python things
+mkdir -p ${HOME}/.pipcache
 export PIP_DOWNLOAD_CACHE=${HOME}/.pipcache
+
+alias pydoc='python -m pydoc'
+alias pycheck="python -m py_compile $@"
+alias tox="check-status.sh /usr/local/bin/tox $@"
+alias jsondecode='python -mjson.tool'
+
+# Virtualenvwrapper
+if test -x /usr/local/bin/virtualenvwrapper.sh; then
+    # Standard python installation location
+    source /usr/local/bin/virtualenvwrapper.sh
+elif test -x /etc/bash_completion.d/virtualenvwrapper; then
+    # Ubuntu borkedness
+    source /usr/local/bin/virtualenvwrapper.sh
+fi
+
+# Git things
+alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
+alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 
 # Set up path correctly
 export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}
 
-# Handy functions
+# Perl things
 function profile-perl()
 {
-echo "Profiling $1"
-time perl -d:NYTProf $1
-nytprofhtml nytprof.out
-open nytprof/index.html
+    echo "Profiling $1"
+    time perl -d:NYTProf $1
+    nytprofhtml nytprof.out
+    open nytprof/index.html
 }
 
+# ssh agent stuff
+mkdir -p "$HOME/etc/ssh"
+
+function short-hostname {
+    printf $(hostname | cut -f1 -d'.')
+}
+
+function start-ssh-agent {
+    eval `ssh-agent -s -a ${HOME}/etc/ssh/ssh-agent-socket`;
+    ssh-add ${HOME}/.ssh/id_$(short-hostname);
+}
+
+if [ ${SSH_AGENT_PID} ]; then
+    RUNNING="$(ps ${SSH_AGENT_PID} | grep ssh-agent-socket)"
+    if [ -z "${RUNNING}" ]; then
+        start-ssh-agent
+    fi
+fi
+
+#
+# Prompt mangling
+#
 
 # Are we in a screen session?
 __screen_ps1 ()
@@ -39,6 +117,7 @@ __screen_ps1 ()
         printf "(${STY})"
     fi
 }
+
 # Git me harder!
 __git_ps1 ()
 {
@@ -76,44 +155,8 @@ __git_ps1 ()
     fi
 }
 
-# ssh agent
-if test -x /usr/bin/ssh-agent; then
-    sock=`netstat -l 2>/dev/null|grep ssh-|cut -c 58-|head -n 1`
-    if test -n "$sock"; then
-            export SSH_AUTH_SOCK=$sock
-    else
-            eval `ssh-agent`
-    fi
-fi
-
-# virtualenvwrapper
-if test -x /usr/local/bin/virtualenvwrapper.sh; then
-    # Standard python installation location
-    source /usr/local/bin/virtualenvwrapper.sh
-elif test -x /etc/bash_completion.d/virtualenvwrapper; then
-    # Ubuntu borkedness
-    source /usr/local/bin/virtualenvwrapper.sh
-fi
-
-# Add to path in we're in a screen session
-__screen_ps1 ()
-{
-    if [ -n "${STY}" ]; then
-        printf "(${STY})"
-    fi
-}
-
-export EDITOR=vim
-export VISUAL=vim
 export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
-export LESS="-R" # so we get colour
-export LESSOPEN='|~/.lessfilter %s'
-export ACK_OPTIONS="--color" # so we get color
 
-alias pycheck="python -m py_compile $@"
-alias tox="check-status.sh /usr/local/bin/tox $@"
-alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
-alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
-alias re-auth="eval `ssh-agent -s`"
-alias jsondecode='python -mjson.tool'
+# Anything after here was probably automagically added,
+# and should be re-categorised
 
