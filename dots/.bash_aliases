@@ -54,8 +54,6 @@ alias listvms='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage list vms'
 alias startweb='VBoxManage startvm --type headless michaeldavies.org'
 
 # Python things
-mkdir -p ${HOME}/.pipcache
-export PIP_DOWNLOAD_CACHE=${HOME}/.pipcache
 
 alias pydoc='python -m pydoc'
 alias pycheck="python -m py_compile $@"
