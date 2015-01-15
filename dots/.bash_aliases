@@ -76,6 +76,9 @@ alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 # Set up path correctly
 export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}
 
+# Go things
+export GOPATH=${HOME}/src/gocode
+
 # Perl things
 function profile-perl()
 {
