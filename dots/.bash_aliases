@@ -77,6 +77,8 @@ alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}
 
 # Go things
+export GOROOT=${HOME}/go
+export PATH=${PATH}:${GOROOT}/bin
 export GOPATH=${HOME}/src/gocode
 
 # Perl things
