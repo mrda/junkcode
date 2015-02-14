@@ -54,11 +54,13 @@ alias listvms='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage list vms'
 alias startweb='VBoxManage startvm --type headless michaeldavies.org'
 
 # Python things
-
 alias pydoc='python -m pydoc'
 alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh /usr/local/bin/tox $@"
 alias jsondecode='python -mjson.tool'
+
+# Java things
+export JAVA_HOME=${HOME}/src/java
 
 # Virtualenvwrapper
 if test -x /usr/local/bin/virtualenvwrapper.sh; then
@@ -74,11 +76,10 @@ alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
 alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 
 # Set up path correctly
-export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}
+export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin
 
 # Go things
 export GOROOT=${HOME}/src/go
-export PATH=${PATH}:${GOROOT}/bin
 export GOPATH=${HOME}/src/gocode
 
 # Perl things
