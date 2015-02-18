@@ -25,6 +25,9 @@ import random
 import sys
 
 
+debug = False
+
+
 def _find_best_position(data):
     """ Find the largest value, and it's index in the array """
     largest = 0
@@ -33,7 +36,7 @@ def _find_best_position(data):
         if val > largest:
             largest = val
             largest_idx = idx
-    return largest_idx, largest
+    return largest_idx+1, largest
 
 
 def _greaterthan(a, b):
@@ -41,59 +44,81 @@ def _greaterthan(a, b):
     return a > b
 
 
-def guess_best_secretary(data, evaluate_fn):
+def guess_best_secretary(sample_size, get_next_candidate_fn,
+                         score_candidate_fn):
     """ Provide a solution for the 'Secretary Problem'
     See http://en.wikipedia.org/wiki/Secretary_problem
     """
 
     # Find the highest value in the first stop_point
     # elements
-    stop_point = int(len(data) / math.e)
-    best_val = 0
-    best_idx = 0
-    for i in range(1, stop_point):
-        if evaluate_fn(data[i], best_val):
-            best_idx = i
-            best_val = data[i]
+    stop_point = int(sample_size / math.e)
+
+    candidate_idx = 0
+    best_candidate_score = 0
+    for i in xrange(1, stop_point):
+        next_candidate = get_next_candidate_fn()
+        candidate_score = score_candidate_fn(next_candidate)
+        if candidate_score > best_candidate_score:
+            candidate_idx = i
+            best_candidate_score = candidate_score
+    if debug:
+        print ("First pass up to N/e, we found best value %s in pos %s" %
+               (best_candidate_score, candidate_idx))
 
     # Find the first value, after the stop_point, which
     # is higher than those examined already
-    best_applicant_idx = 0
-    best_applicant_val = 0
-    for j in range(stop_point+1, len(data)-1):
-        if evaluate_fn(data[j], best_val):
-            best_applicant_idx = j
-            best_applicant_val = data[j]
+    best_candidate_idx = 0
+    for j in xrange(stop_point, sample_size+1):
+        candidate = get_next_candidate_fn()
+        candidate_score = score_candidate_fn(candidate)
+        if candidate_score > best_candidate_score:
+            best_candidate_idx = j
+            best_candidate_score = candidate_score
+            break
+        elif j == sample_size:
+            # There were none better, we have to choose the last applicant
+            if debug:
+                print ("*** Rats! We have to choose the last applicant")
+            best_candidate_idx = sample_size
+            best_candidate_score = candidate_score
 
-    # There were none better, chose the last applicant
-    if best_applicant_idx == 0:
-        print ("*** Rats! We have to choose the last applicant")
-        best_applicant_idx = len(data)
-        best_applicant_val = data[len(data)-1]
-
-    return best_applicant_idx, best_applicant_val
+    return best_candidate_idx, best_candidate_score
 
 
 if __name__ == '__main__':
 
-    if len(sys.argv) != 1:
-        # Assume params are an ordered list of numbers you want to process
-        data = sys.argv[1:]
-        test = False
-    else:
-        # Run some tests, since no data provided
-        data = random.sample(range(1, 10000), 5000)
-        test = True
+    class TestData:
+        def __init__(self):
+            self.data = random.sample(range(1, 10000000), 1000000)
+            self.current_idx = 0
+
+        def get_next_candidate(self):
+            d = self.data[self.current_idx]
+            self.current_idx += 1
+            return d
+
+        def score_candidate(self, c):
+            return c
+
+        def get_size(self):
+            return len(self.data)
 
     print("Solving the Secretary problem...")
-    pos, value = guess_best_secretary(data, _greaterthan)
+    test_data = TestData()
+    pos, value = guess_best_secretary(test_data.get_size(),
+                                      test_data.get_next_candidate,
+                                      test_data.score_candidate)
     print("The value chosen was %s in position %s" % (value, pos))
     print("We searched %-2d%% of all possible values" %
-          (pos/float(len(data))*100))
+          (pos/float(test_data.get_size())*100))
 
-    if test:
-        best_pos, best_value = _find_best_position(data)
-        print("(The actual best value was %s in position %s)" %
-              (best_value, best_pos))
-        if best_value == value:
-            print ("\o/ Yay we got it right!")
+    best_pos, best_value = _find_best_position(test_data.data)
+    print("(The actual best value was %s in position %s)" %
+          (best_value, best_pos))
+    if best_value == value:
+        print ("\o/ Yay we guessed correctly!")
+
+    if debug:
+        for i in range(0, len(test_data.data)):
+            print(i+1, test_data.data[i])
