@@ -59,6 +59,9 @@ alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh /usr/local/bin/tox $@"
 alias jsondecode='python -mjson.tool'
 
+# XML things
+alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.parseString(sys.stdin.read()).toprettyxml()"'
+
 # Java things
 export JAVA_HOME=${HOME}/src/java
 
