@@ -31,54 +31,57 @@ import os
 import sys
 import string
 
-LETTER_SPACE = ' ' * 3
-WORD_SPACE = ' ' * 7
+LETTER_SPACE = ' ' * 1
+WORD_SPACE = ' / '
 
 table = {
-    'a': '. -',
-    'b': '- . . .',
-    'c': '- . - .',
-    'd': '- . .',
+    'a': '.-',
+    'b': '-...',
+    'c': '-.-.',
+    'd': '-..',
     'e': '.',
-    'f': '. . - .',
-    'g': '- - .',
-    'h': '. . . .',
-    'i': '. .',
-    'j': '. - - -',
-    'k': '- . -',
-    'l': '. - . .',
-    'm': '- -',
-    'n': '- .',
-    'o': '- - -',
-    'p': '. - - .',
-    'q': '- - . -',
-    'r': '. - .',
-    's': '. . .',
+    'f': '..-.',
+    'g': '--.',
+    'h': '....',
+    'i': '..',
+    'j': '.---',
+    'k': '-.-',
+    'l': '.-..',
+    'm': '--',
+    'n': '-.',
+    'o': '---',
+    'p': '.--.',
+    'q': '--.-',
+    'r': '.-.',
+    's': '...',
     't': '-',
-    'u': '. . -',
-    'v': '. . . -',
-    'w': '. - -',
-    'x': '- . . -',
-    'y': '- . - -',
-    'z': '- - . .',
-    '1': '. - - - -',
-    '2': '. . - - -',
-    '3': '. . . - -',
-    '4': '. . . . -',
-    '5': '. . . . .',
-    '6': '- . . . .',
-    '7': '- - . . .',
-    '8': '- - - . .',
-    '9': '- - - - .',
-    '0': '- - - - -',
+    'u': '..-',
+    'v': '...-',
+    'w': '.--',
+    'x': '-..-',
+    'y': '-.--',
+    'z': '--..',
+    '1': '.----',
+    '2': '..---',
+    '3': '...--',
+    '4': '....-',
+    '5': '.....',
+    '6': '-....',
+    '7': '--...',
+    '8': '---..',
+    '9': '----.',
+    '0': '-----',
     ' ': WORD_SPACE,
 }
 
 
 def encode(words):
     str = ' '.join(x for x in words)
-    encoded = LETTER_SPACE.join(x for x in [table[x.lower()]
-                                for x in list(str)])
+    try:
+        encoded = LETTER_SPACE.join(x for x in [table[x.lower()]
+                                    for x in list(str)])
+    except KeyError:
+        exit("*** Unhandled letter found during encoding '%s'" % x)
     # Remove superfluous gaps before a space.
     return string.replace(encoded,
                           LETTER_SPACE + WORD_SPACE + LETTER_SPACE,
@@ -87,13 +90,16 @@ def encode(words):
 
 def decode(s):
     final = ""
-    str = ''.join(x for x in s)
+    str = ''.join(x for x in s).rstrip()
     for word in string.split(str, WORD_SPACE):
         letters = string.split(word, LETTER_SPACE)
         dec_word = ""
         for letter in letters:
-            dec_letter = ([key for key, value in table.items()
-                          if value == letter][0])
+            try:
+                dec_letter = ([key for key, value in table.items()
+                              if value == letter][0])
+            except IndexError:
+                exit("*** Unhandled chars found during decoding '%s'" % letter)
             dec_word += dec_letter
         final += dec_word + " "
     return final.rstrip()
