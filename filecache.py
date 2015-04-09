@@ -136,7 +136,7 @@ def retrieve_data():
     if fname is None:
         print "No data retrieved"
     else:
-        print("Data stored to '%s' is '%s'" % (fname, data))
+        print("Data retrieved to '%s' is '%s'" % (fname, data))
 
 
 def display_usage():

@@ -33,5 +33,16 @@ if __name__ == '__main__':
     parser.add_argument("--descending",
                         help="print out the ski-ramp in descending order",
                         action='store_true', default=False)
+    parser.add_argument("--skiier",
+                        help="adds a skiier",
+                        action='store_true', default=False)
     args, rest = parser.parse_known_args(sys.argv)
+    if args.skiier:
+        print("     _   ")
+        print("  __(_)  ")
+        print(" / / /\  ")
+        print("/  `\\\\ | ")
+        print("  \\\// | ")
+        print("   \\\\   ")
+        print("    \\\\  ")
     print build_ski_ramp(rest[1:], args.descending)
