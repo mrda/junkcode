@@ -24,22 +24,24 @@ import sys
 import os
 
 
-def collatz(n):
+def collatz(n, dump=False):
+    if dump:
+        print n,
     if (n <= 1):
         return True
     elif (n % 2 == 0):
-        return collatz(n/2)
+        return collatz(n/2, dump)
     else:
-        return collatz(3*n + 1)
+        return collatz(3*n + 1, dump)
 
 
 if __name__ == '__main__':
     usage = False
     if len(sys.argv) == 1:
-        n = 10
+        n = range(1, 10)
     elif len(sys.argv) == 2:
         try:
-            n = int(sys.argv[1])
+            n = [int(sys.argv[1])]
         except ValueError:
             usage = True
     else:
@@ -48,5 +50,5 @@ if __name__ == '__main__':
     if usage:
         exit("Usage: %s [n]" % os.path.basename(__file__))
 
-    for i in range(n):
-        print("The Collatz conjecture for n=%d is %s" % (i, collatz(i)))
+    for i in n:
+        print(collatz(i, True))
