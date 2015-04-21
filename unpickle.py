@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# unpickle.py - printty print the dump of a python pickle
+# unpickle.py - pretty print the dump of a python pickle
 #
 # Copyright (C) 2015 Michael Davies (michael@the-davies.net)
 #
