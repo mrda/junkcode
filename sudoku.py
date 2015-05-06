@@ -57,6 +57,7 @@ import os
 import random
 import string
 import sys
+import time
 
 SIZE = 9
 VALS = 9
@@ -65,6 +66,16 @@ VALS = 9
 def abstract():
     caller = inspect.getouterframes(inspect.currentframe())[1][3]
     raise NotImplementedError(caller + ' must be implemented in subclass')
+
+
+class Timer:
+    def __enter__(self):
+        self.start = time.clock()
+        return self
+
+    def __exit__(self, *args):
+        self.end = time.clock()
+        self.interval = self.end - self.start
 
 
 class AbstractSolver:
@@ -113,7 +124,6 @@ class BruteForceSolver(AbstractSolver):
 
 
 class PossibilitiesSolver(AbstractSolver):
-
     def __init__(self, board, verbose):
         # Initialise possible values
         if verbose == 2:
@@ -194,7 +204,6 @@ class PossibilitiesSolver(AbstractSolver):
 
 
 class Board:
-
     def __init__(self, verbose, random_vals=0):
         self.verbose = verbose
         self.board = [[0 for x in range(1, SIZE+1)] for x in range(1, SIZE+1)]
@@ -209,9 +218,9 @@ class Board:
                     if self.is_valid(val, row, col):
                         break
                     else:
-                        if verbose == 1:
+                        if verbose > 1:
                             print ("*** Tried %s at %s,%s" % (val, row, col))
-                if verbose == 1:
+                if verbose > 1:
                     print ("Added %s at %s,%s" % (val, row, col))
                 self.board[row][col] = val
 
@@ -301,12 +310,18 @@ def generate_sudoku(difficulty, algorithm, verbose):
         b.print_board()
 
         if algorithm in ['brute', 'all']:
-            if brute_solver.find_solution(brute_b, verbose):
-                looping = False
+            with Timer() as t:
+                if brute_solver.find_solution(brute_b, verbose):
+                    looping = False
+            if verbose >= 1:
+                print('That took %.03f seconds' % t.interval)
 
         if algorithm in ['possible', 'all']:
-            if poss_solver.find_solution(poss_b, verbose):
-                looping = False
+            with Timer() as t:
+                if poss_solver.find_solution(poss_b, verbose):
+                    looping = False
+            if verbose >= 1:
+                print('That took %.03f seconds' % t.interval)
 
         if looping:
             if verbose == 1:
@@ -364,16 +379,22 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
     brute_solver = BruteForceSolver()
 
     if algorithm in ['brute', 'all']:
-        if brute_solver.find_solution(b, verbose):
-            b.print_board()
-        else:
-            print "No solution found"
+        with Timer() as t:
+            if brute_solver.find_solution(b, verbose):
+                b.print_board()
+            else:
+                print "No solution found"
+        if verbose >= 1:
+            print('That took %.03f seconds' % t.interval)
 
     if algorithm in ['possible', 'all']:
-        if poss_solver.find_solution(b, verbose):
-            b.print_board()
-        else:
-            print "No solution found"
+        with Timer() as t:
+            if poss_solver.find_solution(b, verbose):
+                b.print_board()
+            else:
+                print "No solution found"
+        if verbose >= 1:
+            print('That took %.03f seconds' % t.interval)
 
 
 if __name__ == '__main__':
