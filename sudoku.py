@@ -52,6 +52,7 @@
 # 02111-1307, USA.
 #
 import argparse
+import inspect
 import os
 import random
 import string
@@ -61,12 +62,137 @@ SIZE = 9
 VALS = 9
 
 
-class Board():
+def abstract():
+    caller = inspect.getouterframes(inspect.currentframe())[1][3]
+    raise NotImplementedError(caller + ' must be implemented in subclass')
+
+
+class AbstractSolver:
+    def find_solution(self, board, verbose=False):
+        abstract()
+
+
+class BruteForceSolver(AbstractSolver):
+    def find_solution(self, board, verbose=False):
+        """Find a solution to the current puzzle.
+
+        Returns True if a solution can be found, False otherwise.
+        """
+        # Note(mrda): This is a terrible brute force approach
+        empty_slot = False
+        for row in range(SIZE):
+            for col in range(SIZE):
+                if board.board[row][col] == 0:
+                    empty_slot = True
+                    for val in range(1, VALS+1):
+                        solution = False
+                        if board.is_valid(val, row, col):
+                            board.board[row][col] = val
+                            if self.find_solution(board, verbose):
+                                if verbose == 2:
+                                    print("Success: %s at (%s, %s) ok" %
+                                          (val, row, col))
+                                return True
+                            else:
+                                if verbose == 2:
+                                    print("Backtracking: %s at (%s, %s)" %
+                                          (val, row, col))
+                                board.board[row][col] = 0
+                    if not solution:
+                        if verbose == 2:
+                            print("No solution for (%s, %s) found" %
+                                  (row, col))
+                        return False
+        if not empty_slot:
+            # Everything solved!
+            return True
+        else:
+            if verbose == 2:
+                print("Expensive backtrack needed...")
+            return False
+
+
+class PossibilitiesSolver(AbstractSolver):
+
+    def __init__(self, board):
+        # Initialise possible values
+        self.poss = [[0 for x in range(1, SIZE+1)] for x in range(1, SIZE+1)]
+        for row in range(SIZE):
+            for col in range(SIZE):
+                if board.board[row][col] == 0:
+                    self.poss[row][col] = (self.get_possible_values(
+                                           board, row, col))
+
+    def get_possible_values(self, board, row, col):
+        s = set(list('123456789'))
+        # Remove all the numbers in my segment
+        top_r, top_c = board.get_segment_top_left(row, col)
+        for r in range(top_r, top_r + 3):
+            for c in range(top_c, top_c + 3):
+                elem = board.board[r][c]
+                if elem != 0:
+                    s.discard(elem)
+
+        # Remove all numbers in my row
+        for c in range(SIZE):
+            if c != col:
+                s.discard(board.board[row][c])
+
+        # Remove all numbers in my column
+        for r in range(SIZE):
+            if r != row:
+                s.discard(board.board[r][col])
+
+        # Double check
+        assert(len(s) != 0)
+
+        return s
+
+    def find_solution(self, board, verbose=False):
+        """Find a solution to the current puzzle.
+
+        Returns True if a solution can be found, False otherwise.
+        """
+        empty_slot = False
+        for row in range(SIZE):
+            for col in range(SIZE):
+                if board.board[row][col] == 0:
+                    empty_slot = True
+                    for val in self.poss[row][col]:
+                        solution = False
+                        if board.is_valid(val, row, col):
+                            board.board[row][col] = val
+                            if self.find_solution(board, verbose):
+                                if verbose == 2:
+                                    print("Success: %s at (%s, %s) ok" %
+                                          (val, row, col))
+                                return True
+                            else:
+                                if verbose == 2:
+                                    print("Backtracking: %s at (%s, %s)" %
+                                          (val, row, col))
+                                board.board[row][col] = 0
+                    if not solution:
+                        if verbose == 2:
+                            print("No solution for (%s, %s) found" %
+                                  (row, col))
+                        return False
+        if not empty_slot:
+            # Everything solved!
+            return True
+        else:
+            if verbose == 2:
+                print("Expensive backtrack needed...")
+            return False
+
+
+class Board:
 
     def __init__(self, verbose, random_vals=0):
+        self.verbose = verbose
         self.board = [[0 for x in range(1, SIZE+1)] for x in range(1, SIZE+1)]
         if random_vals != 0:
-            if verbose:
+            if verbose == 1:
                 print ("Generating Sudoku board")
             for i in range(random_vals):
                 while True:
@@ -76,11 +202,20 @@ class Board():
                     if self.is_valid(val, row, col):
                         break
                     else:
-                        if verbose:
+                        if verbose == 1:
                             print ("*** Tried %s at %s,%s" % (val, row, col))
-                if verbose:
+                if verbose == 1:
                     print ("Added %s at %s,%s" % (val, row, col))
                 self.board[row][col] = val
+
+    def copy(self):
+        obj = Board(self.verbose)
+        new = [[0 for x in range(1, SIZE+1)] for x in range(1, SIZE+1)]
+        for r in range(SIZE):
+            for c in range(SIZE):
+                new[r][c] = self.board[r][c]
+        obj.board = new
+        return obj
 
     def print_board(self, with_zeros=False):
         segment = '+' + '-' * 7
@@ -131,46 +266,8 @@ class Board():
                     return False
         return True
 
-    def find_solution(self, verbose=False):
-        """Find a solution to the current puzzle.
 
-        Returns True if a solution can be found, False otherwise.
-        """
-        # Note(mrda): This is a terrible brute force approach
-        empty_slot = False
-        for row in range(SIZE):
-            for col in range(SIZE):
-                if self.board[row][col] == 0:
-                    empty_slot = True
-                    for val in range(1, VALS+1):
-                        solution = False
-                        if self.is_valid(val, row, col):
-                            self.board[row][col] = val
-                            if self.find_solution(verbose):
-                                if verbose:
-                                    print("Success: %s at (%s, %s) ok" %
-                                          (val, row, col))
-                                return True
-                            else:
-                                if verbose:
-                                    print("Backtracking: %s at (%s, %s)" %
-                                          (val, row, col))
-                                self.board[row][col] = 0
-                    if not solution:
-                        if verbose:
-                            print("No solution for (%s, %s) found" %
-                                  (row, col))
-                        return False
-        if not empty_slot:
-            # Everything solved!
-            return True
-        else:
-            if verbose:
-                print("Expensive backtrack needed...")
-            return False
-
-
-def generate_sudoku(difficulty, verbose=False):
+def generate_sudoku(difficulty, algorithm, verbose=False):
     if difficulty == 'easy':
         hints = 24
     elif difficulty == 'medium':
@@ -182,13 +279,40 @@ def generate_sudoku(difficulty, verbose=False):
         hints = 14
 
     # Generate a random Sudoku and see if it's solvable
-    while True:
+    looping = True
+    while looping:
         b = Board(verbose, hints)
+
+        brute_b = b.copy()
+        poss_b = b.copy()
+
+        brute_solver = BruteForceSolver()
+        poss_solver = PossibilitiesSolver(poss_b)
+
+        if verbose == 1:
+            print ("Problem to solve")
         b.print_board()
-        if b.find_solution(verbose):
-            break
-        print("*** Rats, that random puzzle didn't work, trying again")
-    b.print_board(verbose)
+
+        if algorithm in ['brute', 'all']:
+            if brute_solver.find_solution(brute_b, verbose):
+                looping = False
+
+        if algorithm in ['possible', 'all']:
+            if poss_solver.find_solution(poss_b, verbose):
+                looping = False
+
+        if looping:
+            if verbose == 1:
+                print("*** Rats, that random puzzle didn't work, trying again")
+
+    if algorithm in ['brute', 'all']:
+        if verbose == 1:
+            print ("Brute force solution")
+        brute_b.print_board(verbose)
+    if algorithm in ['possible', 'all']:
+        if verbose == 1:
+            print ("Possibilities solution")
+        poss_b.print_board(verbose)
 
 
 def read_sudoku_from_filename(filename, verbose):
@@ -198,7 +322,7 @@ def read_sudoku_from_filename(filename, verbose):
         b = Board(verbose)
         lines = fd.readlines()
         if len(lines) != 9:
-            if verbose:
+            if verbose == 1:
                 print("Wrong number of lines - found %s" % len(lines))
             return None
         row = 0
@@ -208,7 +332,7 @@ def read_sudoku_from_filename(filename, verbose):
             # TODO(mrda): Should add more validation here
             line = line.rstrip()
             if len(line) != 9:
-                if verbose:
+                if verbose == 1:
                     print("Line %d has %d chars" % (row, len(line)))
                 return None
             col = 0
@@ -218,7 +342,7 @@ def read_sudoku_from_filename(filename, verbose):
                 if ch == '.':
                     ch = 0
                 num = int(ch)
-                if verbose:
+                if verbose == 2:
                     print("Setting (%s, %s) to %s" % (row, col, num))
                 b.board[row][col] = num
                 col += 1
@@ -226,25 +350,40 @@ def read_sudoku_from_filename(filename, verbose):
     return b
 
 
-def solve_sudoku_from_filename(filename, verbose):
+def solve_sudoku_from_filename(filename, algorithm, verbose):
     b = read_sudoku_from_filename(filename, verbose)
     b.print_board()
-    if b.find_solution(verbose):
-        b.print_board()
-    else:
-        print "No solution found"
+    poss_solver = PossibilitiesSolver(b)
+    brute_solver = BruteForceSolver()
+
+    if algorithm in ['brute', 'all']:
+        if brute_solver.find_solution(b, verbose):
+            b.print_board()
+        else:
+            print "No solution found"
+
+    if algorithm in ['possible', 'all']:
+        if poss_solver.find_solution(b, verbose):
+            b.print_board()
+        else:
+            print "No solution found"
 
 
 if __name__ == '__main__':
     progname = os.path.basename(__file__)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbose', action='store_true', default=False,
-                        help='Print our working out')
+    parser.add_argument('-v', '--verbose', action='count',
+                        help='Increase verbosity')
 
     parser.add_argument('-d', '--difficulty',
                         choices=['easy', 'medium', 'hard'],
                         help='Difficulty level for generated Sudokus')
+
+    parser.add_argument('-a', '--algorithm',
+                        choices=['brute', 'possible', 'all'],
+                        default='possible',
+                        help='Choose algorithm to solve the puzzle')
 
     parser.add_argument('filenames', metavar='filename', type=str, nargs='*',
                         help='list of files containing puzzles to solve')
@@ -253,13 +392,13 @@ if __name__ == '__main__':
 
     # Generate a Sudoku
     if not args.filenames:
-        if args.verbose:
+        if args.verbose == 1:
             print("Generating a Sudoko...")
-        generate_sudoku(args.difficulty, args.verbose)
+        generate_sudoku(args.difficulty, args.algorithm, args.verbose)
         sys.exit(0)
 
     # Otherwise, solve some puzzles
     for filename in args.filenames:
-        if args.verbose:
+        if args.verbose == 1:
             print("Processing puzzle '%s'" % filename)
-        solve_sudoku_from_filename(filename, args.verbose)
+        solve_sudoku_from_filename(filename, args.algorithm, args.verbose)
