@@ -68,12 +68,12 @@ def abstract():
 
 
 class AbstractSolver:
-    def find_solution(self, board, verbose=False):
+    def find_solution(self, board, verbose):
         abstract()
 
 
 class BruteForceSolver(AbstractSolver):
-    def find_solution(self, board, verbose=False):
+    def find_solution(self, board, verbose):
         """Find a solution to the current puzzle.
 
         Returns True if a solution can be found, False otherwise.
@@ -114,14 +114,19 @@ class BruteForceSolver(AbstractSolver):
 
 class PossibilitiesSolver(AbstractSolver):
 
-    def __init__(self, board):
+    def __init__(self, board, verbose):
         # Initialise possible values
+        if verbose == 2:
+            board.print_board()
         self.poss = [[0 for x in range(1, SIZE+1)] for x in range(1, SIZE+1)]
         for row in range(SIZE):
             for col in range(SIZE):
                 if board.board[row][col] == 0:
                     self.poss[row][col] = (self.get_possible_values(
                                            board, row, col))
+                    if verbose == 2:
+                        print("(%s, %s) has possibilities %s" %
+                              (row, col, str(self.poss[row][col])))
 
     def get_possible_values(self, board, row, col):
         s = set(list('123456789'))
@@ -129,26 +134,28 @@ class PossibilitiesSolver(AbstractSolver):
         top_r, top_c = board.get_segment_top_left(row, col)
         for r in range(top_r, top_r + 3):
             for c in range(top_c, top_c + 3):
-                elem = board.board[r][c]
-                if elem != 0:
+                elem = str(board.board[r][c])
+                if elem != '0':
                     s.discard(elem)
 
         # Remove all numbers in my row
         for c in range(SIZE):
-            if c != col:
-                s.discard(board.board[row][c])
+            elem = str(board.board[row][c])
+            if elem != '0':
+                s.discard(elem)
 
         # Remove all numbers in my column
         for r in range(SIZE):
-            if r != row:
-                s.discard(board.board[r][col])
+            elem = str(board.board[r][col])
+            if elem != '0':
+                s.discard(elem)
 
         # Double check
         assert(len(s) != 0)
 
         return s
 
-    def find_solution(self, board, verbose=False):
+    def find_solution(self, board, verbose):
         """Find a solution to the current puzzle.
 
         Returns True if a solution can be found, False otherwise.
@@ -267,7 +274,7 @@ class Board:
         return True
 
 
-def generate_sudoku(difficulty, algorithm, verbose=False):
+def generate_sudoku(difficulty, algorithm, verbose):
     if difficulty == 'easy':
         hints = 24
     elif difficulty == 'medium':
@@ -287,7 +294,7 @@ def generate_sudoku(difficulty, algorithm, verbose=False):
         poss_b = b.copy()
 
         brute_solver = BruteForceSolver()
-        poss_solver = PossibilitiesSolver(poss_b)
+        poss_solver = PossibilitiesSolver(poss_b, verbose)
 
         if verbose == 1:
             print ("Problem to solve")
@@ -353,7 +360,7 @@ def read_sudoku_from_filename(filename, verbose):
 def solve_sudoku_from_filename(filename, algorithm, verbose):
     b = read_sudoku_from_filename(filename, verbose)
     b.print_board()
-    poss_solver = PossibilitiesSolver(b)
+    poss_solver = PossibilitiesSolver(b, verbose)
     brute_solver = BruteForceSolver()
 
     if algorithm in ['brute', 'all']:
