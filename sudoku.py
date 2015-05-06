@@ -310,18 +310,14 @@ def generate_sudoku(difficulty, algorithm, verbose):
         b.print_board()
 
         if algorithm in ['brute', 'all']:
-            with Timer() as t:
+            with Timer() as t_b:
                 if brute_solver.find_solution(brute_b, verbose):
                     looping = False
-            if verbose >= 1:
-                print('That took %.03f seconds' % t.interval)
 
         if algorithm in ['possible', 'all']:
-            with Timer() as t:
+            with Timer() as t_p:
                 if poss_solver.find_solution(poss_b, verbose):
                     looping = False
-            if verbose >= 1:
-                print('That took %.03f seconds' % t.interval)
 
         if looping:
             if verbose == 1:
@@ -331,10 +327,14 @@ def generate_sudoku(difficulty, algorithm, verbose):
         if verbose == 1:
             print ("Brute force solution")
         brute_b.print_board(verbose)
+        if verbose >= 1:
+            print('That took %.03f seconds' % t_b.interval)
     if algorithm in ['possible', 'all']:
         if verbose == 1:
             print ("Possibilities solution")
         poss_b.print_board(verbose)
+        if verbose >= 1:
+            print('That took %.03f seconds' % t_p.interval)
 
 
 def read_sudoku_from_filename(filename, verbose):
