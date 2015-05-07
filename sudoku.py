@@ -85,7 +85,7 @@ class AbstractSolver:
 
 class BruteForceSolver(AbstractSolver):
     def find_solution(self, board, verbose):
-        """Find a solution to the current puzzle.
+        """Find a solution to the current puzzle via brute force.
 
         Returns True if a solution can be found, False otherwise.
         """
@@ -114,6 +114,60 @@ class BruteForceSolver(AbstractSolver):
                             print("No solution for (%s, %s) found" %
                                   (row, col))
                         return False
+        if not empty_slot:
+            # Everything solved!
+            return True
+        else:
+            if verbose == 2:
+                print("Expensive backtrack needed...")
+            return False
+
+
+class RandomSolver(AbstractSolver):
+    def find_solution(self, board, verbose):
+        """Find a solution to the current puzzle, trying random values.
+
+        Returns True if a solution can be found, False otherwise.
+        """
+        # Note(mrda): This is a terrible brute force approach
+        empty_slot = False
+        for row in range(SIZE):
+            for col in range(SIZE):
+                if board.board[row][col] == 0:
+                    empty_slot = True
+                    s = set(list('123456789'))
+                    while len(s) > 0:
+                        havent_found_one = True
+                        while havent_found_one and len(s) != 0:
+                            val = random.randrange(SIZE+1)
+                            if str(val) in s:
+                                havent_found_one = False
+                        if verbose > 1:
+                            print("Trying %s at (%s, %s)" % (val, row, col))
+                        if board.is_valid(val, row, col):
+                            board.board[row][col] = val
+                            if self.find_solution(board, verbose):
+                                if verbose == 2:
+                                    print("Success: %s at (%s, %s) ok" %
+                                          (val, row, col))
+                                return True
+                            else:
+                                if verbose == 2:
+                                    print("Backtracking: %s at (%s, %s)" %
+                                          (val, row, col))
+                                board.board[row][col] = 0
+                                s.discard(str(val))
+                        else:
+                            s.discard(str(val))
+                            if verbose == 2:
+                                print("Removing %s as a possibility for "
+                                      "(%s, %s)" % (val, row, col))
+                    # No solution
+                    if verbose == 2:
+                        print("No solution for (%s, %s) found" %
+                              (row, col))
+                    return False
+
         if not empty_slot:
             # Everything solved!
             return True
@@ -166,7 +220,11 @@ class PossibilitiesSolver(AbstractSolver):
         return s
 
     def find_solution(self, board, verbose):
-        """Find a solution to the current puzzle.
+        """Find a solution to the current puzzle via possibility reasoning.
+
+        Build a list of valid values for each unknown square, and iterate
+        over them, trying each one.  This is kind of like brute force, but
+        a little smarter.
 
         Returns True if a solution can be found, False otherwise.
         """
@@ -298,25 +356,29 @@ def generate_sudoku(difficulty, algorithm, verbose):
     looping = True
     while looping:
         b = Board(verbose, hints)
-
-        brute_b = b.copy()
-        poss_b = b.copy()
-
-        brute_solver = BruteForceSolver()
-        poss_solver = PossibilitiesSolver(poss_b, verbose)
-
         if verbose == 1:
             print ("Problem to solve")
         b.print_board()
 
         if algorithm in ['brute', 'all']:
+            brute_b = b.copy()
+            brute_solver = BruteForceSolver()
             with Timer() as t_b:
                 if brute_solver.find_solution(brute_b, verbose):
                     looping = False
 
         if algorithm in ['possible', 'all']:
+            poss_b = b.copy()
+            poss_solver = PossibilitiesSolver(poss_b, verbose)
             with Timer() as t_p:
                 if poss_solver.find_solution(poss_b, verbose):
+                    looping = False
+
+        if algorithm in ['random', 'all']:
+            rand_b = b.copy()
+            rand_solver = RandomSolver()
+            with Timer() as t_r:
+                if rand_solver.find_solution(rand_b, verbose):
                     looping = False
 
         if looping:
@@ -335,6 +397,12 @@ def generate_sudoku(difficulty, algorithm, verbose):
         poss_b.print_board(verbose)
         if verbose >= 1:
             print('That took %.03f seconds' % t_p.interval)
+    if algorithm in ['random', 'all']:
+        if verbose == 1:
+            print ("Random solution")
+        rand_b.print_board(verbose)
+        if verbose >= 1:
+            print('That took %.03f seconds' % t_r.interval)
 
 
 def read_sudoku_from_filename(filename, verbose):
@@ -375,27 +443,39 @@ def read_sudoku_from_filename(filename, verbose):
 def solve_sudoku_from_filename(filename, algorithm, verbose):
     b = read_sudoku_from_filename(filename, verbose)
     b.print_board()
-    poss_solver = PossibilitiesSolver(b, verbose)
-    brute_solver = BruteForceSolver()
 
     if algorithm in ['brute', 'all']:
+        brute_b = b.copy()
+        brute_solver = BruteForceSolver()
         with Timer() as t:
-            if brute_solver.find_solution(b, verbose):
-                b.print_board()
+            if brute_solver.find_solution(brute_b, verbose):
+                brute_b.print_board()
             else:
                 print "No solution found"
         if verbose >= 1:
             print('That took %.03f seconds' % t.interval)
 
     if algorithm in ['possible', 'all']:
+        poss_b = b.copy()
+        poss_solver = PossibilitiesSolver(poss_b, verbose)
         with Timer() as t:
-            if poss_solver.find_solution(b, verbose):
-                b.print_board()
+            if poss_solver.find_solution(poss_b, verbose):
+                poss_b.print_board()
             else:
                 print "No solution found"
         if verbose >= 1:
             print('That took %.03f seconds' % t.interval)
 
+    if algorithm in ['random', 'all']:
+        rand_b = b.copy()
+        rand_solver = RandomSolver()
+        with Timer() as t:
+            if rand_solver.find_solution(rand_b, verbose):
+                rand_b.print_board()
+            else:
+                print "No solution found"
+        if verbose >= 1:
+            print('That took %.03f seconds' % t.interval)
 
 if __name__ == '__main__':
     progname = os.path.basename(__file__)
@@ -409,7 +489,7 @@ if __name__ == '__main__':
                         help='Difficulty level for generated Sudokus')
 
     parser.add_argument('-a', '--algorithm',
-                        choices=['brute', 'possible', 'all'],
+                        choices=['brute', 'possible', 'random', 'all'],
                         default='possible',
                         help='Choose algorithm to solve the puzzle')
 
