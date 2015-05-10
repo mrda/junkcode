@@ -386,19 +386,19 @@ def generate_sudoku(difficulty, algorithm, verbose):
                 print("*** Rats, that random puzzle didn't work, trying again")
 
     if algorithm in ['brute', 'all']:
-        if verbose == 1:
+        if verbose >= 1:
             print ("Brute force solution")
         brute_b.print_board(verbose)
         if verbose >= 1:
             print('That took %.03f seconds' % t_b.interval)
     if algorithm in ['possible', 'all']:
-        if verbose == 1:
+        if verbose >= 1:
             print ("Possibilities solution")
         poss_b.print_board(verbose)
         if verbose >= 1:
             print('That took %.03f seconds' % t_p.interval)
     if algorithm in ['random', 'all']:
-        if verbose == 1:
+        if verbose >= 1:
             print ("Random solution")
         rand_b.print_board(verbose)
         if verbose >= 1:
@@ -447,6 +447,8 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
     if algorithm in ['brute', 'all']:
         brute_b = b.copy()
         brute_solver = BruteForceSolver()
+        if verbose >= 1:
+            print ("Brute Force solution")
         with Timer() as t:
             if brute_solver.find_solution(brute_b, verbose):
                 brute_b.print_board()
@@ -458,6 +460,8 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
     if algorithm in ['possible', 'all']:
         poss_b = b.copy()
         poss_solver = PossibilitiesSolver(poss_b, verbose)
+        if verbose >= 1:
+            print ("Possibilities solution")
         with Timer() as t:
             if poss_solver.find_solution(poss_b, verbose):
                 poss_b.print_board()
@@ -469,6 +473,8 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
     if algorithm in ['random', 'all']:
         rand_b = b.copy()
         rand_solver = RandomSolver()
+        if verbose >= 1:
+            print ("Random solution")
         with Timer() as t:
             if rand_solver.find_solution(rand_b, verbose):
                 rand_b.print_board()
