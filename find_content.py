@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# find-content.py - find files specified, specify --help to
+# find_content.py - find files specified, specify --help to
 #                   get usage information
 #
 # Copyright (C) 2015 Michael Davies <michael@the-davies.net>
@@ -37,8 +37,6 @@ DEFAULT_EXCLUDE_DIRS = ['Previews', 'Thumbnails']
 
 # End Defaults
 
-debug = True
-
 
 def find_files(directories, exclude_dirs, exts, files_only):
     matches = []
@@ -56,12 +54,13 @@ def find_files(directories, exclude_dirs, exts, files_only):
                     prune = True
             if not prune:
                 for extension in extensions:
-                    for filename in fnmatch.filter(filenames, '*.'+extension):
-                        if files_only:
-                            result = filename
-                        else:
-                            result = (root, filename)
-                        matches.append(result)
+                    for filename in filenames:
+                        if fnmatch.fnmatchcase(filename, '*.'+extension):
+                            if files_only:
+                                result = filename
+                            else:
+                                result = (root, filename)
+                            matches.append(result)
     if matches is not None:
         matches.sort()
     return matches
