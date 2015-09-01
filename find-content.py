@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# find-content.py - find files specified 
+# find-content.py - find files specified, specify --help to
+#                   get usage information
 #
 # Copyright (C) 2015 Michael Davies <michael@the-davies.net>
 #
@@ -68,13 +69,13 @@ def find_files(directories, exclude_dirs, exts, files_only):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--files-only',
-                        help='Only return files found, not full path',
+    parser.add_argument('--debug',
+                        help='Internal debugging flag',
                         action='store_true',
                         default=False)
 
-    parser.add_argument('--debug',
-                        help='Internal debugging flag',
+    parser.add_argument('--files-only',
+                        help='Only return files found, not full path',
                         action='store_true',
                         default=False)
 
@@ -119,7 +120,8 @@ if __name__ == '__main__':
         print "For files with extenstions " + str(extensions)
         print "and we're looking for files only? " + str(args.files_only)
 
-    matches = find_files(directories, exclude_dirs, extensions, args.files_only)
+    matches = find_files(directories, exclude_dirs, extensions,
+                         args.files_only)
     for match in matches:
         if isinstance(match, six.string_types):
             print match
