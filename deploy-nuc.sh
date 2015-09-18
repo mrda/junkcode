@@ -21,38 +21,39 @@
 #
 
 # Change these settings to match your environment
-export NUC="thenuc"
-export NUCMAC="<your nuc mac address here>"
-export NUCIP="<your nuc ip address here>"
+export NUC="<NUCNAME>"
+export NUCMAC="**:**:**:**:**:**"
+export NUCIP="<NUC IP ADDRESS>"
 export NUCPORT="16992"
 export NUCADMIN="admin"
-export NUCPASSWORD="<your nuc admin password here>"
-export NUCDEPLOYIMAGE="file:///tftpboot/deployramdisk"
-export NUCUSERIMAGE="file:///tftpboot/my-image"
+export NUCPASSWORD="<NUCPASSWORD>"   # Remember to escape $ and \
+export NUCDEPLOYKERNEL="file:///Images/deploy-ramdisk.kernel"
+export NUCDEPLOYIMAGE="file:///Images/deploy-ramdisk.initramfs"
+export NUCUSERIMAGE="file:///Images/user-image"
+
 
 # Fake authentication, and point to where ironic-api is running
 export OS_AUTH_TOKEN=fake-token
 export IRONIC_URL=http://localhost:6385/
 
-
-# Unenroll the nuc if it's there
+# Unenroll and delete the nuc if it's there
 ironic node-set-maintenance ${NUC} on &> /dev/null
 ironic node-delete ${NUC} &> /dev/null
 
 # Deploy!
-ironic node-create -d pxe_amt -n ${NUC} -i amt_password='${NUCPASSWORD}' -i amt_username='${NUCADMIN}' -i amt_address='${NUCIP}' -i deploy_ramdisk='${NUCDEPLOYIMAGE}.initramfs' -i deploy_kernel='${NUCDEPLOYIMAGE}.kernel'
+ironic node-create -d pxe_amt -n ${NUC} -i amt_password=${NUCPASSWORD} -i amt_username=${NUCADMIN} -i amt_address=${NUCIP} -i deploy_ramdisk=${NUCDEPLOYIMAGE} -i deploy_kernel=${NUCDEPLOYKERNEL}
 
-ironic node-update thenuc add instance_info/image_source="${NUCUSERIMAGE}.qcow2" instance_info/kernel="${NUCUSERIMAGE}.vmlinuz" instance_info/ramdisk="${NUCUSERIMAGE}.initrd" instance_info/root_gb=10
+ironic node-update thenuc add instance_info/image_source=${NUCUSERIMAGE}.qcow2 instance_info/kernel=${NUCUSERIMAGE}.vmlinuz instance_info/root_gb=10 instance_info/ramdisk=${NUCUSERIMAGE}.initrd
 
-export NODEUUID=$(ironic node-list | tail -n +4 | head -n -1 | awk -F "| " '{print $2}')
+NODEUUID=$(ironic node-list | tail -n +4 | head -n -1 | awk -F "| " '{print $2}')
 
 ironic port-create -n ${NODEUUID} -a ${NUCMAC}
 
 ironic node-validate thenuc
 
-# Make sure the AMT interface is awake
+# Make sure the AMT interface is awake before we kick off the provision
 while true; do
-    nc -zv ${NUCIP} ${NUCPORT};
+    nc -zv ${NUCIP} ${NUCPORT}
     if [ "$?" == "0" ]; then
         break;
     fi;
