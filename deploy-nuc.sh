@@ -43,13 +43,13 @@ ironic node-delete ${NUC} &> /dev/null
 # Deploy!
 ironic node-create -d pxe_amt -n ${NUC} -i amt_password=${NUCPASSWORD} -i amt_username=${NUCADMIN} -i amt_address=${NUCIP} -i deploy_ramdisk=${NUCDEPLOYIMAGE} -i deploy_kernel=${NUCDEPLOYKERNEL}
 
-ironic node-update thenuc add instance_info/image_source=${NUCUSERIMAGE}.qcow2 instance_info/kernel=${NUCUSERIMAGE}.vmlinuz instance_info/root_gb=10 instance_info/ramdisk=${NUCUSERIMAGE}.initrd
+ironic node-update ${NUC} add instance_info/image_source=${NUCUSERIMAGE}.qcow2 instance_info/kernel=${NUCUSERIMAGE}.vmlinuz instance_info/root_gb=10 instance_info/ramdisk=${NUCUSERIMAGE}.initrd
 
 NODEUUID=$(ironic node-list | tail -n +4 | head -n -1 | awk -F "| " '{print $2}')
 
 ironic port-create -n ${NODEUUID} -a ${NUCMAC}
 
-ironic node-validate thenuc
+ironic node-validate ${NUC}
 
 # Make sure the AMT interface is awake before we kick off the provision
 while true; do

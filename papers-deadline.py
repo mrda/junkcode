@@ -25,10 +25,10 @@ import datetime
 import math
 
 ####### START OF THINGS TO UPDATE #########
-NUM_MINICONFS = 1
-NUM_PRESENTATIONS = 1
-NUM_PROTOTYPES = 1
-NUM_TUTORIALS = 1
+NUM_MINICONFS = 33
+NUM_PRESENTATIONS = 219
+NUM_PROTOTYPES = 11
+NUM_TUTORIALS = 24
 REVIEW_CLOSE = '23/08/2015'
 ######### END OF THINGS TO UPDATE #########
 
@@ -48,7 +48,8 @@ print('There are %s tutorials to review' % NUM_TUTORIALS)
 
 print('\nFor a TOTAL of %s things to review\n' % total_number)
 
-print('<<< REVIEWING CLOSES IN %d DAYS >>>\n' % days_left)
+print('<<< REVIEWING CLOSES IN %d DAYS ON %s >>>\n' %
+      (days_left, REVIEW_CLOSE))
 
 for i in [25, 50, 100]:
     print('If you wanted to review %d%% you need to do %d per day' %
