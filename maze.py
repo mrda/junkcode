@@ -19,6 +19,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+import random
+
 
 class Cell(object):
 
@@ -112,6 +114,30 @@ class Grid(object):
                     self.grid[row][col].west = self.grid[row][col-1]
                 if col != self.col_size-1:
                     self.grid[row][col].east = self.grid[row][col+1]
+
+    def get_cell(self, row, col):
+        if row < 0 or row >= self.row_size:
+            return None
+        if col < 0 or col >= self.col_size:
+            return None
+        return self.grid[row][col]
+
+    def get_random_cell(self):
+        rand_row = random.randrange(self.row_size)
+        rand_col = random.randrange(self.col_size)
+        return self.grid[rand_row][rand_col]
+
+    def size(self):
+        return self.row_size * self.col_size
+
+    def each_row(self):
+        for row in range(self.row_size):
+            yield self.grid[row]
+
+    def each_cell(self):
+        for row in range(self.row_size):
+            for col in range(self.col_size):
+                yield self.grid[row][col]
 
     def __str__(self):
         b = '+' + '-------' * self.col_size + '+' "\n"
@@ -207,5 +233,51 @@ if __name__ == '__main__':
             self.assertEqual((5, 3), cell.south.coords())
             self.assertEqual((4, 4), cell.east.coords())
             self.assertEqual((4, 2), cell.west.coords())
+
+        def test_get_cell_ok(self):
+            cell = self.g.get_cell(4, 3)
+            self.assertEqual((4, 3), cell.coords())
+
+        def test_get_cell_out_of_bounds(self):
+            c = self.g.get_cell(-1, 3)
+            d = self.g.get_cell(1, self.g.col_size)
+            e = self.g.get_cell(-1, 300)
+            self.assertIsNone(c)
+            self.assertIsNone(d)
+            self.assertIsNone(e)
+
+        def test_get_random_cells(self):
+            # When is enough? :-P
+            for i in range(50):
+                self.assertIsNotNone(self.g.get_random_cell())
+
+        def test_size(self):
+            self.assertEqual(70, self.g.size())
+
+        def test_each_row(self):
+            last_row = None
+            count = 0
+            for row in self.g.each_row():
+                self.assertEqual(self.g.col_size, len(row))
+                last_row = row
+                count += 1
+            cell_start = last_row[0]
+            cell_end = last_row[6]
+            self.assertEqual((9, 0), cell_start.coords())
+            self.assertEqual((9, 6), cell_end.coords())
+            self.assertEqual(self.g.row_size, count)
+
+        def test_each_cell(self):
+            first_cell = None
+            last_cell = None
+            count = 0
+            for cell in self.g.each_cell():
+                count += 1
+                if not first_cell:
+                    first_cell = cell
+                last_cell = cell
+            self.assertEqual((0, 0), first_cell.coords())
+            self.assertEqual((9, 6), last_cell.coords())
+            self.assertEqual(self.g.size(), count)
 
     unittest.main()
