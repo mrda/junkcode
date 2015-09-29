@@ -177,29 +177,29 @@ if __name__ == '__main__':
             cell = self.g.grid[0][0]
             self.assertEqual((1, 0), cell.south.coords())
             self.assertEqual((0, 1), cell.east.coords())
-            self.assertEqual(None, cell.north)
-            self.assertEqual(None, cell.west)
+            self.assertIsNone(cell.north)
+            self.assertIsNone(cell.west)
 
         def test_top_right(self):
             cell = self.g.grid[0][6]
             self.assertEqual((1, 6), cell.south.coords())
             self.assertEqual((0, 5), cell.west.coords())
-            self.assertEqual(None, cell.north)
-            self.assertEqual(None, cell.east)
+            self.assertIsNone(cell.north)
+            self.assertIsNone(cell.east)
 
         def test_bottom_right(self):
             cell = self.g.grid[9][6]
             self.assertEqual((8, 6), cell.north.coords())
             self.assertEqual((9, 5), cell.west.coords())
-            self.assertEqual(None, cell.south)
-            self.assertEqual(None, cell.east)
+            self.assertIsNone(cell.south)
+            self.assertIsNone(cell.east)
 
         def test_bottom_left(self):
             cell = self.g.grid[9][0]
             self.assertEqual((8, 0), cell.north.coords())
             self.assertEqual((9, 1), cell.east.coords())
-            self.assertEqual(None, cell.south)
-            self.assertEqual(None, cell.west)
+            self.assertIsNone(cell.south)
+            self.assertIsNone(cell.west)
 
         def test_happy_cell(self):
             cell = self.g.grid[4][3]
