@@ -34,11 +34,15 @@ class Cell(object):
         self._links = {}
 
     def link(self, cell, bidi=True):
+        if not cell:
+            return
         self._links[cell] = True
         if bidi:
             cell.link(self, False)
 
     def unlink(self, cell, bidi=True):
+        if not cell:
+            return
         if cell in self._links:
             del self._links[cell]
         if bidi:
@@ -139,7 +143,7 @@ class Grid(object):
             for col in range(self.col_size):
                 yield self.grid[row][col]
 
-    def __str__(self):
+    def dump(self):
         b = '+' + '-------' * self.col_size + '+' "\n"
         for row in range(self.row_size):
             b += '|'
@@ -149,6 +153,29 @@ class Grid(object):
         b += '+' + '-------' * self.col_size + '+' "\n"
         return b
 
+    def __str__(self, curr_row=None, curr_col=None):
+        output = '+' + '---+' * self.col_size + '\n'
+        for row in range(self.row_size):
+            output += '|'
+            for col in range(self.col_size):
+                if row == curr_row and col == curr_col:
+                    output += ' * '
+                else:
+                    output += '   '
+                cell = self.grid[row][col]
+                if cell.islinked(cell.east):
+                    output += ' '
+                else:
+                    output += '|'
+            output += '\n+'
+            for col in range(self.col_size):
+                cell = self.grid[row][col]
+                if cell.islinked(cell.south):
+                    output += '   +'
+                else:
+                    output += '---+'
+            output += '\n'
+        return output
 
 if __name__ == '__main__':
 
