@@ -2,6 +2,8 @@
 #
 # maze_binary.py <nums rows> <num cols> - build a maze using binary tree
 #
+# Copyright (C) 2015 Michael Davies <michael@the-davies.net>
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
 # published by the Free Software Foundation; either version 2 of the
