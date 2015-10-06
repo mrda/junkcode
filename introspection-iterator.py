@@ -39,10 +39,17 @@ class Commands(object):
     def step_5_eggs(self):
         print("This is step 5")
 
+    def step_11_bacon(self):
+        print("This is step 11")
+
+    def step_101_chocolate(self):
+        print("This is step 101")
+
     def _get_functions_to_run(self):
-        for name in sorted(dir(self)):
-            if name.startswith('step'):
-                yield name, getattr(self, name)
+        unsorted_steps = [s for s in dir(self) if s.startswith('step_')]
+        steps = sorted(unsorted_steps, key=lambda s: int(s.split('_', 2)[1]))
+        for name in steps:
+            yield name, getattr(self, name)
 
     def run_steps(self):
         for name, func in self._get_functions_to_run():
