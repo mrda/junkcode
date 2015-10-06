@@ -20,10 +20,15 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+from select import select
 import os
 import random
 import sys
 import time
+
+
+# Number of iterations before we start over
+NUM_ITERATIONS = 150
 
 
 class Life:
@@ -86,10 +91,6 @@ class Life:
                 if self.check_for_life(row, col):
                     new_creation.create(row, col)
         self.board = new_creation.board
-
-
-def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def build_acorn(life, base_row=40, base_col=12):
@@ -264,21 +265,52 @@ def initialise_life(life, x, y):
     dispatch[random.randrange(0, len(dispatch))](life, x, y)
 
 
+def time_to_exit(timeout=None):
+    # Note(mrda): select() on stdin might not work on non-Unixes
+    exit = False
+    if not timeout:
+        timeout = 0.2  # seconds
+    rlist, wlist, xlist = select([sys.stdin], {}, {}, timeout)
+    if rlist:
+        s = sys.stdin.readline().rstrip()
+        if s in ['q', 'Q']:
+            exit = True
+    return exit
+
+
+def print_exit_info(row, cols, timeout=None):
+    # Clear the screen in a platform independent way
+    os.system(['clear', 'cls'][os.name == 'nt'])
+    if not timeout:
+        timeout = 5  # seconds
+    message = "Life: Press 'q' and <RETURN> to exit"
+    center_spacing = (cols - len(message)) / 2
+    vertical_spacing = int(1.0/3 * rows)
+    print('\n' * vertical_spacing)
+    print(' ' * center_spacing + message)
+    time.sleep(timeout)
+
+
 if __name__ == '__main__':
     # Get the terminal size
     rows, cols = os.popen('stty size', 'r').read().split()
     rows = int(rows)
     cols = int(cols)
 
+    # Create the petri dish
     life = Life(rows, cols)
+
+    # Give an approximate starting location
     initialise_life(life, (rows/2-10), (cols/2-10))
-    while(1):
+
+    exit = False
+    while(not exit):
+        print_exit_info(rows, cols)
         n = 0
-        while(n < 150):
-            clear_screen()
+        while(n < NUM_ITERATIONS and not exit):
             print life
             life.tick()
-            time.sleep(0.2)
             n += 1
+            exit = time_to_exit()
         # Design shouts Designer
         build_randomised(life)
