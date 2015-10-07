@@ -27,17 +27,17 @@ import random
 import sys
 
 
-def flip_coin():
+def _flip_coin():
     """Returns True for a head, or False for tails"""
     return (random.randint(0, 1) == 0)
 
 
-def choose_random_element(list_of_elems):
+def _choose_random_element(list_of_elems):
     idx = random.randint(0, len(list_of_elems)-1)
     return list_of_elems[idx]
 
 
-def create_maze(row_size, col_size):
+def create_sidewinder_maze(row_size, col_size):
     g = Grid(row_size, col_size)
     for row in reversed(range(row_size)):
         current_run = []
@@ -50,10 +50,10 @@ def create_maze(row_size, col_size):
 
             close_out_run = (
                 at_eastern_boundary or
-                (not at_northern_boundary and flip_coin()))
+                (not at_northern_boundary and _flip_coin()))
 
             if close_out_run:
-                chosen_cell = choose_random_element(current_run)
+                chosen_cell = _choose_random_element(current_run)
                 chosen_cell.link(chosen_cell.north)
                 current_run = []
             else:
@@ -76,5 +76,5 @@ if __name__ == '__main__':
         sys.exit('%s: Board sizes need to be integers' %
                  progname)
 
-    maze = create_maze(rows, cols)
+    maze = create_sidewinder_maze(rows, cols)
     print maze

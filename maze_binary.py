@@ -26,28 +26,36 @@ import random
 import sys
 
 
+def _flip_coin():
+    """Returns True for a head, or False for tails"""
+    return (random.randint(0, 1) == 0)
+
+
 def _make_path(grid, row, col):
-    if row == 0:
+    cell = grid.get_cell(row, col)
+
+    at_eastern_boundary = cell.east is None
+    at_northern_boundary = cell.north is None
+
+    if at_northern_boundary:
         # Have to choose east, unless top-right corner
-        if col == grid.col_size-1:
+        if at_eastern_boundary:
             return
-        else:
-            direction = 'east'
-    elif col == grid.col_size-1:
+        direction = 'east'
+    elif at_eastern_boundary:
         direction = 'north'
     else:
         direction = 'north'
-        if random.randint(0, 1):
+        if _flip_coin():
             direction = 'east'
 
-    cell = grid.grid[row][col]
     if direction == 'north':
         cell.link(cell.north)
     else:
         cell.link(cell.east)
 
 
-def create_maze(row_size, col_size):
+def create_binary_maze(row_size, col_size):
     g = Grid(row_size, col_size)
     for row in reversed(range(row_size)):
         for col in range(col_size):
@@ -70,5 +78,5 @@ if __name__ == '__main__':
         sys.exit('%s: Board sizes need to be integers' %
                  progname)
 
-    maze = create_maze(rows, cols)
+    maze = create_binary_maze(rows, cols)
     print maze
