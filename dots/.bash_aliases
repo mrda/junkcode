@@ -95,6 +95,9 @@ function profile-perl()
     open nytprof/index.html
 }
 
+# Misc things
+alias plusone="figlet '+1' | cowsay -n | sed -e 's/^/  /'"
+
 # ssh agent stuff
 mkdir -p "$HOME/etc/ssh"
 
