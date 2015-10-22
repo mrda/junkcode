@@ -77,7 +77,7 @@ fi
 # Git things
 alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
 alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
-export GIT_EXTERNAL_DIFF=git-diff-using-sdiff.sh
+#export GIT_EXTERNAL_DIFF=git-diff-using-sdiff.sh
 
 # Set up path correctly
 export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin
@@ -94,6 +94,9 @@ function profile-perl()
     nytprofhtml nytprof.out
     open nytprof/index.html
 }
+
+# Ansible things
+export ANSIBLE_CONFIG=${HOME}/.ansible.cfg
 
 # Misc things
 alias plusone="figlet '+1' | cowsay -n | sed -e 's/^/  /'"
