@@ -127,8 +127,8 @@ class Board(object):
             return False
         return True
 
-    def get_opponent(self, player):
-        if player == DARK:
+    def get_opponent(self, colour):
+        if colour == DARK:
             return LIGHT
         return DARK
 
@@ -145,18 +145,18 @@ class Board(object):
             cand_board.set(cand['row'], cand['col'], DOT)
         return cand_board
 
-    def find_all_valid_moves(self, player):
+    def find_all_valid_moves(self, colour):
         slots = []
         for row in range(self.row_size):
             for col in range(self.col_size):
                 cell = self.grid[row][col]
-                if cell.owner == player:
+                if cell.owner == colour:
                     cell_cands = (
-                        self.find_valid_moves_for_cell(row, col, player))
+                        self.find_valid_moves_for_cell(row, col, colour))
                     slots.extend(cell_cands)
         return slots
 
-    def find_valid_moves_for_cell(self, row, col, player):
+    def find_valid_moves_for_cell(self, row, col, colour):
         candidate_list = []
         for dr in [-1, 0, 1]:
             for dc in [-1, 0, 1]:
@@ -171,14 +171,14 @@ class Board(object):
                                                                     col,
                                                                     dr,
                                                                     dc,
-                                                                    player)
+                                                                    colour)
                 if dir_result is not None:
                     candidate_list.append(dir_result)
 
         return candidate_list
 
-    def valid_moves_for_cell_in_direction(self, row, col, dr, dc, player):
-        opponent = self.get_opponent(player)
+    def valid_moves_for_cell_in_direction(self, row, col, dr, dc, colour):
+        opponent = self.get_opponent(colour)
 
         cand_row = row
         cand_col = col
@@ -203,7 +203,7 @@ class Board(object):
                     return None
             elif self.grid[cand_row][cand_col].owner == opponent:
                 flips.append((cand_row, cand_col))
-            elif self.grid[cand_row][cand_col].owner == player:
+            elif self.grid[cand_row][cand_col].owner == colour:
                 return None
 
     def _print_candidates(self, candidates):
@@ -216,25 +216,25 @@ class Board(object):
                 st += self.format_coords(f[0], f[1]) + " "
             print("  " + st)
 
-    def is_valid_move(self, row, col, player):
-        candidates = self.find_all_valid_moves(player)
+    def is_valid_move(self, row, col, colour):
+        candidates = self.find_all_valid_moves(colour)
         for candidate in candidates:
             if candidate['row'] == row and candidate['col'] == col:
                 return True
         return False
 
-    def score(self, player):
+    def score(self, colour):
         count = 0
         for row in range(self.row_size):
             for col in range(self.col_size):
-                if self.grid[row][col].owner == player:
+                if self.grid[row][col].owner == colour:
                     count += 1
         return count
 
-    def find_flips_in_direction(self, row, col, dr, dc, player):
+    def find_flips_in_direction(self, row, col, dr, dc, colour):
         """ Search in dr, dc direction from row, col and find all the flips
         required """
-        opponent = self.get_opponent(player)
+        opponent = self.get_opponent(colour)
 
         flips = []
 
@@ -251,10 +251,10 @@ class Board(object):
                 return None
             elif self.grid[cand_row][cand_col].owner == opponent:
                 flips.append((cand_row, cand_col))
-            elif self.grid[cand_row][cand_col].owner == player:
+            elif self.grid[cand_row][cand_col].owner == colour:
                 return flips
 
-    def find_flips(self, row, col, player):
+    def find_flips(self, row, col, colour):
         """ Find the tokens that need to flip as a result of player
         placing a token at row, col"""
         all_flips = []
@@ -265,17 +265,17 @@ class Board(object):
                 if dr == 0 and dc == 0:
                     continue
 
-                flips = self.find_flips_in_direction(row, col, dr, dc, player)
+                flips = self.find_flips_in_direction(row, col, dr, dc, colour)
                 if flips is not None:
                     all_flips.extend(flips)
 
         return all_flips
 
-    def make_move(self, row, col, player):
-        self.grid[row][col].owner = player
-        flips = self.find_flips(row, col, player)
+    def make_move(self, row, col, colour):
+        self.grid[row][col].owner = colour
+        flips = self.find_flips(row, col, colour)
         for f in flips:
-            self.grid[f[0]][f[1]].owner = player
+            self.grid[f[0]][f[1]].owner = colour
 
 
 class Player(object):
@@ -376,16 +376,16 @@ class Game(object):
         self.player1 = player1
         self.player2 = player2
 
-    def print_valid_moves(self, player, valid_moves):
+    def print_valid_moves(self, colour, valid_moves):
         for move in valid_moves:
             coords = self.b.format_coords(move['row'], move['col'])
             print("Player %s can choose %s which has a count of %d" %
-                  (player, coords, move['count']))
+                  (colour, coords, move['count']))
 
     def _debug_current_moves(self, board):
-        for player in (DARK, LIGHT):
-            valid_moves = self.b.find_all_valid_moves(player)
-            self.print_valid_moves(player, valid_moves)
+        for colour in (DARK, LIGHT):
+            valid_moves = self.b.find_all_valid_moves(colour)
+            self.print_valid_moves(colour, valid_moves)
 
     def end_of_game_message(self, winner, player1_score, player2_score):
         print "***** GAME OVER *****"
@@ -413,7 +413,6 @@ class Game(object):
         player2_skip = False
 
         while still_playing:
-            #player1_skip = self.player_move(self.player1)
             player1_skip = self.player1.make_move(self.b)
             if player1_skip and player2_skip:
                 break
@@ -435,7 +434,6 @@ class Game(object):
 if __name__ == '__main__':
 
     player1 = Human('Michael', DARK)
-    #player2 = Human('Susie', LIGHT)
     player2 = SimpleRobot(LIGHT)
 
     g = Game(player1, player2)
