@@ -28,6 +28,7 @@ HUMAN = 'human'
 ROBOT = 'robot'
 
 import inspect
+import random
 
 
 class Cell(object):
@@ -345,26 +346,33 @@ class Robot(Player):
 
 class SimpleRobot(Robot):
 
-    def __init__(self, colour):
-        name = 'Penny'
+    def __init__(self, colour, name=None):
+        if name is None:
+            name = 'Penny'
         super(SimpleRobot, self).__init__(name, colour)
 
     def make_move(self, board):
-        best_move = None
+        poss_moves = []
         for move in board.find_all_valid_moves(self.colour):
-            if best_move is None:
-                best_move = move
+            if len(poss_moves) == 0:
+                poss_moves = [move]
             else:
-                if move['count'] > best_move['count']:
-                    best_move = move
-        if best_move is None:
+                if move['count'] > poss_moves[0]['count']:
+                    poss_moves = [move]
+                elif move['count'] == poss_moves[0]['count']:
+                    poss_moves.append(move)
+
+        if len(poss_moves) == 0:
             print("%s must skip a move :-(" % self.name)
             return True  # Must skip a move
         else:
+            chosen_move = random.choice(poss_moves)
             print("%s has decided to move to %s" %
                   (self.name,
-                   board.format_coords(best_move['row'], best_move['col'])))
-            board.make_move(best_move['row'], best_move['col'], self.colour)
+                   board.format_coords(chosen_move['row'],
+                                       chosen_move['col'])))
+            board.make_move(chosen_move['row'], chosen_move['col'],
+                            self.colour)
             return False
 
 
@@ -387,8 +395,9 @@ class Game(object):
             valid_moves = self.b.find_all_valid_moves(colour)
             self.print_valid_moves(colour, valid_moves)
 
-    def end_of_game_message(self, winner, player1_score, player2_score):
-        print "***** GAME OVER *****"
+    def end_of_game_message(self, winner, player1_score, player2_score,
+                            number_of_moves):
+        print "\n***** GAME OVER *****"
         s1 = max(player1_score, player2_score)
         s2 = min(player1_score, player2_score)
         if winner is not None:
@@ -396,6 +405,7 @@ class Game(object):
                       % (winner.name, s1, s2))
         else:
             report = "Wow, a draw! Congratulations to both players!\n"
+        report += "(The game took %d moves)\n" % number_of_moves
         return report
 
     def determine_winner(self, player1_score, player2_score):
@@ -411,13 +421,18 @@ class Game(object):
         still_playing = True
         player1_skip = False
         player2_skip = False
+        number_of_moves = 0
 
         while still_playing:
             player1_skip = self.player1.make_move(self.b)
+            if not player1_skip:
+                number_of_moves += 1
             if player1_skip and player2_skip:
                 break
 
             player2_skip = self.player2.make_move(self.b)
+            if not player2_skip:
+                number_of_moves += 1
             if player1_skip and player2_skip:
                 break
 
@@ -425,16 +440,18 @@ class Game(object):
         player2_score = self.b.score(player2.colour)
         winner = self.determine_winner(player1_score, player2_score)
 
-        print self.end_of_game_message(winner, player1_score, player2_score)
+        print self.end_of_game_message(winner, player1_score, player2_score,
+                                       number_of_moves)
         print self.b.__str__(include_score=False)
 
-        return winner, player1_score, player2_score
+        return winner, player1_score, player2_score, number_of_moves
 
 
 if __name__ == '__main__':
 
     player1 = Human('Michael', DARK)
+    #player1 = SimpleRobot(DARK, name="Fred")
     player2 = SimpleRobot(LIGHT)
 
     g = Game(player1, player2)
-    winner, player1_score, player2_score = g.play_game()
+    winner, player1_score, player2_score, number_of_moves = g.play_game()
