@@ -49,7 +49,7 @@ class TextMenu:
         if self.exit is not None and self.exit_at_top:
             print("'%s' : %s" % (self.exit[0], self.exit[1]))
 
-        for key in self.options:
+        for key in sorted(self.options):
             print("'%s' : %s" % (key, self.options[key][0]))
 
         if self.exit is not None and not self.exit_at_top:
@@ -67,7 +67,11 @@ class TextMenu:
 
                 if raw in self.options:
                     print "You selected '%s'" % raw
-                    self.options[raw][1]()
+                    option = self.options[raw][1]
+                    if hasattr(option, '__call__'):
+                        return option()
+                    else:
+                        return option
 
             print "\n*** %s is not a valid option\n" % raw
 

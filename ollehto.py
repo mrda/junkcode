@@ -344,18 +344,19 @@ class Human(Player):
 
 class Robot(Player):
 
-    def __init__(self, name, colour):
+    def __init__(self, name, colour, display):
         self.kind = ROBOT
+        self.display = display
         super(Robot, self).__init__(name, colour)
 
 
 class SimpleRobot(Robot):
 
-    def __init__(self, colour, name=None, randomise=False):
+    def __init__(self, colour, name=None, display=True, randomise=False):
         self.randomise = randomise
         if name is None:
             name = 'Stewart'
-        super(SimpleRobot, self).__init__(name, colour)
+        super(SimpleRobot, self).__init__(name, colour, display)
 
     def make_move(self, board):
         poss_moves = []
@@ -369,14 +370,16 @@ class SimpleRobot(Robot):
                     poss_moves.append(move)
 
         if len(poss_moves) == 0:
-            print("%s must skip a move :-(" % self.name)
+            if self.display:
+                print("%s must skip a move :-(" % self.name)
             return True  # Must skip a move
         else:
             if self.randomise:
                 chosen_move = random.choice(poss_moves)
             else:
                 chosen_move = poss_moves[0]
-            print("%s has decided to move to %s" %
+            if self.display:
+                print("%s has decided to move to %s" %
                   (self.name,
                    board.format_coords(chosen_move['row'],
                                        chosen_move['col'])))
@@ -387,19 +390,21 @@ class SimpleRobot(Robot):
 
 class SimpleRandomRobot(SimpleRobot):
 
-    def __init__(self, colour, name=None):
+    def __init__(self, colour, name=None, display=True):
         if name is None:
             name = 'Penny'
-        super(SimpleRandomRobot, self).__init__(colour, name, randomise=True)
+        super(SimpleRandomRobot, self).__init__(colour, name, display,
+                                                randomise=True)
 
 
 class Game(object):
 
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, output=True):
         self.b = Board()
         self.b.initialise_board()
         self.player1 = player1
         self.player2 = player2
+        self.output = output
 
     def print_valid_moves(self, colour, valid_moves):
         for move in valid_moves:
@@ -453,21 +458,20 @@ class Game(object):
             if player1_skip and player2_skip:
                 break
 
-        player1_score = self.b.score(player1.colour)
-        player2_score = self.b.score(player2.colour)
+        player1_score = self.b.score(self.player1.colour)
+        player2_score = self.b.score(self.player2.colour)
         winner = self.determine_winner(player1_score, player2_score)
 
-        print self.end_of_game_message(winner, player1_score, player2_score,
-                                       number_of_moves)
-        print self.b.__str__(include_score=False)
+        if self.output:
+            print self.end_of_game_message(winner, player1_score,
+                                           player2_score, number_of_moves)
+            print self.b.__str__(include_score=False)
 
         return winner, player1_score, player2_score, number_of_moves
 
 
 def play_single_player_game():
-
     print("\nStarting a one player game\n")
-
     while True:
         name = raw_input("Please enter your name: ")
         if name is not None or name != "":
@@ -479,11 +483,84 @@ def play_single_player_game():
     g = Game(player1, player2)
     winner, player1_score, player2_score, number_of_moves = g.play_game()
 
+def play_two_player_game():
+    print("\nStarting a two player game\n")
+    while True:
+        name_1 = raw_input("Please enter the name of player 1: ")
+        if name_1 is not None or name_1 != "":
+            break
+    while True:
+        name_2 = raw_input("Please enter the name of player 2: ")
+        if name_2 is not None or name_2 != "":
+            break
+
+    player1 = Human(name_1, DARK)
+    player2 = Human(name_2, LIGHT)
+
+    g = Game(player1, player2)
+    winner, player1_score, player2_score, number_of_moves = g.play_game()
+
+def play_computer_vs_computer(output=True):
+    if output:
+        print("\nPlaying computer vs computer\n")
+    player1 = SimpleRandomRobot(DARK, display=False)
+    player2 = SimpleRobot(LIGHT, display=False)
+    g = Game(player1, player2, output)
+    winner, player1_score, player2_score, number_of_moves = g.play_game()
+    return winner, player1_score, player2_score, number_of_moves
+
+def play_many_comp_vs_comp():
+    number_games = 100
+    result = {}
+    for i in range(number_games):
+        winner, player1_score, player2_score, number_of_moves = (
+            play_computer_vs_computer(output=False))
+        if winner is None:
+            # Draw
+            if 'Draw' not in result:
+                result['Draw'] = (1, player1_score, player2_score,
+                                  number_of_moves)
+            else:
+                wins = result['Draw'][0] + 1
+                score1 = result['Draw'][1] + player1_score
+                score2 = result['Draw'][2] + player2_score
+                moves = result['Draw'][3] + number_of_moves
+                result['Draw'] = (wins, player1_score, player2_score,
+                                  number_of_moves)
+            continue
+
+        if winner.name not in result:
+            result[winner.name] = (1, player1_score, player2_score,
+                                number_of_moves)
+        else:
+            wins = result[winner.name][0] + 1
+            score1 = result[winner.name][1] + player1_score
+            score2 = result[winner.name][2] + player2_score
+            moves = result[winner.name][3] + number_of_moves
+            result[winner.name] = (wins, score1, score2, moves)
+
+    print("%-20s\t\t%s\t%s\t%s\t%s\t%s\t%s" % ('Player', 'Wins', 'For',
+        'Agst', '% For', '% Agst', 'Moves/Win'))
+    print("%-20s\t\t%s\t%s\t%s\t%s\t%s\t%s" % ('~~~~~~', '~~~~', '~~~',
+        '~~~~', '~~~~~', '~~~~~~', '~~~~~~~~~'))
+    for player in result:
+        wins, points_for, points_against, moves = result[player]
+        tot_points = 1.0 * points_for + points_against
+        print("%-20s\t\t%d\t%d\t%d\t%.2f\t%.2f\t%.2f" %
+              (player, wins, points_for, points_against,
+               points_for/tot_points, points_against/tot_points,
+               1.0*moves/wins))
+
 
 if __name__ == '__main__':
     menu = textmenu.TextMenu('ollehto - Main Menu')
     menu.add_exit('q', "Press 'q' to exit")
     menu.add_option('1', 'Play a one person game', play_single_player_game)
+    menu.add_option('2', 'Play a two person game', play_two_player_game)
+    menu.add_option('c', 'Play a random computer vs computer game',
+                    play_computer_vs_computer)
+    menu.add_option('r', 'Play many computer vs computer games',
+                    play_many_comp_vs_comp)
     menu.start_menu()
 
-    print("Thanks for playing!")
+    print("\nThanks for playing!")
