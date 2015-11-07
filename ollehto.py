@@ -29,6 +29,7 @@ ROBOT = 'robot'
 
 import inspect
 import random
+import textmenu
 
 
 class Cell(object):
@@ -320,6 +321,10 @@ class Human(Player):
             if raw_move is None or raw_move == '':
                 continue
 
+            if len(raw_move) != 2:
+                print("*** That's not a valid move, moves look like 'A3'")
+                continue
+
             move = raw_move.strip()
             try:
                 row = ord(move[0]) - 65  # 'A' == 65
@@ -346,9 +351,10 @@ class Robot(Player):
 
 class SimpleRobot(Robot):
 
-    def __init__(self, colour, name=None):
+    def __init__(self, colour, name=None, randomise=False):
+        self.randomise = randomise
         if name is None:
-            name = 'Penny'
+            name = 'Stewart'
         super(SimpleRobot, self).__init__(name, colour)
 
     def make_move(self, board):
@@ -366,7 +372,10 @@ class SimpleRobot(Robot):
             print("%s must skip a move :-(" % self.name)
             return True  # Must skip a move
         else:
-            chosen_move = random.choice(poss_moves)
+            if self.randomise:
+                chosen_move = random.choice(poss_moves)
+            else:
+                chosen_move = poss_moves[0]
             print("%s has decided to move to %s" %
                   (self.name,
                    board.format_coords(chosen_move['row'],
@@ -374,6 +383,14 @@ class SimpleRobot(Robot):
             board.make_move(chosen_move['row'], chosen_move['col'],
                             self.colour)
             return False
+
+
+class SimpleRandomRobot(SimpleRobot):
+
+    def __init__(self, colour, name=None):
+        if name is None:
+            name = 'Penny'
+        super(SimpleRandomRobot, self).__init__(colour, name, randomise=True)
 
 
 class Game(object):
@@ -447,11 +464,26 @@ class Game(object):
         return winner, player1_score, player2_score, number_of_moves
 
 
-if __name__ == '__main__':
+def play_single_player_game():
 
-    player1 = Human('Michael', DARK)
-    #player1 = SimpleRobot(DARK, name="Fred")
-    player2 = SimpleRobot(LIGHT)
+    print("\nStarting a one player game\n")
+
+    while True:
+        name = raw_input("Please enter your name: ")
+        if name is not None or name != "":
+            break
+
+    player1 = Human(name, DARK)
+    player2 = SimpleRandomRobot(LIGHT)
 
     g = Game(player1, player2)
     winner, player1_score, player2_score, number_of_moves = g.play_game()
+
+
+if __name__ == '__main__':
+    menu = textmenu.TextMenu('ollehto - Main Menu')
+    menu.add_exit('q', "Press 'q' to exit")
+    menu.add_option('1', 'Play a one person game', play_single_player_game)
+    menu.start_menu()
+
+    print("Thanks for playing!")
