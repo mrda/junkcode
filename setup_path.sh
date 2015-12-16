@@ -24,7 +24,7 @@ JUNKCODE=${HOME}/src/junkcode
 NOARCH=${HOME}/bin/noarch
 
 SCRIPTS=`ls -1 ${JUNKCODE}/*.py ${JUNKCODE}/*.sh ${JUNKCODE}/*.pl \
-         ${JUNKCODE}/rem*`
+         ${JUNKCODE}/rem* ${JUNKCODE}/noauth-local-ironic`
 
 LN=`which ln`
 CP=`which cp`
