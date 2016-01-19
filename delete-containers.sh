@@ -20,8 +20,6 @@
 # 02111-1307, USA.
 #
 
-# TODO(mrda): Add in confirmation
-
 read -p "Are you sure you want to delete your lxc containers? " -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
