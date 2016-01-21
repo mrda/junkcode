@@ -30,6 +30,7 @@ alias l="ls -la $@"  # args quoted
 alias cls="clear"
 alias tac="perl -e 'print reverse <> '"
 alias freq_commands="history|awk '{a[$2]++} END{for(i in a){printf \"%5d\t%s \n\",a[i],i}}'|sort -rn|head"
+alias catdata="perl -ne 's/^#.*//; print if /\S/'"
 
 # timestamp things
 alias tstamp="date +%Y%m%d-%H%M%S"
@@ -58,6 +59,7 @@ alias pydoc='python -m pydoc'
 alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh /usr/local/bin/tox $@"
 alias jsondecode='python -mjson.tool'
+export PIP_REQUIRE_VIRTUALENV=true    # Ensure pip only runs in virtualenvs
 
 # XML things
 alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.parseString(sys.stdin.read()).toprettyxml()"'
