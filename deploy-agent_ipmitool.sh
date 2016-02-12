@@ -50,7 +50,7 @@ ${IRONIC} node-create -d agent_${IPMITOOL} -i ipmi_address="${IPMIADDRESS}" -i i
 
 ${IRONIC} node-update ${NAME} add instance_info/image_source="${USERIMAGE}" instance_info/root_gb=20 instance_info/image_checksum="${USERIMAGEMD5}"
 
-NODEUUID=$(${IRONIC} node-list | tail -n +4 | head -n -1 | cut -f 2 -d "|" )
+NODEUUID=$(${IRONIC} node-list | grep ${NAME} | cut -f 2 -d "|" )
 
 ${IRONIC} port-create -n ${NODEUUID} -a ${MAC}
 
