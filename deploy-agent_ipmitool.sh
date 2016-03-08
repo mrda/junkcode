@@ -22,7 +22,7 @@ WATCH=1
 
 export IRONIC='ironic'
 export IPMITOOL='ipmitool'
-export WATCH='watch'
+export WATCH_CMD='watch'
 
 __check_cmd_avail ()
 {
@@ -35,7 +35,7 @@ __check_cmd_avail ()
 # Verify we havew the commands we need
 __check_cmd_avail ${IPMITOOL}
 __check_cmd_avail ${IRONIC}
-__check_cmd_avail ${WATCH}
+__check_cmd_avail ${WATCH_CMD}
 
 
 # Unenroll and delete the node if it's there
@@ -61,5 +61,5 @@ ${IRONIC} node-set-provision-state ${NAME} active
 
 # Watch what's going on
 if [[ ${WATCH} -eq 1 ]]; then
-    ${WATCH} ${IRONIC} node-show ${NAME}
+    ${WATCH_CMD} ${IRONIC} node-show ${NAME}
 fi
