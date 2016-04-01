@@ -5,10 +5,13 @@
 # Change these settings to match your environment
 export NAME="xxxxxx"                 # what you want to refer to your node as
 export MAC="xx:xx:xx:xx:xx:xx"       # PXE bootable MAC on the node
-export HTTPADDRESS="xxx.xxx.xxx.xxx" # ironic-api node IP addr
 export IPMIADDRESS="xxx.xxx.xxx.xxx" # your node's drac/ilo IP addr
 export IPMIUSER="xxxx"
-export IPMIPASSWORD="xxxxxn"         # Remember to escape $ and \
+export IPMIPASSWORD="xxxxxx"         # Remember to escape $ and \
+export IPMIPORT="xxxx"
+
+export HTTPADDRESS="xxx.xxx.xxx.xxx" # ironic-api node IP addr
+
 
 export DEPLOYRAMDISK="http://${HTTPADDRESS}/images/deploy/coreos_production_pxe_image-oem.cpio.gz"
 export DEPLOYKERNEL="http://${HTTPADDRESS}/images/deploy/coreos_production_pxe.vmlinuz"
@@ -32,7 +35,7 @@ __check_cmd_avail ()
     fi
 }
 
-# Verify we havew the commands we need
+# Verify we have the commands we need
 __check_cmd_avail ${IPMITOOL}
 __check_cmd_avail ${IRONIC}
 __check_cmd_avail ${WATCH_CMD}
@@ -43,10 +46,10 @@ ${IRONIC} node-set-maintenance ${NAME} on
 ${IRONIC} node-delete ${NAME}
 
 # Turn off the node and start from power down
-${IPMITOOL} -I lanplus -H ${IPMIADDRESS} -L ADMINISTRATOR -U ${IPMIUSER} -R 12 -N 5 -P ${IPMIPASSWORD} power off
+${IPMITOOL} -I lanplus -H ${IPMIADDRESS} -L ADMINISTRATOR -U ${IPMIUSER} -R 12 -N 5 -P ${IPMIPASSWORD} -p ${IPMIPORT} power off
 
 # Enroll the node
-${IRONIC} node-create -d agent_${IPMITOOL} -i ipmi_address="${IPMIADDRESS}" -i ipmi_password="${IPMIPASSWORD}" -i ipmi_username="${IPMIUSER}" -i deploy_ramdisk="${DEPLOYRAMDISK}" -i deploy_kernel="${DEPLOYKERNEL}" -n ${NAME}
+${IRONIC} node-create -d agent_${IPMITOOL} -i ipmi_address="${IPMIADDRESS}" -i ipmi_password="${IPMIPASSWORD}" -i ipmi_username="${IPMIUSER}" -p ${IPMIPORT} -i deploy_ramdisk="${DEPLOYRAMDISK}" -i deploy_kernel="${DEPLOYKERNEL}" -n ${NAME}
 
 ${IRONIC} node-update ${NAME} add instance_info/image_source="${USERIMAGE}" instance_info/root_gb=20 instance_info/image_checksum="${USERIMAGEMD5}"
 
