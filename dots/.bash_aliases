@@ -31,6 +31,7 @@ alias cls="clear"
 alias tac="perl -e 'print reverse <> '"
 alias freq_commands="history|awk '{a[$2]++} END{for(i in a){printf \"%5d\t%s \n\",a[i],i}}'|sort -rn|head"
 alias catdata="perl -ne 's/^#.*//; print if /\S/'"
+function mkcd() { mkdir "$@" && cd "$@"; } && alias mkcda=mkcd
 
 # timestamp things
 alias tstamp="date +%Y%m%d-%H%M%S"
