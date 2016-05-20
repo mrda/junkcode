@@ -25,6 +25,7 @@ export VISUAL=vim
 export LESS="-R" # so we get colour
 export LESSOPEN='|~/.lessfilter %s'
 export ACK_OPTIONS="--color" # so we get color
+export CDPATH=.:~:~/src:~/src/openstack:~/src/openstack-attic:~/src/openstack-dev:~/src/openstack-infra
 
 alias l="ls -la $@"  # args quoted
 alias cls="clear"
@@ -75,6 +76,17 @@ if test -x /usr/local/bin/virtualenvwrapper.sh; then
 elif test -x /etc/bash_completion.d/virtualenvwrapper; then
     # Ubuntu borkedness
     source /usr/local/bin/virtualenvwrapper.sh
+fi
+
+# Bash completion in interactive shells
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+      . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+      . /etc/bash_completion
+  elif [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+  fi
 fi
 
 # Git things
