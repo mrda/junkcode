@@ -69,6 +69,9 @@ alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.p
 # Java things
 export JAVA_HOME=${HOME}/src/java
 
+# Paranoid things :)
+alias whoislistening='for IP in $(netstat -an | grep tcp | cut -c45- | grep -v \* | cut -f1 -d" " | cut -f1,2,3,4 -d\. | sort | uniq); do echo -n $IP; whois $IP | grep OrgName | cut -c16-; done'
+
 # Virtualenvwrapper
 if test -x /usr/local/bin/virtualenvwrapper.sh; then
     # Standard python installation location
