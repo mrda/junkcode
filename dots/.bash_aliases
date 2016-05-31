@@ -19,6 +19,22 @@
 # 02111-1307, USA.
 #
 
+# OS Detection
+PLATFORM='unknown'
+case "$OSTYPE" in
+  solaris*)
+    PLATFORM="SOLARIS";;
+  darwin*)
+    PLATFORM="OSX";;
+  linux*)
+    PLATFORM="LINUX";;
+  bsd*)
+    PLATFORM="BSD";;
+  *)
+    PLATFORM='unknown'
+esac
+export PLATFORM
+
 # Shell things
 export EDITOR=vim
 export VISUAL=vim
@@ -48,11 +64,12 @@ alias list-packages='dpkg --get-selections | grep -v deinstall'
 alias remove-package-fully='sudo apt-get --purge remove $@'
 
 # Mac things
-alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
-alias minecraft_server='java -Xmx1024M -Xms1024M -jar ~/Downloads/minecraft_server.jar nogui'
+if [[ "z${PLATFORM}" == "zOSX" ]]; then
+    alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
+    alias minecraft_server='java -Xmx1024M -Xms1024M -jar ~/Downloads/minecraft_server.jar nogui'
+fi
 
 # VirtualBox things
-alias list-packages='dpkg --get-selections | grep -v deinstall'
 alias listvms='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage list vms'
 alias startweb='VBoxManage startvm --type headless michaeldavies.org'
 
