@@ -1,7 +1,7 @@
 #
 # Michael's bash profile/aliases
 #
-# Copyright (C) 1989-2014 Michael Davies <michael@the-davies.net>
+# Copyright (C) 1989-2016 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
