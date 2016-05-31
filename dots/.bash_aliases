@@ -67,11 +67,10 @@ alias remove-package-fully='sudo apt-get --purge remove $@'
 if [[ "z${PLATFORM}" == "zOSX" ]]; then
     alias macvim='/Applications/MacVim.app/Contents/MacOS/Vim -g'
     alias minecraft_server='java -Xmx1024M -Xms1024M -jar ~/Downloads/minecraft_server.jar nogui'
+    # VirtualBox things
+    alias listvms='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage list vms'
+    alias startweb='VBoxManage startvm --type headless michaeldavies.org'
 fi
-
-# VirtualBox things
-alias listvms='/Applications/VirtualBox.app/Contents/MacOS/VBoxManage list vms'
-alias startweb='VBoxManage startvm --type headless michaeldavies.org'
 
 # Python things
 alias pydoc='python -m pydoc'
@@ -115,7 +114,7 @@ alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 #export GIT_EXTERNAL_DIFF=git-diff-using-sdiff.sh
 
 # Set up path correctly
-export PATH=${HOME}/bin/noarch:/usr/local/bin/:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin
+export PATH=${HOME}/bin/noarch:/usr/local/bin:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin
 
 # Go things
 export GOROOT=${HOME}/src/go
@@ -130,8 +129,8 @@ function profile-perl()
     open nytprof/index.html
 }
 
-# Ansible things
-export ANSIBLE_CONFIG=${HOME}/.ansible.cfg
+# Ansible things (not anymore)
+#export ANSIBLE_CONFIG=${HOME}/.ansible.cfg
 
 # Misc things
 alias plusone="figlet '+1' | cowsay -n | sed -e 's/^/  /'"
