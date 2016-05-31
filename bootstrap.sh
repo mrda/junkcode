@@ -31,6 +31,30 @@ apt-get install -y \
     ack-grep \
     python-pygments
 
+# Setup a modern pip environment
+# purge may fail if these aren't installed 
+(
+    set +e
+    apt-get purge -y \
+        python-pip \
+        python-tox \
+        python-distribute \
+        python-setuptools \
+        python-virtualenv \
+        python-wheel
+
+    apt-get purge -y \
+        python3-pip \
+        python3-tox \
+        python3-setuptools \
+        python3-virtualenv \
+        python3-wheel
+    set -e
+)
+wget -O - https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade tox setuptools virtualenvwrapper wheel flake8 bindep
+
+
 # Install basic repos and setup the environment
 mkdir -p ${HOME}/src
 cd ${HOME}/src
