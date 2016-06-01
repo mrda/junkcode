@@ -54,6 +54,11 @@ apt-get install -y \
 wget -O - https://bootstrap.pypa.io/get-pip.py | python
 pip install --upgrade tox setuptools virtualenvwrapper wheel flake8 bindep
 
+read -p "Do you want to install Michael's software? "
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    printf "Done.\n"
+    exit 0
+fi
 
 # Install basic repos and setup the environment
 mkdir -p ${HOME}/src
@@ -68,4 +73,5 @@ cd ${HOME}/src/shiny-engine/scripts
 
 printf "\nYou're running on a ${PLATFORM} platform\n"
 printf "If you want 'rack' go and read https://developer.rackspace.com/docs/rack-cli/configuration/\n"
+printf "\nYou also probably want to 'source ~/.bash_aliases' to get everything setup.\n"
 printf "All done\n"
