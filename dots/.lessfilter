@@ -5,16 +5,12 @@
 # based on code found on http://superuser.com/questions/117841/get-colors-in-less-command
 #
 
-__check_cmd_avail ()
-{
-    if [ "z$(which $1)" == "z" ]; then
-        echo "The command '$1' could not be found, exiting"
-        exit 1
-    fi
-}
-
 PYGMENTIZE="pygmentize"
-__check_cmd_avail ${PYGMENTIZE}
+
+if [ "z$(which ${PYGMENTIZE})" == "z" ]; then
+    cat "$1"
+    exit 0
+fi
 
 case "$1" in
     *.awk|*.groff|*.java|*.js|*.m4|*.php|*.pl|*.pm|*.pod|*.sh|\
