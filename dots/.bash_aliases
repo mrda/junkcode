@@ -154,6 +154,10 @@ if [ ${SSH_AGENT_PID} ]; then
     fi
 fi
 
+# Micropython things
+export AMPY_PORT=/dev/tty.SLAB_USBtoUART
+
+
 #
 # Prompt mangling
 #
