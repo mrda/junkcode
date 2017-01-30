@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# find-suffixes - Examing all files from . downwards finding
+#                 their suffixes
+#
+# Copyright (C) 2017 Michael Davies <michael@the-davies.net>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+# TODO(mrda): Need to fix handling filenames with spaces
+#
+DEBUG=1
+
+EXTS=(fred)
+
+# -prune is for all the MAC OS Xisms
+for fullfile in $(find . -name .DS_Store -prune -o -name .fseventsd \
+    -prune -o -name .Spotlight-V100 -prune -o -name .Trashes -prune -o -print )
+do
+
+    filename=$(basename "$fullfile")
+    extension="${filename##*.}"
+    filename="${filename%.*}"
+
+    if [ -z "$extension" ]; then
+        continue
+    fi
+
+    # Check to see if suffix already exists, if not add it
+    FOUND=0
+    for existing in "${EXTS[@]}"
+    do
+        if [ "$existing" == "$extension" ] ; then
+            FOUND=1
+            break
+        fi
+    done
+
+    if [ ${FOUND} -eq 0 ] ; then
+        if [ ${DEBUG} -eq 1 ]; then
+            echo "*** Found new extension $extension from file $fullfile"
+        fi
+        EXTS=("${EXTS[@]}" "$extension")
+    fi
+
+done
+
+EXTS=("${EXTS[@]:1}") #removed the 1st element
+echo ${EXTS[@]}
