@@ -66,11 +66,11 @@ if [ "$#" -eq 3 ]; then
 fi
 
 OUTPUT=$(printf "GET / HTTP/1.1\r\nHost: ${HOST}\r\nConnection: close\r\n\r\n" | ${NC} ${HOST} ${PORT})
-FIRST=$(printf "$OUTPUT\n" | head -n 1)
+FIRST=$(echo "$OUTPUT" | head -n 1)
 
 if [ "$DISPLAY_ALL" -eq "1" ]; then
-    printf "${OUTPUT}\n"
+    echo "${OUTPUT}"
 else
-    printf "${FIRST}\n"
+    echo "${FIRST}"
 fi
 
