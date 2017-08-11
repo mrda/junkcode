@@ -19,10 +19,12 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+RE='^[0-9]+$'
 NC="nc"
 PORT=80
+DISPLAY_ALL=0
 
-USAGE="$(basename $0): [hostname or IP address to check] [port]"
+USAGE="$(basename $0): [hostname or IP address to check] [port] ['full']"
 
 __check_cmd_avail ()
 {
@@ -43,7 +45,32 @@ fi
 HOST=$1
 
 if [ "$#" -eq 2 ]; then
-  PORT=$2
+  # Might be a port number, or might be the string 'full'
+  if [[ $2 =~ $RE ]]; then
+    PORT=$2
+  elif [ "z$2" == "zfull" ]; then
+    DISPLAY_ALL=1
+  else
+    echo ${USAGE}
+    exit 3
+  fi
 fi
 
-printf "GET / HTTP/1.1\r\nHost: ${HOST}\r\nConnection: close\r\n\r\n" | ${NC} ${HOST} ${PORT}
+if [ "$#" -eq 3 ]; then
+  if [ "z$3" == "zfull" ]; then
+    DISPLAY_ALL=1
+  else
+    echo ${USAGE}
+    exit 4
+  fi
+fi
+
+OUTPUT=$(printf "GET / HTTP/1.1\r\nHost: ${HOST}\r\nConnection: close\r\n\r\n" | ${NC} ${HOST} ${PORT})
+FIRST=$(printf "$OUTPUT\n" | head -n 1)
+
+if [ "$DISPLAY_ALL" -eq "1" ]; then
+    printf "${OUTPUT}\n"
+else
+    printf "${FIRST}\n"
+fi
+
