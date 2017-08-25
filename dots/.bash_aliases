@@ -38,7 +38,9 @@ export PLATFORM
 # Linux distro detection
 DISTRO='unknown'
 if [[ "z${PLATFORM}" == "zLINUX" ]]; then
-    DISTRO=$(lsb_release -i | cut -f2)
+    if [ "z$(which lsb_release)" == "z" ]; then
+        DISTRO=$(lsb_release -i | cut -f2)
+    fi
 fi
 
 # Shell things
@@ -112,8 +114,12 @@ if ! shopt -oq posix; then
       . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
       . /etc/bash_completion
-  elif [ -f $(brew --prefix)/etc/bash_completion ]; then
-    . $(brew --prefix)/etc/bash_completion
+  else
+    if [ "z$(which brew)" != "z" ]; then
+        if [ -f $(brew --prefix)/etc/bash_completion ]; then
+            . $(brew --prefix)/etc/bash_completion
+        fi
+    fi
   fi
 fi
 
