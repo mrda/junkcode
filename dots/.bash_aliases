@@ -35,23 +35,27 @@ case "$OSTYPE" in
 esac
 export PLATFORM
 
+# Linux distro detection
+DISTRO='unknown'
+if [[ "z${PLATFORM}" == "zLINUX" ]]; then
+    DISTRO=$(lsb_release -i | cut -f2)
+fi
+
 # Shell things
 export EDITOR=vim
 export VISUAL=vim
 export LESS="-R" # so we get colour
 export LESSOPEN='|~/.lessfilter %s'
 export ACK_OPTIONS="--color" # so we get color
-export CDPATH=.:~:~/src:~/src/openstack:~/src/openstack-attic:~/src/openstack-dev:~/src/openstack-infra
+export CDPATH=.:~:~/src
 
 alias l="ls -la $@"  # args quoted
 alias cls="clear"
 alias tac="perl -e 'print reverse <> '"
-alias freq_commands="history|awk '{a[$2]++} END{for(i in a){printf \"%5d\t%s \n\",a[i],i}}'|sort -rn|head"
 alias catdata="perl -ne 's/^#.*//; print if /\S/'"
-function mkcd() { mkdir "$@" && cd "$@"; } && alias mkcda=mkcd
+function mkcd() { mkdir -p "$@" && cd "$@"; } && alias mkcda=mkcd
 
 # timestamp things
-alias tstamp="date +%Y%m%d-%H%M%S"
 alias timestamp="date +%Y%m%d-%H%M%S"
 
 # file things
@@ -59,9 +63,14 @@ alias removedones="find . -name \*.done -exec rm {} \;"
 alias cleanmail='sqlite3 ~/Library/Mail/Envelope\ Index vacuum;'
 alias changed_today='find ~ -type f -mtime 0'
 
-# apt things
-alias list-packages='dpkg --get-selections | grep -v deinstall'
-alias remove-package-fully='sudo apt-get --purge remove $@'
+# Linux package management
+if [[ "z${DISTRO}" == "zCentos" ]]; then
+    alias list-packages='yum list installed'
+    alias remove-package-fully='sudo yum remove $@' # As close as you'll get
+elif [[ "z${DISTRO}" == "zUbuntu" ]]; then
+    alias list-packages='dpkg --get-selections | grep -v deinstall'
+    alias remove-package-fully='sudo apt-get --purge remove $@'
+fi
 
 # Mac things
 if [[ "z${PLATFORM}" == "zOSX" ]]; then
@@ -83,7 +92,7 @@ export PIP_REQUIRE_VIRTUALENV=true    # Ensure pip only runs in virtualenvs
 alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.parseString(sys.stdin.read()).toprettyxml()"'
 
 # Java things
-export JAVA_HOME=${HOME}/src/java
+#export JAVA_HOME=${HOME}/src/java
 
 # Paranoid things :)
 alias whoislistening='for IP in $(netstat -an | grep tcp | cut -c45- | grep -v \* | cut -f1 -d" " | cut -f1,2,3,4 -d\. | sort | uniq); do echo -n $IP; whois $IP | grep OrgName | cut -c16-; done'
@@ -91,10 +100,10 @@ alias whoislistening='for IP in $(netstat -an | grep tcp | cut -c45- | grep -v \
 # Virtualenvwrapper
 if test -x /usr/local/bin/virtualenvwrapper.sh; then
     # Standard python installation location
-    source /usr/local/bin/virtualenvwrapper.sh
+    . /usr/local/bin/virtualenvwrapper.sh
 elif test -x /etc/bash_completion.d/virtualenvwrapper; then
     # Ubuntu borkedness
-    source /usr/local/bin/virtualenvwrapper.sh
+    . /usr/local/bin/virtualenvwrapper.sh
 fi
 
 # Bash completion in interactive shells
@@ -114,7 +123,7 @@ alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 #export GIT_EXTERNAL_DIFF=git-diff-using-sdiff.sh
 
 # Set up path correctly
-export PATH=${HOME}/bin/noarch:/usr/local/bin:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin
+export PATH=${HOME}/bin/noarch:/usr/local/bin:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin:${HOME}/apps/PhpStorm/bin:${HOME}/apps/freeplane/freeplane:${HOME}/apps/intelliJ/idea/bin:${HOME}/apps/packer
 
 # Go things
 export GOROOT=${HOME}/src/go
@@ -136,26 +145,26 @@ function profile-perl()
 alias plusone="figlet '+1' | cowsay -n | sed -e 's/^/  /'"
 
 # ssh agent stuff
-mkdir -p "$HOME/etc/ssh"
+#mkdir -p "$HOME/etc/ssh"
+#
+#function short-hostname {
+#    printf $(hostname | cut -f1 -d'.')
+#}
 
-function short-hostname {
-    printf $(hostname | cut -f1 -d'.')
-}
-
-function start-ssh-agent {
-    eval `ssh-agent -s -a ${HOME}/etc/ssh/ssh-agent-socket`;
-    ssh-add ${HOME}/.ssh/id_$(short-hostname);
-}
-
-if [ ${SSH_AGENT_PID} ]; then
-    RUNNING="$(ps ${SSH_AGENT_PID} | grep ssh-agent-socket)"
-    if [ -z "${RUNNING}" ]; then
-        start-ssh-agent
-    fi
-fi
+#function start-ssh-agent {
+#    eval `ssh-agent -s -a ${HOME}/etc/ssh/ssh-agent-socket`;
+#    ssh-add ${HOME}/.ssh/id_rsa
+#}
+#
+#if [ ${SSH_AGENT_PID} ]; then
+#    RUNNING="$(ps ${SSH_AGENT_PID} | grep ssh-agent-socket)"
+#    if [ -z "${RUNNING}" ]; then
+#        start-ssh-agent
+#    fi
+#fi
 
 # Micropython things
-export AMPY_PORT=/dev/tty.SLAB_USBtoUART
+#export AMPY_PORT=/dev/tty.SLAB_USBtoUART
 
 
 #

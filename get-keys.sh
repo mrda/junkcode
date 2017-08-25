@@ -19,18 +19,16 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-USAGE="$(basename $0): <GitHub User>"
+USAGE="$(basename $0): <GitHub User(s)>"
 
 if [ "$#" -eq 0 ]; then
   echo ${USAGE}
   exit 2
 fi
 
-KEYNAME=$1.keys
-
-if [ "$#" -eq 1 ]; then
+for ACCOUNT in "$@"; do
+    echo "User account is ${ACCOUNT}"
+    KEYNAME="${ACCOUNT}.keys"
     curl -O https://github.com/${KEYNAME}
     echo "$1's GitHub keys have been saved as ${KEYNAME}"
-    exit 0
-fi
-
+done
