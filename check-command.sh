@@ -35,4 +35,10 @@ __check_cmd_avail ()
     fi
 }
 
+# Ensure a command was provided
+if [ $# -eq 0 ]; then
+  echo "Usage: $(basename $0) <command>"
+  exit 1
+fi
+
 __check_cmd_avail ${1}
