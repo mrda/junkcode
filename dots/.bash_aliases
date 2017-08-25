@@ -19,6 +19,13 @@
 # 02111-1307, USA.
 #
 
+# Check for things existing
+__command_exists ()
+{
+    hash ${1} &> /dev/null
+    return $?
+}
+
 # OS Detection
 PLATFORM='unknown'
 case "$OSTYPE" in
@@ -38,7 +45,7 @@ export PLATFORM
 # Linux distro detection
 DISTRO='unknown'
 if [[ "z${PLATFORM}" == "zLINUX" ]]; then
-    if [ "z$(which lsb_release)" == "z" ]; then
+    if __command_exists lsb_release; then
         DISTRO=$(lsb_release -i | cut -f2)
     fi
 fi
@@ -115,7 +122,7 @@ if ! shopt -oq posix; then
   elif [ -f /etc/bash_completion ]; then
       . /etc/bash_completion
   else
-    if [ "z$(which brew)" != "z" ]; then
+    if __command_exists brew; then
         if [ -f $(brew --prefix)/etc/bash_completion ]; then
             . $(brew --prefix)/etc/bash_completion
         fi
