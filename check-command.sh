@@ -28,7 +28,7 @@ __does_command_exist ()
 
 __check_cmd_avail ()
 {
-    if __does_command_exist ${1}; then
+    if hash ${1} &> /dev/null; then
         echo "$1 exists"
     else
         echo "$1 does NOT exist"
