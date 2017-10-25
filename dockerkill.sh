@@ -38,9 +38,18 @@ if [ $# -eq 0 ]; then
   exit 2
 fi
 
-PATTERN=$1
-ALL_PROCS=$(${DOCKER} ps -a | grep ${PATTERN})
-ALL_PROCS_IDS=$(echo "${ALL_PROCS}" | cut -f1 -d" ")
+ALL_PROCS=""
+ALL_PROCS_IDS=""
+for PATTERN in "$@";
+do
+    LOCAL_PROCS=$(${DOCKER} ps -a | grep ${PATTERN})
+    LOCAL_PROCS_IDS=$(echo "${LOCAL_PROCS}" | cut -f1 -d" ")
+
+    if [ ! -z "${LOCAL_PROCS}" ]; then
+        ALL_PROCS="${ALL_PROCS} ${LOCAL_PROCS}"
+        ALL_PROCS_IDS="${ALL_PROCS_IDS} ${LOCAL_PROCS_IDS}"
+    fi
+done
 
 if [ -z "${ALL_PROCS}" ]; then
     echo "No processes found"
