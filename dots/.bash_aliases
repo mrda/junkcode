@@ -53,8 +53,8 @@ fi
 # Shell things
 export EDITOR=vim
 export VISUAL=vim
-export LESS="-R" # so we get colour
-export LESSOPEN='|~/.lessfilter %s'
+#export LESS="-R" # so we get colour  # Breaks on Centos 7
+#export LESSOPEN='|~/.lessfilter %s'  # Breaks on Centos 7
 export ACK_OPTIONS="--color" # so we get color
 export CDPATH=.:~:~/src
 
@@ -66,6 +66,7 @@ function mkcd() { mkdir -p "$@" && cd "$@"; } && alias mkcda=mkcd
 
 # timestamp things
 alias timestamp="date +%Y%m%d-%H%M%S"
+alias logtimestamp='echo "<<<<<" $(date +%Y%m%d-%H%M%S) ">>>>>"'
 
 # file things
 alias removedones="find . -name \*.done -exec rm {} \;"
@@ -230,6 +231,10 @@ __git_ps1 ()
 }
 
 export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
+
+# Brewery API test key
+export BDB_API_KEY="d28a194879ac624eb01e41050ca412e5"
+
 
 # Anything after here was probably automagically added,
 # and should be re-categorised
