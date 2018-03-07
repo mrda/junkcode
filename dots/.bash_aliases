@@ -53,10 +53,17 @@ fi
 # Shell things
 export EDITOR=vim
 export VISUAL=vim
-#export LESS="-R" # so we get colour  # Breaks on Centos 7
-#export LESSOPEN='|~/.lessfilter %s'  # Breaks on Centos 7
 export ACK_OPTIONS="--color" # so we get color
 export CDPATH=.:~:~/src
+
+# Deal with Centos 7 being broken
+if [[ "z${DISTRO}" == "zCentOS" ]]; then
+    unset LESS
+    unset LESSOPEN
+else
+    export LESS="-R" # so we get colour  # Breaks on Centos 7
+    export LESSOPEN='|~/.lessfilter %s'  # Breaks on Centos 7
+fi
 
 alias l="ls -la $@"  # args quoted
 alias cls="clear"
