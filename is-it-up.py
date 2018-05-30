@@ -32,7 +32,7 @@ def get_ip_addresses(host, record_type):
     ips = []
     for rdata in answers:
         ips.append(str(rdata))
-    return ips
+    return sorted(ips)
 
 
 def verify_ip_address_assignments(first, second):
@@ -45,8 +45,8 @@ def verify_ip_address_assignments(first, second):
         if ip not in second_answers:
             failure = True
     if failure:
-        print "{} IP addresses: {}".format(first, first_answers)
-        print "{} IP addresses: {}".format(second, second_answers)
+        print "{:<40} IP addresses: {}".format(first, first_answers)
+        print "{:<40} IP addresses: {}".format(second, second_answers)
         sys.exit(66)
 
 
