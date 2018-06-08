@@ -5,23 +5,9 @@
 #
 # Copyright (C) 2018 Michael Davies <michael@the-davies.net>
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-# 02111-1307, USA.
-#
 
 from __future__ import print_function
+import csv
 import dns.resolver
 import getopt
 import os
@@ -30,6 +16,35 @@ import urllib2
 
 
 debug = False
+
+
+def get_config_files():
+    return ["{}/.dns-hosts-to-check".format(os.path.expanduser(x))
+            for x in [".", "~"]]
+
+
+def get_hosts_from_file(filename):
+    hosts = []
+    try:
+        with open(filename) as f:
+            # Hosts as in format <host1>,<host2>
+            csvfilereader = csv.reader(f, delimiter=',')
+            for row in csvfilereader:
+                hosts.append([row[0], row[1]])
+        return hosts
+    except IOError as err:
+        print("Error reading the file {0}: {1}".format(filename, err))
+
+
+def get_hosts():
+    hosts = []
+    config_files = get_config_files()
+    for filename in config_files:
+        if os.path.isfile(filename):
+            hosts = get_hosts_from_file(filename)
+    if not hosts:
+        print("No hosts found")
+    return hosts
 
 
 def get_ip_addresses(host, record_type):
@@ -115,20 +130,26 @@ if __name__ == '__main__':
     except getopt.error:
         exit_with_usage()
 
-    if len(sys.argv) < 3 or (not opts and len(sys.argv) > 3):
-        exit_with_usage()
-
     opt_flags = [flag for (flag, val) in opts]
-
     for opt in opt_flags:
         if opt == '--verbose':
             debug = True
         elif opt == '--help':
             exit_with_usage(code=0)
 
-    # First verify that the main website IP address matches
-    # the actual entry point website IP address
-    verify_ip_address_assignments(args[0], args[1])
+    hosts = []
+    if len(sys.argv) < 3:
+        # Must have hosts defined in a file
+        hosts = get_hosts()
 
-    # Now verify that we're getting a sensible HTTP return code
-    verify_website_up("https://{}".format(args[0]))
+    else:
+        # Must be command line options
+        hosts.append([args[0], args[1]])
+
+    for hostpair in hosts:
+        # First verify that the main website IP address matches
+        # the actual entry point website IP address
+        verify_ip_address_assignments(hostpair[0], hostpair[1])
+
+        # Now verify that we're getting a sensible HTTP return code
+        verify_website_up("https://{}".format(hostpair[0]))
