@@ -10,8 +10,10 @@ from __future__ import print_function
 import csv
 import dns.resolver
 import getopt
+import IPy
 import os
 import sys
+import traceback
 import urllib2
 
 
@@ -55,14 +57,24 @@ def get_ip_addresses(host, record_type):
     return sorted(ips)
 
 
+def identify_host(host_or_ip):
+    result = None
+    try:
+        IPy.IP(host_or_ip)
+        result = [host_or_ip]
+    except ValueError:
+        result = get_ip_addresses(host_or_ip, 'A')
+    return result
+
+
 def verify_ip_address_assignments(first, second):
     if debug:
         print("Verifying {} and {} point to the same servers: "
               .format(first, second), end='')
     # Everything is as it should be if all the IP addresses for 'first'
     # are in the list of IP addresses for 'second'
-    first_answers = get_ip_addresses(first, 'A')
-    second_answers = get_ip_addresses(second, 'A')
+    first_answers = identify_host(first)
+    second_answers = identify_host(second)
     failure = False
     for ip in first_answers:
         if ip not in second_answers:
@@ -85,7 +97,9 @@ def get_url_nofollow(url):
         return code
     except urllib2.HTTPError as e:
         return e.code
-    except e:
+    except Exception:
+        print("*** Unexpected error")
+        print(traceback.format_exc())
         return 0
 
 
@@ -152,4 +166,7 @@ if __name__ == '__main__':
         verify_ip_address_assignments(hostpair[0], hostpair[1])
 
         # Now verify that we're getting a sensible HTTP return code
-        verify_website_up("https://{}".format(hostpair[0]))
+        # Note: We don't want to test https connections, as we'll need
+        # to deal with self-signed certificates or Let's Encrypt, and we
+        # we just want basic connectivity, so we'll ignore this for now
+        verify_website_up("http://{}".format(hostpair[0]))
