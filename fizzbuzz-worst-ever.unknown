@@ -1,0 +1,14 @@
+#
+# This is the current worst attempt I have seen of anyone trying to
+# implement FizzBuzz (https://en.wikipedia.org/wiki/Fizz_buzz)
+#
+
+int = a;  int = total;
+
+function(add)
+{ total = a++;
+ while(a%3==0)
+   { print={"Fizz}}
+ while(a%5==0)
+   print("BUZZ"};
+ }
