@@ -50,6 +50,8 @@ roman_numbers_by_value = sorted(roman_numbers.items(),
                                 key=lambda v: v[1],
                                 reverse=True)
 
+UNKNOWN_STR = "Unknown number format"
+
 
 def convert_arabic(number):
     result = ""
@@ -72,9 +74,9 @@ def follow_on_digit(number, idx):
 
 
 def convert_roman(number):
-    # TODO(mrda): Add invalid number check
     result = 0
     skip = False
+    largest = roman_numbers_by_value[0]
     for idx, roman_digit in enumerate(number):
         if skip:
             skip = False
@@ -90,16 +92,19 @@ def convert_roman(number):
         else:
             converted_digit = roman_numbers[roman_digit]
             skip = False
+        if converted_digit <= largest:
+            largest = converted_digit
+        else:
+            return UNKNOWN_STR
         result = result + converted_digit
     return result
 
 
 def is_roman(number):
-    # TODO(mrda): Add invalid number check
-    for digit in number:
-        if digit not in roman_numbers:
-            return False
-    return True
+    try:
+        return str(convert_roman(number)).isdigit()
+    except Exception as e:
+        return False
 
 
 def is_arabic(number):
@@ -112,7 +117,7 @@ def convert_roman_arabic(number):
     elif is_arabic(number):
         return convert_arabic(number)
     else:
-        return "Unknown number format"
+        return UNKNOWN_STR
 
 
 def exit_with_usage(code=1):
@@ -169,7 +174,7 @@ class TestRoman(unittest.TestCase):
 
     def test_incorrect_roman(self):
         self.assertFalse(is_roman('IC'))
-        self.assertEqual("Unknown number format", convert_roman('IC'))
+        self.assertEqual(UNKNOWN_STR, convert_roman('IC'))
 
 
 if __name__ == '__main__':
@@ -184,7 +189,6 @@ if __name__ == '__main__':
     opt_flags = [flag for (flag, val) in opts]
     for opt in opt_flags:
         if opt == '--verbose':
-            print("verbsoing")
             debug = True
         elif opt == '--help':
             exit_with_usage(code=0)
@@ -201,4 +205,4 @@ if __name__ == '__main__':
     if len(args) != 1:
         exit_with_usage()
     else:
-        print(convert_roman_arabic(args[0]))
+        print(convert_roman_arabic(args[0].upper()))
