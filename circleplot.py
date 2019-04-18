@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# circleplot.py - plot circles looking for intersecting points
+# circleplot.py - plot two circles
 #
 # Copyright (C) 2019 Michael Davies <michael@the-davies.net>
 #
@@ -28,13 +28,15 @@ plt.xticks(axes)
 plt.yticks(axes)
 ax.grid(True)
 
-ax.add_patch(plt.Circle((5, 5), 5, color='#FF6347', alpha=0.7))
-ax.add_patch(plt.Circle((0, 0), 5, color='#002366', alpha=0.7))
+# ax.add_patch(plt.Circle((5, 5), 5, color='#FF6347', alpha=0.7))
+# ax.add_patch(plt.Circle((0, 0), 5, color='#002366', alpha=0.7))
+ax.add_patch(plt.Circle((6, 8), 22, color='#002366', alpha=0.7))
+ax.add_patch(plt.Circle((-1.5555, 8), 14, color='#FF6347', alpha=0.7))
 
 ax.set_aspect('equal', adjustable='box-forced')
 ax.plot()
 
 print()
-print('Press \'q\' to exit in the matplotlib window...')
+print('Press \'q\' to exit...')
 print()
 plt.show()
