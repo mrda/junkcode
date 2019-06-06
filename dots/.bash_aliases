@@ -55,6 +55,7 @@ export EDITOR=vim
 export VISUAL=vim
 export ACK_OPTIONS="--color" # so we get color
 export CDPATH=.:~:~/src
+export HISTCONTROL="ignoreboth"
 
 # Deal with Centos 7 being broken
 if [[ "z${DISTRO}" == "zCentOS" ]]; then
@@ -141,7 +142,7 @@ fi
 # Git things
 alias gitbackup="git status --porcelain | cut -d' ' -f 3 | xargs backup.sh"
 alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
-#export GIT_EXTERNAL_DIFF=git-diff-using-sdiff.sh
+export GIT_EXTERNAL_DIFF=git-diff-using-sdiff.sh
 
 # Set up path correctly
 export PATH=${HOME}/bin/noarch:/usr/local/bin:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin:${HOME}/apps/PhpStorm/bin:${HOME}/apps/freeplane/freeplane:${HOME}/apps/intelliJ/idea/bin:${HOME}/apps/packer
@@ -242,6 +243,17 @@ export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
 # Brewery API test key
 export BDB_API_KEY="d28a194879ac624eb01e41050ca412e5"
 
+
+function fix-screens {
+    xrandr --output DP-2-2 --off
+    xrandr --output DP-2-2 --right-of eDP-1 --auto
+    xrandr --output DP-2-1 --off
+    xrandr --output DP-2-1 --right-of DP-2-2 --auto
+}
+
+function fix-HDMI-1080 {
+    xrandr --output HDMI1 --mode 1920x1080
+}
 
 # Anything after here was probably automagically added,
 # and should be re-categorised
