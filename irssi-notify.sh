@@ -75,7 +75,7 @@ esac
 
 blink ()
 {
-  blink1-tool --playpattern '20,#ff00ff,0.1,0,#00ff00,0.1,0' >& /dev/null
+  blink1-tool --playpattern '10,#ff4500,0.2,0,#00ff00,0.2,0' >& /dev/null
 }
 
 # Notify the user on their desktop
@@ -107,7 +107,7 @@ desktop_notify ()
 echo -ne "\033]0;[irssi on $HOST] - Status\007"
 
 # Go and poll the notifications
-ssh -q $HOST "echo \#status New Connection;tail -n0 -f .irssi/fnotify" | \
+ssh -q $HOST "echo \#status New Connection on $HOST;tail -n0 -f .irssi/fnotify" | \
 while read heading message ; do
     # FIXME: Add a check for escapable characters and do $something
     desktop_notify "$heading" "$message"
