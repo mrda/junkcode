@@ -22,6 +22,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+DEBUG=true
 
 case "$1" in
   start)
@@ -59,10 +60,12 @@ ICON=""
 case "$OSTYPE" in
   darwin*)
     check_cmd_avail osascript
+    check_cmd_avail blink1-tool
     #SOUND="sound name \"Sosumi\""
     ;;
   linux*)
     check_cmd_avail desktop_notify
+    check_cmd_avail blink1-tool
     #ICON="-i $HOME/.local/share/icons/hicolor/128x128/redhat.png"
     ;;
   *)
@@ -70,21 +73,34 @@ case "$OSTYPE" in
     ;;
 esac
 
+blink ()
+{
+  blink1-tool --playpattern '20,#ff00ff,0.1,0,#00ff00,0.1,0' >& /dev/null
+}
+
 # Notify the user on their desktop
 desktop_notify ()
 {
   # $1 is the header
   # $2 is the message
+
+  if [ "$DEBUG" = true ] ; then
+    printf "H:$heading\tM:$message"
+  fi
+
   case "$OSTYPE" in
     darwin*)
       osascript -e "display notification \"$1: $2\" with title \"irssi on $HOST\" $SOUND"
+      blink
       ;;
     linux*)
       desktop_notify "$ICON" -a "irssi-notify" "$1" "$2"
+      blink
       ;;
     *)
       printf "H:$heading\tM:$message"
    esac
+
 }
 
 # Change the title bar
