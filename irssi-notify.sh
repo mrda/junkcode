@@ -85,7 +85,7 @@ desktop_notify ()
   # $2 is the message
 
   if [ "$DEBUG" = true ] ; then
-    printf "H:$heading\tM:$message"
+    printf "H:$heading\tM:$message\n"
   fi
 
   case "$OSTYPE" in
@@ -98,7 +98,7 @@ desktop_notify ()
       blink
       ;;
     *)
-      printf "H:$heading\tM:$message"
+      printf "H:$heading\tM:$message\n"
    esac
 
 }
