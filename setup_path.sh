@@ -23,30 +23,45 @@
 JUNKCODE=${HOME}/src/junkcode
 NOARCH=${HOME}/bin/noarch
 
-SCRIPTS=`ls -1 ${JUNKCODE}/*.py ${JUNKCODE}/*.sh ${JUNKCODE}/*.pl \
-         ${JUNKCODE}/rem* ${JUNKCODE}/noauth-local-ironic`
+SCRIPTS=$(ls -1 ${JUNKCODE}/*.py ${JUNKCODE}/*.sh ${JUNKCODE}/*.pl \
+          ${JUNKCODE}/rem*)
 
 LN=`which ln`
 CP=`which cp`
 
-if [ ! -d ${NOARCH} ]; then
-  # Control will enter here if $DIRECTORY doesn't exist.
-  mkdir -p ${NOARCH}
-fi
+# Ensure the directories we need are here
+mkdir -p ${NOARCH}
+mkdir -p ${HOME}/bin/$(arch)/$(uname)
 
+# Copy noarch scripts into place
 for FILE in ${SCRIPTS}
 do
     # -f is required because some links may already exist
     ${LN} -s -f ${FILE} ${NOARCH}
 done
 
-#for DOT in ${JUNKCODE}/dots/.[a-z]*
-#do
-#    # -f is required because some links may already exist
-#    ${LN} -s -f ${DOT} ${HOME}
-#done
+# Copy dot files into place
+for DOT in ${JUNKCODE}/dots/.[a-z]*
+do
+    # -f is required because some links may already exist
+    ${LN} -s -f ${DOT} ${HOME}
+done
 
 # one last hack for different OSes
 #${LN} -s -f ${HOME}/.bash_aliases ${HOME}/.bash_profile
 
+# Copy some binaries into place
+if [ -d ${HOME}/src/blink1-tool ]; then
+    ${CP} ${HOME}/src/blink1-tool/blink1-tool ${HOME}/bin/$(arch)/$(uname)
+fi
 
+# Append my config on the end of the provided bash startup scripts
+if [ -f /etc/bashrc ]; then
+cat <<- EOF >> ${HOME}/.bashrc
+
+# Michael's local bash customisations
+if [ -f ${HOME}/.bash_aliases ]; then
+    . ${HOME}/.bash_aliases
+fi
+EOF
+fi

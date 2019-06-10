@@ -52,26 +52,41 @@ check_cmd_avail ()
     fi
 }
 
-#TODO: Add in $HOST specific icons and/or sounds
-
-# Platform and host specific changes
-SOUND=""
-ICON=""
+# Allow platform specific capabilities
+ADDSOUND=false
+ADDICON=false
 case "$OSTYPE" in
   darwin*)
     check_cmd_avail osascript
     check_cmd_avail blink1-tool
-    #SOUND="sound name \"Sosumi\""
+    ADDSOUND=true
     ;;
   linux*)
-    check_cmd_avail desktop_notify
+    check_cmd_avail notify-send
     check_cmd_avail blink1-tool
-    #ICON="-i $HOME/.local/share/icons/hicolor/128x128/redhat.png"
+    ADDICON=true
     ;;
   *)
     # Do nothing
     ;;
 esac
+
+# Add in $HOST specific icons and/or sounds
+SOUND=""
+ICON=""
+if [ $ADDSOUND=true ]; then
+    SOUND="sound name \"Sosumi\""
+fi
+
+if [ $ADDICON=true ]; then
+    if [ "$1" = "rh-bos-fs" ]; then
+        ICON="${HOME}/Pictures/redhat.jpg"
+    fi
+    if [ "$1" = "gce" ]; then
+        ICON="${HOME}/Pictures/Tux.png"
+    fi
+fi
+
 
 blink ()
 {
@@ -94,13 +109,12 @@ desktop_notify ()
       blink
       ;;
     linux*)
-      desktop_notify "$ICON" -a "irssi-notify" "$1" "$2"
+      notify-send -a "irssi-notify" -i "$ICON" "$1" "$2"
       blink
       ;;
     *)
       printf "H:$heading\tM:$message\n"
    esac
-
 }
 
 # Change the title bar
