@@ -188,13 +188,13 @@ if __name__ == '__main__':
                     print(json.dumps(act_response, indent=4))
                     print("* Expected:")
                     print(json.dumps(expected_response, indent=4))
-                    print ("*** TEST FAILED - Response didn't match")
+                    print("*** TEST FAILED - Response didn't match")
                     total_fails += 1
                 else:
                     print("# Request:  {}".format(request))
                     print("# Response: {}".format(act_response))
                     print("# HTTP Response Code: {}".format(act_code))
-                    print ("--- Test Passed")
+                    print("--- Test Passed")
                     total_pass += 1
     print("\n+------ Test Summary -------")
     print("| Total tests run: {}".format(total_tests))

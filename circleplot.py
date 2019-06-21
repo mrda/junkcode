@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # circleplot.py - plot two circles
 #
@@ -33,7 +33,7 @@ ax.grid(True)
 ax.add_patch(plt.Circle((6, 8), 22, color='#002366', alpha=0.7))
 ax.add_patch(plt.Circle((-1.5555, 8), 14, color='#FF6347', alpha=0.7))
 
-ax.set_aspect('equal', adjustable='box-forced')
+ax.set_aspect('equal', adjustable='box')
 ax.plot()
 
 print()

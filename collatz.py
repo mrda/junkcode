@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # collatz.py - Test the Collatz conjecture
 #              See http://en.wikipedia.org/wiki/Collatz_conjecture
@@ -26,7 +26,7 @@ import os
 
 def collatz(n, dump=False):
     if dump:
-        print n,
+        print(n, end=" ")
     if (n <= 1):
         return True
     elif (n % 2 == 0):

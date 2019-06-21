@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # queens - find a solution to the eight queens problem using simple
 #          backtracking.  Note, you'll need to go make a coffee if you
@@ -44,8 +44,9 @@ class Board:
     def print_board(self):
         for row in range(self.size):
             for col in range(self.size):
-                print(self.board[row][col]),
-            print
+                print(self.board[row][col], end="")
+            print()
+        print()
 
     def is_valid_spot(self, row, col):
         fail = False

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # b64.py - Base64 encode or decode
 #
@@ -33,13 +33,14 @@ import sys
 
 
 def encode(strings):
-    return base64.b64encode(' '.join(s for s in strings))
+    s = ' '.join(s for s in strings)
+    return base64.b64encode(s.encode()).decode("utf-8", "ignore")
 
 
 def decode(strings):
     final = []
     for s in strings:
-        final.append(base64.b64decode(s))
+        final.append(base64.b64decode(s).decode("utf-8", "ignore"))
     return final
 
 
@@ -48,8 +49,8 @@ if __name__ == "__main__":
         progname = os.path.basename(__file__)
         sys.exit('Usage: %s [enc|encode|dec|decode] string(s)' % progname)
     elif (sys.argv[1] == "enc") or (sys.argv[1] == "encode"):
-        print encode(sys.argv[2:])
+        print(encode(sys.argv[2:]))
     elif (sys.argv[1] == "dec") or (sys.argv[1] == "decode"):
-        print ' '.join(s for s in decode(sys.argv[2:]))
+        print(' '.join(s for s in decode(sys.argv[2:])))
     else:
-        print encode(sys.argv[1:])
+        print(encode(sys.argv[1:]))

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 #
 # character-freq.py - work out the frequency of all characters in the
 #                     supplied input
@@ -52,7 +52,7 @@ def dump_char_freq_table(table):
             pkey = 'space'
         else:
             pkey = key
-        print "'%s' appears %s times" % (pkey, table[key])
+        print("'%s' appears %s times" % (pkey, table[key]))
 
 if __name__ == '__main__':
     try:
@@ -62,7 +62,6 @@ if __name__ == '__main__':
         freq_table = get_char_frequencies(buffer)
         dump_char_freq_table(freq_table)
     except IOError as e:
-        print "%s: [Errno %s] %s: '%s'" % \
-            (basename(sys.argv[0]), e.errno, e.strerror, fileinput.filename())
+        print("%s: [Errno %s] %s: '%s'" % (basename(sys.argv[0]),
+              e.errno, e.strerror, fileinput.filename()))
         sys.exit(e.errno)
-

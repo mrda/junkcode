@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # check-status-reset.py - Reset whatever check-status.sh did
 #

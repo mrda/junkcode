@@ -1,0 +1,8 @@
+# This is Git's per-user configuration file.
+[user]
+    email = michael@the-davies.net
+    name = Michael Davies
+[gitreview]
+    username = mrda
+[alias]
+    lol = log --graph --decorate --pretty=oneline --abbrev-commit

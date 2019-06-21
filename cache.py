@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # cache.py - Simple caching decorator for pure python functions
 #            (note that you probably don't want this, but instead

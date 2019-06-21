@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # analyse_this - calcularte some simple statistics on the supplied
 #                command line arguments
@@ -33,9 +33,9 @@ def calc_mean(nums):
 def calc_median(nums):
     nums.sort()
     if len(nums) % 2 == 1:
-        return nums[((len(nums)+1)/2)-1]
+        return nums[((len(nums)+1)//2)-1]
     else:
-        return float(sum(nums[(len(nums)/2)-1:(len(nums)/2)+1]))/2.0
+        return float(sum(nums[(len(nums)//2)-1:(len(nums)//2)+1]))//2.0
 
 
 def calc_range(nums):
@@ -51,13 +51,13 @@ def calc_sum_of_squares(nums):
 
 def calc_std_dev(strs):
     ss = calc_sum_of_squares(strs)
-    variance = ss / (len(strs) - 1)
+    variance = ss // (len(strs) - 1)
     return variance ** 0.5
 
 
 def calc_pop_std_dev(nums):
     ss = calc_sum_of_squares(nums)
-    population_variance = ss/len(nums)
+    population_variance = ss//len(nums)
     return population_variance ** 0.5
 
 
