@@ -22,6 +22,7 @@
 # Things you can modify
 declare -a KNOWN_SWITCHES=('lounge_lamp' 'coffee_machine')
 declare -a VALID_STATES=('on' 'off')
+DEBUG=1
 # End of things you can modify
 
 CREDS=${HOME}/.ha.sh
@@ -82,6 +83,9 @@ get_state() {
   local AUTH="Authorization: Bearer $HA_TOKEN"
   local CONTENT="Content-Type: application/json"
   local CMD=$(curl -s -X GET -H "$AUTH" -H "$CONTENT" ${HA_BASE_URL}/api/states/${SWITCH})
+  if [ $DEBUG -eq 1 ]; then
+    echo curl -s -X GET -H "$AUTH" -H "$CONTENT" ${HA_BASE_URL}/api/states/${SWITCH}
+  fi
   echo $CMD | python3 -m json.tool
 }
 
@@ -91,6 +95,9 @@ set_state() {
   local AUTH="Authorization: Bearer $HA_TOKEN"
   local CONTENT="Content-Type: application/json"
   local ENTITY="{\"entity_id\": \"$SWITCH\"}"
+  if [ $DEBUG -eq 1 ]; then
+    echo curl -s -X POST -H "$AUTH" -H "$CONTENT" -d "$ENTITY" ${HA_BASE_URL}/api/services/switch/turn_$STATE
+  fi
   local CMD=$(curl -s -X POST -H "$AUTH" -H "$CONTENT" -d "$ENTITY" ${HA_BASE_URL}/api/services/switch/turn_$STATE)
 }
 
