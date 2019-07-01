@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # roman.py - Convert to/from Roman Digits.  Another little programming
 #            hiring challenge.
@@ -27,7 +27,7 @@ import sys
 import unittest
 
 
-valid_opts = ['help', 'self-test', 'verbose']
+valid_opts = ['help', 'self-test']
 
 
 roman_numbers = {
@@ -76,7 +76,7 @@ def follow_on_digit(number, idx):
 def convert_roman(number):
     result = 0
     skip = False
-    largest = roman_numbers_by_value[0]
+    largest = roman_numbers_by_value[0][1]
     for idx, roman_digit in enumerate(number):
         if skip:
             skip = False
@@ -188,9 +188,7 @@ if __name__ == '__main__':
 
     opt_flags = [flag for (flag, val) in opts]
     for opt in opt_flags:
-        if opt == '--verbose':
-            debug = True
-        elif opt == '--help':
+        if opt == '--help':
             exit_with_usage(code=0)
         elif opt == '--self-test':
             runtests = True
