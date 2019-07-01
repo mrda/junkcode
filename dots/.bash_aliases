@@ -63,7 +63,7 @@ if [[ "z${DISTRO}" == "zCentOS" ]]; then
     unset LESSOPEN
 else
     export LESS="-R" # so we get colour  # Breaks on Centos 7
-    export LESSOPEN='|~/.lessfilter %s'  # Breaks on Centos 7
+    export LESSOPEN='|pygmentize -g %s'  # Breaks on Centos 7
 fi
 
 alias l="ls -la $@"  # args quoted
