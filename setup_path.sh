@@ -23,8 +23,7 @@
 JUNKCODE=${HOME}/src/junkcode
 NOARCH=${HOME}/bin/noarch
 
-SCRIPTS=$(ls -1 ${JUNKCODE}/*.py ${JUNKCODE}/*.sh ${JUNKCODE}/*.pl \
-          ${JUNKCODE}/rem*)
+SCRIPTS=$(find ${HOME}/src/junkcode -maxdepth 1 -type f)
 
 LN=`which ln`
 CP=`which cp`
@@ -67,5 +66,5 @@ fi
 
 # Remind the user to setup bash_completions
 echo "*** Remember to copy bash_completion scripts into place"
-echo "sudo cp ${HOME}/src/junkcode/bash_completions.d/* /etc/bash_completion.d"
+echo "sudo cp ${HOME}/src/junkcode/bash_completion.d/* /etc/bash_completion.d"
 

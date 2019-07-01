@@ -22,4 +22,4 @@ _ha_completions()
 {
   COMPREPLY=($(compgen -W "$(ha-list-entities.py)" "${COMP_WORDS[1]}"))
 } &&
-complete -F _ha_completions ha.sh
+complete -F _ha_completions ha

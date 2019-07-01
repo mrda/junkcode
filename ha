@@ -19,21 +19,22 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 
-# Things you can modify
-declare -a KNOWN_SWITCHES=('switch.lounge_lamp' 'switch.coffee_machine')
+declare -a KNOWN_SWITCHES=($(ha-list-entities.py))
 declare -a VALID_STATES=('on' 'off')
-# End of things you can modify
 
-CREDS=${HOME}/.ha.sh
 BASENAME=$(basename $0)
 
-if [ ! -r $CREDS ]; then
-  printf "%s: Cannot find required credentials file %s\n" $BASENAME $CREDS
-  exit 1
+# The base URL and authentication token can be either in the
+# environment, or in a file.  Either way, we need to retrieve this
+# information from somewhere.  Fail otherwise.
+if [[ -z "$HA_BASE_URL" || -z "$HA_TOKEN" ]]; then
+    CREDS=${HOME}/.ha.sh
+    if [ ! -r $CREDS ]; then
+        printf "%s: Cannot find required credentials file %s\n" $BASENAME $CREDS
+        exit 1
+    fi
+    . $CREDS
 fi
-
-# Bring HA_* env vars into scope
-. $CREDS
 
 # Use DEBUG from the environment, but ensure that we don't error if it's not
 if [ -z "$DEBUG" ]; then
@@ -88,7 +89,7 @@ get_state() {
   local CONTENT="Content-Type: application/json"
   local CMD=$(curl -s -X GET -H "$AUTH" -H "$CONTENT" ${HA_BASE_URL}/api/states/${SWITCH})
   if [ $DEBUG -eq 1 ]; then
-    echo curl -s -X GET -H "$AUTH" -H "$CONTENT" ${HA_BASE_URL}/api/states/${SWITCH}
+    echo curl -s -X GET -H \"$AUTH\" -H \"$CONTENT\" ${HA_BASE_URL}/api/states/${SWITCH}
   fi
   echo $CMD | python3 -m json.tool
 }
@@ -100,7 +101,7 @@ set_state() {
   local CONTENT="Content-Type: application/json"
   local ENTITY="{\"entity_id\": \"$SWITCH\"}"
   if [ $DEBUG -eq 1 ]; then
-    echo curl -s -X POST -H "$AUTH" -H "$CONTENT" -d "$ENTITY" ${HA_BASE_URL}/api/services/switch/turn_$STATE
+    echo curl -s -X POST -H \"$AUTH\" -H \"$CONTENT\" -d \'$ENTITY\' ${HA_BASE_URL}/api/services/switch/turn_$STATE
   fi
   local CMD=$(curl -s -X POST -H "$AUTH" -H "$CONTENT" -d "$ENTITY" ${HA_BASE_URL}/api/services/switch/turn_$STATE)
 }
