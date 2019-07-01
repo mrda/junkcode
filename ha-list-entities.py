@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env getpy3.sh
 #
 # ha-list-entities.py - List all the available entities from Home Assistant
 #                       Depends the following environment variables:
@@ -28,7 +28,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-
 import configparser
 import simplejson
 import requests

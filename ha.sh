@@ -20,9 +20,8 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 
 # Things you can modify
-declare -a KNOWN_SWITCHES=('lounge_lamp' 'coffee_machine')
+declare -a KNOWN_SWITCHES=('switch.lounge_lamp' 'switch.coffee_machine')
 declare -a VALID_STATES=('on' 'off')
-DEBUG=1
 # End of things you can modify
 
 CREDS=${HOME}/.ha.sh
@@ -35,6 +34,11 @@ fi
 
 # Bring HA_* env vars into scope
 . $CREDS
+
+# Use DEBUG from the environment, but ensure that we don't error if it's not
+if [ -z "$DEBUG" ]; then
+  DEBUG=0
+fi
 
 array_contains () {
   # $1 = Thing to look for
@@ -104,13 +108,11 @@ set_state() {
 # cmdline processing
 if [ "$#" -eq 1 ]; then
   check_switch $1 "${KNOWN_SWITCHES[@]}"
-  FULL_SWITCH="switch.$1"
-  get_state $FULL_SWITCH
+  get_state $1
 elif [ "$#" -eq 2 ]; then
   check_switch $1 "${KNOWN_SWITCHES[@]}"
   check_states $2 "${VALID_STATES[@]}"
-  FULL_SWITCH="switch.$1"
-  set_state $FULL_SWITCH $2
+  set_state $1 $2
 else
   # Unknown command
   printf "Usage: %s <switch> [<state>]\n" $BASENAME

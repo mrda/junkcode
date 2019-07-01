@@ -3,7 +3,7 @@
 # setup_path.sh - create a bunch of symlinks so my junkcode scripts are
 #                 available on my path
 #
-# Copyright (C) 2013 Michael Davies <michael@the-davies.net>
+# Copyright (C) 2013-2019 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -47,12 +47,11 @@ do
     ${LN} -s -f ${DOT} ${HOME}
 done
 
-# one last hack for different OSes
-#${LN} -s -f ${HOME}/.bash_aliases ${HOME}/.bash_profile
-
 # Copy some binaries into place
 if [ -d ${HOME}/src/blink1-tool ]; then
     ${CP} ${HOME}/src/blink1-tool/blink1-tool ${HOME}/bin/$(arch)/$(uname)
+else
+    echo "WARNING: No blink1-tool available"
 fi
 
 # Append my config on the end of the provided bash startup scripts
@@ -65,3 +64,8 @@ if [ -f ${HOME}/.bash_aliases ]; then
 fi
 EOF
 fi
+
+# Remind the user to setup bash_completions
+echo "*** Remember to copy bash_completion scripts into place"
+echo "sudo cp ${HOME}/src/junkcode/bash_completions.d/* /etc/bash_completion.d"
+
