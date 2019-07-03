@@ -1,0 +1,69 @@
+#!/usr/bin/bash
+#
+# myinstall - create a symlink for a file to ${HOME}/bin, allowing for architecture
+#             Note that if $DEBUG=1, it's just a dry-run
+#
+# Copyright (C) 2019 Michael Davies <michael@the-davies.net>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+# Use DEBUG from the environment, but ensure that we don't error if it's not
+if [ -z "$DEBUG" ]; then
+  DEBUG=0
+fi
+
+if [ "$#" -ne 1 ]; then
+  printf "Usage: %s <command>\n" $(basename $0)
+  exit 1
+fi
+
+# Is this an absolute or relative path? If so, we don't need to search $PATH
+if [ $(basename "$1") == "$1" ]; then
+  if ! hash $1 &> /dev/null; then
+    printf "%s: '$1' doesn't exist\n" $(basename $0)
+    exit 2
+  fi
+  FILELOCATION=$(which $1)
+else
+  FILELOCATION=$(realpath $1)
+fi
+
+FILETYPE=$(file $FILELOCATION | cut -f2 -d' ')
+
+case "$FILETYPE" in
+
+ELF) DESTDIR=$HOME/bin/$(arch)/$(uname)
+     ;;
+
+  *) DESTDIR=$HOME/bin/noarch
+     ;;
+
+esac
+
+if [ "$(dirname $FILELOCATION)" == "$DESTDIR" ]; then
+  printf "%s: No action performed as '%s' already exists in '%s'\n" $(basename $0) $1 $DESTDIR
+  exit 3
+fi
+
+if [ $DEBUG -eq 1 ]; then
+  printf "File location is %s\n" $FILELOCATION
+  printf "File type is %s\n" $FILETYPE
+  printf "Destination is %s\n" $DESTDIR
+  printf "Command I would execute: ln -sf $FILELOCATION $DESTDIR\n"
+  printf "...but no action performed because \$DEBUG=1.\n"
+else
+  ln -sf $FILELOCATION $DESTDIR
+fi
