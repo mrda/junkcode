@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py3
 #
 # analyse_this - calcularte some simple statistics on the supplied
 #                command line arguments
