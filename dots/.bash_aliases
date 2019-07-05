@@ -240,6 +240,10 @@ __git_ps1 ()
 
 export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
 
+# Red Hat has decided to start quoting files/dirs with spaces.
+# Let's change the behaviour back to normal.
+alias ls='/usr/bin/ls --quoting-style=literal -F --color=auto'
+
 # Brewery API test key
 #export BDB_API_KEY="d28a194879ac624eb01e41050ca412e5"
 
