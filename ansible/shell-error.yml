@@ -1,0 +1,34 @@
+---
+#
+# Shell error handling
+# How to test: ansible-playbook shell-error.yml --extra-vars "h=flopsical.com"
+#
+# Copyright (C) 2015 Michael Davies <michael@the-davies.net>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+- name: Testing out shell error behaviours
+  hosts: localhost
+  tasks:
+    - name: Avoid ssh host key queries
+      shell: |
+        ssh -O exit "{{ h }}"
+        ssh-keygen -R "{{ h }}"
+        ssh -o StrictHostKeyChecking=no -v root@"{{ h }}" true
+      register: result
+      delegate_to: localhost
+      failed_when: (result.rc != 255 and result.rc != 0)
+      when: true  # avoid linting warning
+
+    - debug: var=result
