@@ -93,6 +93,11 @@ blink ()
   blink1-tool --playpattern '10,#ff4500,0.2,0,#00ff00,0.2,0' >& /dev/null
 }
 
+clear_blink ()
+{
+  blink1-tool --off >& /dev/null
+}
+
 # Notify the user on their desktop
 desktop_notify ()
 {
@@ -100,7 +105,7 @@ desktop_notify ()
   # $2 is the message
 
   if [ "$DEBUG" = true ] ; then
-    printf "H:$heading\tM:$message\n"
+    printf "H:$1\tM:$2\n"
   fi
 
   case "$OSTYPE" in
@@ -117,6 +122,18 @@ desktop_notify ()
    esac
 }
 
+clear_notification ()
+{
+  # $1 is the header
+  # $2 is the message
+
+  if [ "$DEBUG" = true ] ; then
+    printf "H:$1\tM:$2\n"
+  fi
+
+  clear_blink
+}
+
 # Change the title bar
 echo -ne "\033]0;[irssi on $HOST] - Status\007"
 
@@ -124,6 +141,10 @@ echo -ne "\033]0;[irssi on $HOST] - Status\007"
 ssh -q $HOST "echo \#status New Connection on $HOST;tail -n0 -f .irssi/fnotify" | \
 while read heading message ; do
     # FIXME: Add a check for escapable characters and do $something
-    desktop_notify "$heading" "$message"
+    if [ "$heading" == "mrda" ]; then
+        clear_notification "$heading" "$message"
+    else
+        desktop_notify "$heading" "$message"
+    fi
 done
 
