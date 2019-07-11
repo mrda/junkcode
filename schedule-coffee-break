@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# schedule-coffee-break - Does what it says on the box.  Turns on the coffee
+#                         machine, waits for it to warm up, prompts the user
+#                         to make a coffee, gives them time to make a coffee,
+#                         then turns the machine off again.
+#
+# Copyright (C) 2019 Michael Davies <michael@the-davies.net>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# Or try here: http://www.fsf.org/copyleft/gpl.html
+
+# Nice little trick to cause this script to put itself in the background
+PASS="startinbackground"
+if [ "$SCB" != "$PASS" ]; then
+  export SCB="$PASS"
+  nohup "$0" "$@" </dev/null >/dev/null 2>&1 &
+  exit
+fi
+
+WARM_UP=900   # 15 mins
+TURN_OFF=600  # 10 mins
+
+ha switch.coffee_machine on
+sleep $WARM_UP
+
+echo -en "\007"
+zenity --info --text="It\'s time for a coffee break\!" --title="Serious Cybernetics Corporation" --width=300 --height=200 >& /dev/null
+sleep $TURN_OFF
+
+ha switch.coffee_machine off
