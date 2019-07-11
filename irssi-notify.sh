@@ -23,7 +23,10 @@
 # 02111-1307, USA.
 #
 
-DEBUG=true
+# Use DEBUG from the environment, but ensure that we don't error if it's not
+if [ -z "$DEBUG" ]; then
+  DEBUG=0
+fi
 
 case "$1" in
   start)
@@ -117,7 +120,7 @@ desktop_notify ()
   # $1 is the header
   # $2 is the message
 
-  if [ "$DEBUG" = true ] ; then
+  if [ "$DEBUG" -eq 1 ] ; then
     printf "H:$1\tM:$2\n"
   fi
 
@@ -140,7 +143,7 @@ clear_notification ()
   # $1 is the header
   # $2 is the message
 
-  if [ "$DEBUG" = true ] ; then
+  if [ "$DEBUG" -eg 1 ] ; then
     printf "H:$1\tM:$2\n"
   fi
 
