@@ -22,6 +22,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+
 DEBUG=true
 
 case "$1" in
@@ -51,6 +52,18 @@ check_cmd_avail ()
         exit 1
     fi
 }
+
+# Find my nick
+if [[ -z "$NICK" ]]; then
+    NICK_FILE=${HOME}/.nick
+    if [ ! -r $NICK_FILE ]; then
+        printf "%s: You don't have your nick defined in \$NICK \
+and cannot find nick file %s\n" $BASENAME $NICK_FILE
+        exit 1
+    fi
+    . $NICK_FILE
+fi
+
 
 # Allow platform specific capabilities
 ADDSOUND=false
@@ -141,7 +154,7 @@ echo -ne "\033]0;[irssi on $HOST] - Status\007"
 ssh -q $HOST "echo \#status New Connection on $HOST;tail -n0 -f .irssi/fnotify" | \
 while read heading message ; do
     # FIXME: Add a check for escapable characters and do $something
-    if [ "$heading" == "mrda" ]; then
+    if [ "$heading" == "$NICK" ]; then
         clear_notification "$heading" "$message"
     else
         desktop_notify "$heading" "$message"
