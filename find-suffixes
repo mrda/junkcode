@@ -20,7 +20,11 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-DEBUG=1
+
+# Use DEBUG from the environment, but ensure that we don't error if it's not
+if [ -z "$DEBUG" ]; then
+  DEBUG=0
+fi
 
 EXTS=(fred)
 
