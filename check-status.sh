@@ -24,6 +24,8 @@
 # 02111-1307, USA.
 #
 
+blink1-tool --off >/dev/null 2>&1
+
 # Run whatever, just pass it all through
 "$@"
 status=$?
@@ -38,5 +40,5 @@ fi
 TMPFILE=${CHECK_STATUS_TIMESTAMP:-/tmp/.check_status_timestamp}
 date '+%s' > ${TMPFILE}
 
-return ${status}
+exit ${status}
 

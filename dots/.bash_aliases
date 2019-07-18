@@ -102,7 +102,7 @@ fi
 # Python things
 alias pydoc='python -m pydoc'
 alias pycheck="python -m py_compile $@"
-alias tox="check-status.sh /usr/local/bin/tox $@"
+alias tox="check-status.sh \tox $@"
 alias jsondecode='python -mjson.tool'
 export PIP_REQUIRE_VIRTUALENV=true    # Ensure pip only runs in virtualenvs
 
@@ -111,6 +111,9 @@ alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.p
 
 # Java things
 #export JAVA_HOME=${HOME}/src/java
+
+# Ansible things
+export ANSIBLE_NOCOWS=1
 
 # Paranoid things :)
 alias whoislistening='for IP in $(netstat -an | grep tcp | cut -c45- | grep -v \* | cut -f1 -d" " | cut -f1,2,3,4 -d\. | sort | uniq); do echo -n $IP; whois $IP | grep OrgName | cut -c16-; done'
