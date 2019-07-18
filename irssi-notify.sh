@@ -143,7 +143,7 @@ clear_notification ()
   # $1 is the header
   # $2 is the message
 
-  if [ "$DEBUG" -eg 1 ] ; then
+  if [ "$DEBUG" -eq 1 ] ; then
     printf "H:$1\tM:$2\n"
   fi
 
