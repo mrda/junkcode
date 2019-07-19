@@ -22,6 +22,16 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 
+PHRASES=("Aye aye, captain!" \
+         "Yes Sir, right away!" \
+         "One is pleased to be of service" \
+         "Everything is impossible until somebody does it" \
+         )
+
+CHOICE=$((RANDOM % ${#PHRASES[@]}))
+# Just to acknowledge we've done something
+printf "%s\n" "${PHRASES[$CHOICE]}"
+
 # Nice little trick to cause this script to put itself in the background
 PASS="startinbackground"
 if [ "$SCB" != "$PASS" ]; then
