@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env py3
 #
 # phonetic.py - Spell out the input string to the NATO phoentic alphabet,
 #               or do the inverse
 #
-# Copyright (C) 2007 Michael Davies (michael@the-davies.net)
+# Copyright (C) 2007,2019 Michael Davies (michael@the-davies.net)
 #
 # e.g. Encoding example:
 # mrda@carbon:~/src/python$ ./phonetic.py vc107
@@ -34,9 +34,15 @@ import string
 
 def encode(strings):
     # nested string comprehension, I love python :-)
-    return " space ".join([" ".join([_enc(string.lower(ch)) for ch in list(str)]) for str in strings])
+    return " space ".join([" ".join([_enc(ch) for ch in list(str)]) for str in strings])
 
 def _enc(ch):
+    phon = __enc(ch.lower())
+    if ch in string.ascii_uppercase:
+        return "capital-" + phon
+    return phon
+
+def __enc(ch):
     if (ch) == 'a':
         return 'alpha'
     elif (ch) == 'b':
@@ -116,94 +122,100 @@ def _enc(ch):
 
 def decode(strings):
     # nested string comprehension, I love python :-)
-    return " ".join(["".join([_dec(atom) for atom in str.split()]) for str in strings])
+    return "".join(["".join([_dec(atom) for atom in str.split()]) for str in strings])
 
-def _dec(ch):
-    if (ch) == 'alpha':
+def _dec(s):
+    splits = s.split('-')
+    if len(splits) == 2:
+        return __dec(splits[1]).upper()
+    return __dec(s)
+
+def __dec(s):
+    if (s) == 'alpha':
         return 'a'
-    elif (ch) == 'bravo':
+    elif (s) == 'bravo':
         return 'b'
-    elif (ch) == 'charlie':
+    elif (s) == 'charlie':
         return 'c'
-    elif (ch) == 'delta':
+    elif (s) == 'delta':
         return 'd'
-    elif (ch) == 'echo':
+    elif (s) == 'echo':
         return 'e'
-    elif (ch) == 'foxtrot':
+    elif (s) == 'foxtrot':
         return 'f'
-    elif (ch) == 'golf':
+    elif (s) == 'golf':
         return 'g'
-    elif (ch) == 'hotel':
+    elif (s) == 'hotel':
         return 'h'
-    elif (ch) == 'india':
+    elif (s) == 'india':
         return 'i'
-    elif (ch) == 'juliet':
+    elif (s) == 'juliet':
         return 'j'
-    elif (ch) == 'kilo':
+    elif (s) == 'kilo':
         return 'k'
-    elif (ch) == 'lima':
+    elif (s) == 'lima':
         return 'l'
-    elif (ch) == 'mike':
+    elif (s) == 'mike':
         return 'm'
-    elif (ch) == 'november':
+    elif (s) == 'november':
         return 'n'
-    elif (ch) == 'oscar':
+    elif (s) == 'oscar':
         return 'o'
-    elif (ch) == 'papa':
+    elif (s) == 'papa':
         return 'p'
-    elif (ch) == 'quebec':
+    elif (s) == 'quebec':
         return 'q'
-    elif (ch) == 'romeo':
+    elif (s) == 'romeo':
         return 'r'
-    elif (ch) == 'sierra':
+    elif (s) == 'sierra':
         return 's'
-    elif (ch) == 'tango':
+    elif (s) == 'tango':
         return 't'
-    elif (ch) == 'uniform':
+    elif (s) == 'uniform':
         return 'u'
-    elif (ch) == 'victor':
+    elif (s) == 'victor':
         return 'v'
-    elif (ch) == 'whiskey':
+    elif (s) == 'whiskey':
         return 'w'
-    elif (ch) == 'xray':
+    elif (s) == 'xray':
         return 'x'
-    elif (ch) == 'yankee':
+    elif (s) == 'yankee':
         return 'y'
-    elif (ch) == 'zulu':
+    elif (s) == 'zulu':
         return 'z'
-    elif (ch) == 'one':
+    elif (s) == 'one':
         return '1'
-    elif (ch) == 'two':
+    elif (s) == 'two':
         return '2'
-    elif (ch) == 'three':
+    elif (s) == 'three':
         return '3'
-    elif (ch) == 'four':
+    elif (s) == 'four':
         return '4'
-    elif (ch) == 'five':
+    elif (s) == 'five':
         return '5'
-    elif (ch) == 'six':
+    elif (s) == 'six':
         return '6'
-    elif (ch) == 'seven':
+    elif (s) == 'seven':
         return '7'
-    elif (ch) == 'eight':
+    elif (s) == 'eight':
         return '8'
-    elif (ch) == 'nine':
+    elif (s) == 'nine':
         return '9'
-    elif (ch) == 'zero':
+    elif (s) == 'zero':
         return '0'
-    elif (ch) == 'space':
+    elif (s) == 'space':
         return ' '
     else:
-        return ch
+        return s
 
 if __name__ == "__main__":
     if (len(sys.argv) == 1):
         pass
     elif (sys.argv[1] == "enc") or (sys.argv[1] == "encode"):
-        print encode(sys.argv[2:])
+        print(encode(sys.argv[2:]))
     elif (sys.argv[1] == "dec") or (sys.argv[1] == "decode"):
-        print decode(sys.argv[2:])
-    elif (sys.argv[0] == "deimify.py"):
-        print decode(sys.argv[1:])
+        print(decode(sys.argv[2:]))
+    elif (sys.argv[0] == "phonetic.py"):
+        print(decode(sys.argv[1:]))
     else:
-        print encode(sys.argv[1:])
+        print(encode(sys.argv[1:]))
