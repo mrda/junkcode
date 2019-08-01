@@ -9,3 +9,4 @@
     unstage = reset HEAD --
     last = log -1 HEAD
     unstash = stash pop
+    gru = remote update
