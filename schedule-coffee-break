@@ -48,6 +48,11 @@ sleep $WARM_UP
 
 echo -en "\007"
 zenity --info --text="It\'s time for a coffee break\!" --title="Serious Cybernetics Corporation" --width=300 --height=200 >& /dev/null
+
+if [ -r ${HOME}/sounds/coffee-time.mp3 ]; then
+    play -q ${HOME}/sounds/coffee-time.mp3
+fi
+
 sleep $TURN_OFF
 
 ha switch.coffee_machine off
