@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env py3
 #
 # morse.py - Convert the input string to morse code, or do the inverse
 #
-# Copyright (C) 2015 Michael Davies (michael@the-davies.net)
+# Copyright (C) 2015,2019 Michael Davies (michael@the-davies.net)
 #
 # e.g. Encoding example:
 # mrda@carbon:~/src/python$ ./morse.py hello
@@ -83,16 +83,15 @@ def encode(words):
     except KeyError:
         exit("*** Unhandled letter found during encoding '%s'" % x)
     # Remove superfluous gaps before a space.
-    return string.replace(encoded,
-                          LETTER_SPACE + WORD_SPACE + LETTER_SPACE,
-                          WORD_SPACE)
+    return encoded.replace(LETTER_SPACE + WORD_SPACE + LETTER_SPACE,
+                           WORD_SPACE)
 
 
 def decode(s):
     final = ""
-    str = ''.join(x for x in s).rstrip()
-    for word in string.split(str, WORD_SPACE):
-        letters = string.split(word, LETTER_SPACE)
+    s = ' '.join(x for x in s).rstrip()
+    for word in s.split(WORD_SPACE):
+        letters = word.split(LETTER_SPACE)
         dec_word = ""
         for letter in letters:
             try:
@@ -110,8 +109,8 @@ if __name__ == "__main__":
         progname = os.path.basename(__file__)
         sys.exit('Usage: %s [dec|decode] <data>' % progname)
     elif (sys.argv[1] == "enc") or (sys.argv[1] == "encode"):
-        print encode(sys.argv[2:])
+        print(encode(sys.argv[2:]))
     elif (sys.argv[1] == "dec") or (sys.argv[1] == "decode"):
-        print decode(sys.argv[2:])
+        print(decode(sys.argv[2:]))
     else:
-        print encode(sys.argv[1:])
+        print(encode(sys.argv[1:]))
