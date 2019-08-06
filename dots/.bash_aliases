@@ -247,6 +247,16 @@ export PS1="${PS1//\\w/\\w\$(__git_ps1)$(__screen_ps1)}"
 # Let's change the behaviour back to normal.
 alias ls='/usr/bin/ls --quoting-style=literal -F --color=auto'
 
+# ls by size and time
+alias lss='ls --human-readable --size -1 -S --classify'
+alias lst='ls -t -l'
+
+# Only show drives and not all the other guff
+alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | egrep ^/dev/ | sort"
+
+# Find things in my history
+alias gh='history|grep'
+
 # Brewery API test key
 #export BDB_API_KEY="d28a194879ac624eb01e41050ca412e5"
 
