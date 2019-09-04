@@ -104,7 +104,7 @@ alias pydoc='python -m pydoc'
 alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh \tox $@"
 alias jsondecode='python -mjson.tool'
-export PIP_REQUIRE_VIRTUALENV=true    # Ensure pip only runs in virtualenvs
+#export PIP_REQUIRE_VIRTUALENV=true    # Ensure pip only runs in virtualenvs
 
 # XML things
 alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.parseString(sys.stdin.read()).toprettyxml()"'
@@ -256,6 +256,9 @@ alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | eg
 
 # Find things in my history
 alias gh='history|grep'
+
+# Protect my work machine from devstack
+touch $HOME/.no-devstack
 
 # Brewery API test key
 #export BDB_API_KEY="d28a194879ac624eb01e41050ca412e5"
