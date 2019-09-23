@@ -30,7 +30,8 @@ PHRASES=("Aye aye, captain!" \
 
 CHOICE=$((RANDOM % ${#PHRASES[@]}))
 # Just to acknowledge we've done something
-printf "%s\n" "${PHRASES[$CHOICE]}"
+DTS=$(datetimestr)
+printf "%s\n" "$DTS: ${PHRASES[$CHOICE]}"
 
 # Nice little trick to cause this script to put itself in the background
 PASS="startinbackground"
