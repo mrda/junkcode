@@ -35,8 +35,8 @@ while true; do
     fi
     if [ $FIRST -eq 0 ]; then
         echo "Internet is currently down, waiting for it to come back"
+        FIRST=1
     fi
-    FIRST=1
     echo -n "."
     sleep 1
 done
