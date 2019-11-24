@@ -22,31 +22,22 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-__does_command_exist ()
-{
-    hash ${1} &> /dev/null
-    return $?
-}
 
-__does_command_exist lolcat
+# Notes: Launching an editor from git once colourised breaks things.
+COMMANDS=( ls find ps history pwd )
+
+[[ "${BASH_SOURCE[0]}" == "$0" ]] && echo "You need to source this script, like this: . $0"  && exit 1
+
+hash lolcat &> /dev/null
 if [ $? -eq 0 ]; then
 
-addlols ()
+function addlols ()
 {
 "$@" | lolcat
 }
 
-function colourise () {
-    alias $1="addlols $1"
-}
-
-colourise ls
-colourise find
-colourise ps
-colourise history
-colourise git
-colourise pwd
+for CMD in "${COMMANDS[@]}"; do
+    alias $CMD="addlols $CMD"
+done
 
 fi
-
-echo "You need to source this script, like this: . $0"
