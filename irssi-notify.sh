@@ -28,6 +28,10 @@ if [ -z "$DEBUG" ]; then
   DEBUG=0
 fi
 
+if [ -z "$LOCALLOGGING" ]; then
+  LOCALLOGGING=1
+fi
+
 case "$1" in
   start)
     shift 1
@@ -156,7 +160,14 @@ echo -ne "\033]0;[irssi on $HOST] - Status\007"
 # Go and poll the notifications
 ssh -q $HOST "echo \#status New Connection on $HOST;tail -n0 -f .irssi/fnotify" | \
 while read heading message ; do
+
     # FIXME: Add a check for escapable characters and do $something
+
+    # Keep a local copy of conversations
+    if [ "$LOCALLOGGING" -eq 1 ] ; then
+      printf "$(date +%Y%m%d-%H%M%S) $heading: $message\n" >> $HOME/.irssi-log
+    fi
+
     if [ "$heading" == "$NICK" ]; then
         clear_notification "$heading" "$message"
     else
