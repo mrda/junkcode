@@ -26,21 +26,28 @@ POLL_OUTAGE=60  # seconds
 BLINK=blink1-toolz
 HAVEBLINK=0
 if hash $BLINK &> /dev/null; then
-  HAVEBLINK=1
+    HAVEBLINK=1
 fi
+
+show_time () {
+    # Display the number of seconds supplied in a user friendly
+    # format of "d h m s"
+    SECS=$1
+    printf "%0dd %0dh %0dm %0ds\n" $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60))
+}
 
 blink ()
 {
-  if [[ $HAVEBLINK -eq 1 ]]; then
-    $BLINK --blue >& /dev/null
-  fi
+    if [[ $HAVEBLINK -eq 1 ]]; then
+        $BLINK --blue >& /dev/null
+    fi
 }
 
 clear_blink ()
 {
-  if [[ $HAVEBLINK -eq 1 ]]; then
-    $BLINK --off >& /dev/null
-  fi
+    if [[ $HAVEBLINK -eq 1 ]]; then
+        $BLINK --off >& /dev/null
+    fi
 }
 
 if [ -z ${INTERNET_HOST+x} ]; then
@@ -71,7 +78,8 @@ while true; do
     END="$(date +%s)"
     DIFF=$(echo "$END-$START" | bc)
     if [ $DIFF -gt 0 ]; then
-        echo " Down for $DIFF seconds"
+        echo -n " Down for "
+        show_time $DIFF
     fi
   fi
 
