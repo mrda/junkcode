@@ -20,6 +20,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+HOSTS_TO_CHECK=( google.com facebook.com twitter.com )
 POLL_NORMAL=300 # seconds
 POLL_OUTAGE=60  # seconds
 
@@ -29,7 +30,8 @@ if hash $BLINK &> /dev/null; then
     HAVEBLINK=1
 fi
 
-show_time () {
+show_time ()
+{
     # Display the number of seconds supplied in a user friendly
     # format of "d h m s"
     SECS=$1
@@ -50,39 +52,60 @@ clear_blink ()
     fi
 }
 
-if [ -z ${INTERNET_HOST+x} ]; then
-    INTERNET_HOST=8.8.8.8
-fi
+declare -a IP_ADDR_LIST
+build_ip_addresses ()
+{
+    for NAME in ${HOSTS_TO_CHECK[*]}; do
+        IP_ADDR_LIST+=( $(dig +short $NAME | head -n 1) )
+    done
+}
+build_ip_addresses
 
-START="$(date +%s)"
+is_internet_up ()
+{
+    ANY_OK=0
+    for IP_ADDR in ${IP_ADDR_LIST[*]}; do
+        ping -c1 $IP_ADDR >& /dev/null
+        if [ $? -eq 0 ]; then
+            ANY_OK=1
+        fi
+    done
+
+    if [ $ANY_OK -eq 1 ]; then
+        return 0
+    fi
+    return 1
+}
+
 
 while true; do
 
-  OUTAGE=0
-  while true; do
-      ping -c1 $INTERNET_HOST >& /dev/null
-      if [ $? -eq 0 ]; then
-          break
-      fi
-      if [ $OUTAGE -eq 0 ]; then
-          OUTAGE=1
-          echo -n Outage: $(date +"%Y%m%d %H:%M:%S ")
-          blink
-      fi
-      echo -n "."
-      sleep $POLL_OUTAGE
-  done
+    OUTAGE=0
+    while true; do
+        is_internet_up
+        if [ $? -eq 0 ]; then
+            break
+        fi
+        if [ $OUTAGE -eq 0 ]; then
+            OUTAGE=1
+            START="$(date +%s)"
+            echo -n Outage: $(date +"%Y%m%d %H:%M:%S ")
+            blink
+        fi
+        echo -n "."
+        sleep $POLL_OUTAGE
+    done
 
-  if [ $OUTAGE -eq 1 ]; then
-    clear_blink
-    END="$(date +%s)"
-    DIFF=$(echo "$END-$START" | bc)
-    if [ $DIFF -gt 0 ]; then
-        echo -n " Down for "
-        show_time $DIFF
+    if [ $OUTAGE -eq 1 ]; then
+        clear_blink
+        END="$(date +%s)"
+        DIFF=$(echo "$END-$START" | bc)
+        if [ $DIFF -gt 0 ]; then
+            echo -n " Down for "
+            show_time $DIFF
+        fi
     fi
-  fi
 
-  sleep $POLL_NORMAL
+    sleep $POLL_NORMAL
 
 done
