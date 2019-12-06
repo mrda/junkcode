@@ -24,7 +24,7 @@ HOSTS_TO_CHECK=( google.com facebook.com twitter.com )
 POLL_NORMAL=300 # seconds
 POLL_OUTAGE=60  # seconds
 
-BLINK=blink1-toolz
+BLINK=blink1-tool
 HAVEBLINK=0
 if hash $BLINK &> /dev/null; then
     HAVEBLINK=1
