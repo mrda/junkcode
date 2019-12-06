@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # poll-internet.sh - Continuous loop to see if the internet is staying up,
-#                    use blink to tll people we have an outage
+#                    use blink to tell people we have an outage
 #
 # Copyright (C) 2019 Michael Davies <michael@the-davies.net>
 #
@@ -30,6 +30,12 @@ if hash $BLINK &> /dev/null; then
     HAVEBLINK=1
 fi
 
+declare -a IP_ADDR_LIST
+for NAME in ${HOSTS_TO_CHECK[*]}; do
+    IP_ADDR_LIST+=( $(dig +short $NAME | head -n 1) )
+done
+
+
 show_time ()
 {
     # Display the number of seconds supplied in a user friendly
@@ -51,15 +57,6 @@ clear_blink ()
         $BLINK --off >& /dev/null
     fi
 }
-
-declare -a IP_ADDR_LIST
-build_ip_addresses ()
-{
-    for NAME in ${HOSTS_TO_CHECK[*]}; do
-        IP_ADDR_LIST+=( $(dig +short $NAME | head -n 1) )
-    done
-}
-build_ip_addresses
 
 is_internet_up ()
 {
