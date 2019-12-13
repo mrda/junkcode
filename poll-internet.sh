@@ -99,7 +99,7 @@ array_shuffle ()
 #
 # Main
 #
-printf "<<< Restarting %s at %s >>>\n" $(basename $0) "$(date +'%Y%m%d %H:%M:%S')" >> $OUTAGE_FILE
+printf "# Restarting %s at %s\n" $(basename $0) "$(date +'%Y%m%d %H:%M:%S')" >> $OUTAGE_FILE
 
 # Translate hostnames into IP addresses, and perform IP address lookup once
 declare -a IP_ADDR_LIST
