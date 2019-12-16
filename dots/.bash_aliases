@@ -265,6 +265,15 @@ function tssh ()
     fi
 }
 
+# Blink-tool
+function _b ()
+{
+    if hash blink1-tool &> /dev/null; then
+        hash blink1-tool && blink1-tool $1 >/dev/null 2>&1
+    fi
+}
+alias boff="_b --off"
+
 # Protect my work machine from devstack
 touch $HOME/.no-devstack
 
