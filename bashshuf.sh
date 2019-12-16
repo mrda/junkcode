@@ -27,20 +27,33 @@
 #
 array_shuffle ()
 {
-    local OUTPUT=$1
+    # Keep a copy of the input array name for copying over once
+    # we've made a shuffled copy of the input array
+    local ARRAY_NAME=$1
 
-    local ARRAYNAME=$1[@]
-    local INPUTARRAY=( ${!ARRAYNAME} )
+    # Build up the input array name, forcing the variable to
+    # to look like an array variable
+    local ARRAY_NAME_AS_ARRAY=$ARRAY_NAME[@]
 
-    local NUM=$(( ${#INPUTARRAY[@]} -1 ))
-    local NEWSEQ=$( shuf -i 0-$NUM )
-    declare -a NEWARR
-    for i in $NEWSEQ; do
-        NEWARR+=( ${INPUTARRAY[$i]} )
+    # Dereference the input array name, getting us the array
+    local INPUT_ARRAY=( ${!ARRAY_NAME_AS_ARRAY} )
+
+    # Grab the index of the last element
+    local LAST_ELEM_IDX=$(( ${#INPUT_ARRAY[@]} - 1 ))
+
+    # Create a new shuffled list of array indexes
+    local NEW_IDX_SEQ=$( shuf -i 0-$LAST_ELEM_IDX )
+
+    # Create a new array by copying the input array,
+    # using the shuffled indexes
+    declare -a OUTPUT_ARRAY
+    for i in $NEW_IDX_SEQ; do
+        OUTPUT_ARRAY+=( ${INPUT_ARRAY[$i]} )
     done
 
-    eval unset $OUTPUT
-    eval $OUTPUT="'${NEWARR[*]}'"
+    # Assign the new array on top of the input array
+    eval unset $ARRAY_NAME
+    eval $ARRAY_NAME="'${OUTPUT_ARRAY[*]}'"
 }
 
 if [[ $1 == "-h" ]]; then
