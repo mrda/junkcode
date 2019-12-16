@@ -257,6 +257,14 @@ alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | eg
 # Find things in my history
 alias gh='history|grep'
 
+# Auto-tmux ssh
+function tssh ()
+{
+    if [[ ! -z $1 ]] && [[ $1 != 'localhost' ]]; then
+        ssh -t $1 'tmux a || tmux'
+    fi
+}
+
 # Protect my work machine from devstack
 touch $HOME/.no-devstack
 
