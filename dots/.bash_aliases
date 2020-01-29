@@ -72,6 +72,13 @@ alias tac="perl -e 'print reverse <> '"
 alias catdata="perl -ne 's/^#.*//; print if /\S/'"
 function mkcd() { mkdir -p "$@" && cd "$@"; } && alias mkcda=mkcd
 
+# Cheatsheet from the comand-line
+function cs() { curl cheat.sh/"$@" ; }
+
+# CLI weather forecast
+function weather() { curl wttr.in/"$@" ; curl v2.wttr.in/"$@" ; }
+
+
 # timestamp things
 alias timestamp="date +%Y%m%d-%H%M%S"
 alias logtimestamp='echo "<<<<<" $(date +%Y%m%d-%H%M%S) ">>>>>"'
