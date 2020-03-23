@@ -20,6 +20,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+SECS_PER_MIN=60
+SECS_PER_HOUR=3600
+SECS_PER_DAY=86400
+
 HOSTS_TO_CHECK=( google-public-dns-a.google.com
                  google-public-dns-b.google.com
                  one.one.one.one
@@ -30,6 +34,9 @@ HOSTS_TO_CHECK=( google-public-dns-a.google.com
 
 POLL_NORMAL=300 # seconds
 POLL_OUTAGE=60  # seconds
+
+POLL_HOURLY_INTERVAL=$((${SECS_PER_HOUR}/${POLL_NORMAL}))
+POLL_DAILY_INTERVAL=24
 
 OUTAGE_FILE=${HOME}/.$(basename $0).log
 
@@ -57,7 +64,7 @@ clear_blink ()
 show_time ()
 {
     SECS=$1
-    printf "%0dd %0dh %0dm %0ds\n" $(($SECS/86400)) $(($SECS%86400/3600)) $(($SECS%3600/60)) $(($SECS%60))
+    printf "%0dd %0dh %0dm %0ds\n" $(($SECS/${SECS_PER_DAY})) $(($SECS%${SECS_PER_DAY}/${SECS_PER_HOUR})) $(($SECS%${SECS_PER_HOUR}/${SECS_PER_MIN})) $(($SECS%${SECS_PER_MIN}))
 }
 
 
@@ -114,6 +121,11 @@ for NAME in ${HOSTS_TO_CHECK[*]}; do
     [[ $DEBUG -eq 1 ]] && printf "%s has IP Address %s\n" $NAME $IP_ADDR
 done
 
+POLL_COUNT=0
+POLL_HOURS=0
+
+printf "$(date +'%Y%m%d %H:%M:%S ')"
+
 while true; do
 
     # Shuffle IP_ADDR_LIST so we don't hit the same host all the time
@@ -125,7 +137,7 @@ while true; do
         if [ $OUTAGE -eq 0 ]; then
             OUTAGE=1
             START="$(date +%s)"
-            echo -n Outage: $(date +"%Y%m%d %H:%M:%S ")
+            printf "\n  Outage: %s " $(date +"%Y%m%d %H:%M:%S ")
             blink
         fi
         echo -n "."
@@ -142,6 +154,11 @@ while true; do
             printf "%s,%s,%s\n" $START $END $DIFF >> $OUTAGE_FILE
         fi
     fi
+
+    # Visual indication that we're still running, if we're not in debug mode
+    [[ $DEBUG -eq 0 ]] && [[ $POLL_COUNT -ge $POLL_HOURLY_INTERVAL ]] && printf "." && POLL_COUNT=0 && POLL_HOURS=$(($POLL_HOURS + 1))
+    [[ $DEBUG -eq 0 ]] && [[ $POLL_HOURS -ge $POLL_DAILY_INTERVAL ]] && printf "\n$(date +'%Y%m%d %H:%M:%S ')" && POLL_HOURS=0
+    [[ $DEBUG -eq 0 ]] && POLL_COUNT=$(($POLL_COUNT + 1))
 
     sleep $POLL_NORMAL
 
