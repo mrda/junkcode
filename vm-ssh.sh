@@ -38,14 +38,11 @@ IP_ADDRS=$(virsh domifaddr $2 | tail -n +2 | awk '{print $4}' | cut -f1 -d"/")
 [[ -z $IP_ADDRS ]] && printf "$MYNAME: No IP addresses found for $2\n" && \
     exit 4
 
-# Grab the real pre-sudo username
-USERNAME=$(pstree -lu -s $$ | grep --max-count=1 -o '([^)]*)' | head -n 1 | tr -d '()')
-
 for IP in ${IP_ADDRS[*]}; do
     ping -c1 $IP >& /dev/null
     if [ $? -eq 0 ]; then
         # TODO: Don't assume that id_rsa is the key to use
-        ssh -i /home/${USERNAME}/.ssh/id_rsa $1@$IP
+        ssh -i /home/${SUDO_USER}/.ssh/id_rsa $1@$IP
         exit 0
     fi
 done
