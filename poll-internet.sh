@@ -137,7 +137,7 @@ while true; do
         if [ $OUTAGE -eq 0 ]; then
             OUTAGE=1
             START="$(date +%s)"
-            printf "\n  Outage: %s " $(date +"%Y%m%d %H:%M:%S ")
+            printf "\n  Outage: %s %s " $(date +"%Y%m%d %H:%M:%S ")
             blink
         fi
         echo -n "."
