@@ -8,6 +8,7 @@ set fileencodings=utf-8,latin1,latin2
 syn on
 
 set list listchars=tab:»·,trail:·
+set guifont=Monospace\ 14
 
 au FileType make setlocal noexpandtab
 
