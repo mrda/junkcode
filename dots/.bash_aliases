@@ -272,6 +272,15 @@ function tssh ()
     fi
 }
 
+function tm ()
+{
+    if [[ ! -z $1 ]] && [[ $1 != 'localhost' ]]; then
+        tmux a -t $1 || tmux new $1
+    else
+        tmux a || tmux new
+    fi
+}
+
 # Blink-tool
 function _b ()
 {
