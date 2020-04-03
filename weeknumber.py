@@ -20,5 +20,5 @@
 # 02111-1307, USA.
 #
 import datetime;
-print datetime.date.today().isocalendar()[1]
+print(datetime.date.today().isocalendar()[1])
 
