@@ -122,9 +122,10 @@ for NAME in ${HOSTS_TO_CHECK[*]}; do
 done
 
 POLL_COUNT=0
-POLL_HOURS=0
+POLL_HOURS=$(date +'%H' | sed 's/^0//')  # Start at the right point in the day
 
 printf "$(date +'%Y%m%d %H:%M:%S ')"
+printf %0${POLL_HOURS}s | tr " " "x"
 
 while true; do
 
