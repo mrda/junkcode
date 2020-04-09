@@ -20,6 +20,8 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 #
 
+#set -xev
+
 # Ensure a certain command is available, exit if it doesn't
 # $1: the command to test for
 ensure_cmd() {
@@ -164,3 +166,45 @@ choose_option ()
     fi
 }
 
+# Print the character "$1" the number of times given by "$2"
+print_char ()
+{
+    # $3 is a secret param, provided to help print_line :)
+    printf "%0$2s$3" | tr " " "$1"
+}
+
+# Print the character "$1" the number of times given by "$2" with newline
+print_line ()
+{
+    print_char $1 $2 $'\n'
+}
+
+# Display the message $1 in a box made up of $2 characters,
+# with $2 being optional
+# Note that you need to handle \n's correctly, i.e.
+# print_message_box $'This is a \ntest message\nsplit over several lines' 'X'
+# print_message_box $'This is a \ntest message\nsplit over several lines'
+print_message_box ()
+{
+    local CHAR ARR MAXLEN BOXLEN
+
+    # If no box char specified...
+    CHAR=$2
+    [[ "z${CHAR}" == "z" ]] && CHAR="#"
+
+    readarray ARR <<< $1
+
+    # Find longest line length, and remove pesky newline characters
+    MAXLEN=0
+    for IDX in "${!ARR[@]}"; do
+        ARR[IDX]=$(tr -d $'\n' <<< ${ARR[IDX]})
+        [[ ${#ARR[IDX]} -gt $MAXLEN ]] && MAXLEN=${#ARR[IDX]}
+    done
+    BOXLEN=$((MAXLEN+4))  # $CHAR and a space either side
+
+    print_line ${CHAR} ${BOXLEN}
+    for ELEM in "${ARR[@]}"; do
+        printf "${CHAR} %-${MAXLEN}s ${CHAR}\n" "${ELEM}"
+    done
+    print_line ${CHAR} ${BOXLEN}
+}
