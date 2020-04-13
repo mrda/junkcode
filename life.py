@@ -284,8 +284,8 @@ def print_exit_info(row, cols, timeout=None):
     if not timeout:
         timeout = 5  # seconds
     message = "Life: Press 'q' and <RETURN> to exit"
-    center_spacing = (cols - len(message)) / 2
-    vertical_spacing = int(1.0/3 * rows)
+    center_spacing = (cols - len(message)) // 2
+    vertical_spacing = int(1.0//3 * rows)
     print('\n' * vertical_spacing)
     print(' ' * center_spacing + message)
     time.sleep(timeout)
@@ -301,14 +301,14 @@ if __name__ == '__main__':
     life = Life(rows, cols)
 
     # Give an approximate starting location
-    initialise_life(life, (rows/2-10), (cols/2-10))
+    initialise_life(life, (rows//2-10), (cols//2-10))
 
     exit = False
     while(not exit):
         print_exit_info(rows, cols)
         n = 0
         while(n < NUM_ITERATIONS and not exit):
-            print life
+            print(life)
             life.tick()
             n += 1
             exit = time_to_exit()
