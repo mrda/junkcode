@@ -28,7 +28,7 @@ import time
 
 
 # Number of iterations before we start over
-NUM_ITERATIONS = 150
+NUM_ITERATIONS = 250
 
 
 class Life:
@@ -318,7 +318,7 @@ def time_to_exit(timeout=None):
     # Note(mrda): select() on stdin might not work on non-Unixes
     exit = False
     if not timeout:
-        timeout = 0.2  # seconds
+        timeout = 0.01  # seconds
     rlist, wlist, xlist = select([sys.stdin], {}, {}, timeout)
     if rlist:
         s = sys.stdin.readline().rstrip()
