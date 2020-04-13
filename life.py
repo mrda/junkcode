@@ -245,6 +245,53 @@ def build_beetle(life, base_row=40, base_col=12):
     life.create(base_row+20, base_col+23)
 
 
+def build_gosper_glider_gun(life, base_row=40, base_col=12):
+    life.create(base_row+0, base_col+24)
+
+    life.create(base_row+1, base_col+22)
+    life.create(base_row+1, base_col+24)
+
+    life.create(base_row+2, base_col+12)
+    life.create(base_row+2, base_col+13)
+    life.create(base_row+2, base_col+20)
+    life.create(base_row+2, base_col+21)
+    life.create(base_row+2, base_col+34)
+    life.create(base_row+2, base_col+35)
+
+    life.create(base_row+3, base_col+11)
+    life.create(base_row+3, base_col+15)
+    life.create(base_row+3, base_col+20)
+    life.create(base_row+3, base_col+21)
+    life.create(base_row+3, base_col+34)
+    life.create(base_row+3, base_col+35)
+
+    life.create(base_row+4, base_col+0)
+    life.create(base_row+4, base_col+1)
+    life.create(base_row+4, base_col+10)
+    life.create(base_row+4, base_col+16)
+    life.create(base_row+4, base_col+20)
+    life.create(base_row+4, base_col+21)
+
+    life.create(base_row+5, base_col+0)
+    life.create(base_row+5, base_col+1)
+    life.create(base_row+5, base_col+10)
+    life.create(base_row+5, base_col+14)
+    life.create(base_row+5, base_col+16)
+    life.create(base_row+5, base_col+17)
+    life.create(base_row+5, base_col+22)
+    life.create(base_row+5, base_col+24)
+
+    life.create(base_row+6, base_col+10)
+    life.create(base_row+6, base_col+16)
+    life.create(base_row+6, base_col+24)
+
+    life.create(base_row+7, base_col+11)
+    life.create(base_row+7, base_col+15)
+
+    life.create(base_row+8, base_col+12)
+    life.create(base_row+8, base_col+13)
+
+
 def build_randomised(life, base_row=0, base_col=0):
     # 1/n percentage of a square having life
     n = 10
@@ -261,6 +308,8 @@ def initialise_life(life, x, y):
         build_glider,
         build_lwss,
         build_beetle,
+        build_gosper_glider_gun,
+        build_randomised,
     ]
     dispatch[random.randrange(0, len(dispatch))](life, x, y)
 
@@ -282,7 +331,7 @@ def print_exit_info(row, cols, timeout=None):
     # Clear the screen in a platform independent way
     os.system(['clear', 'cls'][os.name == 'nt'])
     if not timeout:
-        timeout = 5  # seconds
+        timeout = 1  # seconds
     message = "Life: Press 'q' and <RETURN> to exit"
     center_spacing = (cols - len(message)) // 2
     vertical_spacing = int(1.0//3 * rows)
@@ -303,6 +352,7 @@ if __name__ == '__main__':
     # Give an approximate starting location
     initialise_life(life, (rows//2-10), (cols//2-10))
 
+    # Design shouts Designer
     exit = False
     while(not exit):
         print_exit_info(rows, cols)
@@ -312,5 +362,5 @@ if __name__ == '__main__':
             life.tick()
             n += 1
             exit = time_to_exit()
-        # Design shouts Designer
-        build_randomised(life)
+        life.clear_board()
+        initialise_life(life, (rows//2-10), (cols//2-10))
