@@ -30,7 +30,7 @@ import sys
 import time
 
 
-# Number of iterations before we start over
+# Number of default iterations before we start over
 NUM_ITERATIONS = 250
 
 
@@ -94,6 +94,27 @@ class Life:
                 if self.check_for_life(row, col):
                     new_creation.create(row, col)
         self.board = new_creation.board
+
+
+class CellQueue:
+
+    def __init__(self):
+        self.q = []
+        self.idx = 0
+
+    def add_filename(self, filename):
+        self.q.append(filename)
+
+    def length(self):
+        return len(self.q)
+
+    def next(self):
+        elem = self.q[self.idx]
+        if self.idx+1 < len(self.q):
+            self.idx += 1
+        else:
+            self.idx = 0
+        return elem
 
 
 def build_acorn(life, base_row=40, base_col=12):
@@ -354,9 +375,9 @@ def process_file(life, filename, base_row=40, base_col=12):
             row += 1
 
 
-def pick_random_file(life, directory):
-    process_file(life,
-                 random.choice(glob.glob(os.path.join(directory, "*.cells"))))
+def add_directory(life, queue, directory):
+    for fn in glob.glob(os.path.join(directory, "*.cells")):
+        queue.add_filename(fn)
 
 
 def pick_builtin_sim(life, x, y):
@@ -390,18 +411,26 @@ def print_exit_info(row, cols, timeout=None):
     # Clear the screen in a platform independent way
     os.system(['clear', 'cls'][os.name == 'nt'])
     if not timeout:
-        timeout = 1  # seconds
+        timeout = 3  # seconds
     message = "Life: Press 'q' and <RETURN> to exit"
     center_spacing = (cols - len(message)) // 2
-    vertical_spacing = int(1.0//3 * rows)
+    vertical_spacing = int(1.0/3 * rows)
     print('\n' * vertical_spacing)
     print(' ' * center_spacing + message)
     time.sleep(timeout)
 
 
+def reset_board(life, x, y, queue=None):
+    if queue is None or queue.length() == 0:
+        pick_builtin_sim(life, (rows//2-10), (cols//2-10))
+    else:
+        process_file(life, queue.next())
+
+
 def usage():
     myname = os.path.basename(sys.argv[0])
-    print("Usage: {} [-h|--help] [-s|--speed <seconds>] "
+    print("Usage: {} [-h|--help] [-i|--iterations <iterations>] "
+          "[-s|--speed <seconds>] "
           "[files or directories]".format(myname))
     print("\nYou can find definition files at https://www.conwaylife.com/")
 
@@ -412,11 +441,13 @@ if __name__ == '__main__':
     rows = int(rows)
     cols = int(cols)
 
+    iterations = NUM_ITERATIONS
     speed = 0.5  # seconds
 
     # Command line processing
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hs:', ['help', 'speed='])
+        opts, args = getopt.getopt(sys.argv[1:], 'hi:s:',
+                                   ['help', 'iterations=', 'speed='])
     except getopt.GetoptError as err:
         print(err)
         usage()
@@ -433,39 +464,41 @@ if __name__ == '__main__':
                 print(e)
                 usage()
                 sys.exit(3)
+        elif o in ('-i', '--iterations'):
+            try:
+                iterations = int(a)
+            except Exception as e:
+                print(e)
+                usage()
+                sys.exit(4)
 
     # Create the petri dish
     life = Life(rows, cols)
 
-    if len(args) == 0:
-        pick_builtin_sim(life, (rows//2-10), (cols//2-10))
-    else:
-        # TODO(mrda): Right now this just takes the first filename,
-        # or finds a randomfile in directory and uses that.  What we
-        # should do instead is build a list of files to use, and each
-        # NUM_ITERATIONS move to the next one.  But if no files are
-        # specified, justr randomly choose out of the built-in
-        # simulations.
-        for ford in args:
-            if os.path.isfile(ford):
-                process_file(life, ford)
-            elif os.path.isdir(ford):
-                pick_random_file(life, ford)
-            else:
-                sys.exit("Unexpected param, exiting...")
+    my_queue = CellQueue()
+
+    for ford in args:
+        if os.path.isfile(ford):
+            my_queue.add_filename(ford)
+        elif os.path.isdir(ford):
+            add_directory(life, my_queue, ford)
 
     # TODO(mrda): We should check to see that the petri dish is large
     # enough for the simulation that we're prepopulating.
 
+    init_x = rows//2-10
+    init_y = cols//2-10
+
     # Design shouts Designer
+    reset_board(life, init_x, init_y, my_queue)
     exit = False
     while(not exit):
         print_exit_info(rows, cols)
         n = 0
-        while(n < NUM_ITERATIONS and not exit):
+        while(n < iterations and not exit):
             print(life)
             life.tick()
             n += 1
             exit = time_to_exit(speed)
         life.clear_board()
-        pick_builtin_sim(life, (rows//2-10), (cols//2-10))
+        reset_board(life, init_x, init_y, my_queue)
