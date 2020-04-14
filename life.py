@@ -294,6 +294,39 @@ def build_gosper_glider_gun(life, base_row=40, base_col=12):
     life.create(base_row+8, base_col+13)
 
 
+def build_john_conway(life, base_row=40, base_col=12):
+    # https://xkcd.com/2293/
+    life.create(base_row+1, base_col+10)
+    life.create(base_row+1, base_col+11)
+    life.create(base_row+1, base_col+12)
+
+    life.create(base_row+2, base_col+10)
+    life.create(base_row+2, base_col+12)
+
+    life.create(base_row+3, base_col+10)
+    life.create(base_row+3, base_col+12)
+
+    life.create(base_row+4, base_col+11)
+
+    life.create(base_row+5, base_col+8)
+    life.create(base_row+5, base_col+10)
+    life.create(base_row+5, base_col+11)
+    life.create(base_row+5, base_col+12)
+
+    life.create(base_row+6, base_col+9)
+    life.create(base_row+6, base_col+11)
+    life.create(base_row+6, base_col+13)
+
+    life.create(base_row+7, base_col+11)
+    life.create(base_row+7, base_col+14)
+
+    life.create(base_row+8, base_col+10)
+    life.create(base_row+8, base_col+12)
+
+    life.create(base_row+8, base_col+10)
+    life.create(base_row+8, base_col+12)
+
+
 def build_randomised(life, base_row=0, base_col=0):
     # 1/n percentage of a square having life
     n = 10
@@ -334,6 +367,7 @@ def initialise_life(life, x, y):
         build_beetle,
         build_gosper_glider_gun,
         build_randomised,
+        build_john_conway,
     ]
     dispatch[random.randrange(0, len(dispatch))](life, x, y)
 
@@ -342,7 +376,7 @@ def time_to_exit(timeout=None):
     # Note(mrda): select() on stdin might not work on non-Unixes
     exit = False
     if not timeout:
-        timeout = 0.01  # seconds
+        timeout = 0.4  # seconds
     rlist, wlist, xlist = select([sys.stdin], {}, {}, timeout)
     if rlist:
         s = sys.stdin.readline().rstrip()
@@ -379,7 +413,7 @@ if __name__ == '__main__':
         elif os.path.isdir(sys.argv[1]):
             pick_random_file(life, sys.argv[1])
         else:
-            # No need to test for the 0-h or --help flags
+            # No need to test for the -h or --help flags
             print("Usage: {} [-h|--help] [<file>|<directory>]"
                   .format(os.path.basename(sys.argv[0])))
             sys.exit("\nYou can find definition files at "
