@@ -22,6 +22,7 @@
 #
 from select import select
 
+import getopt
 import glob
 import os
 import random
@@ -358,7 +359,7 @@ def pick_random_file(life, directory):
                  random.choice(glob.glob(os.path.join(directory, "*.cells"))))
 
 
-def initialise_life(life, x, y):
+def pick_builtin_sim(life, x, y):
     # Randomly generate the initial life layout
     dispatch = [
         build_acorn,
@@ -398,28 +399,63 @@ def print_exit_info(row, cols, timeout=None):
     time.sleep(timeout)
 
 
+def usage():
+    myname = os.path.basename(sys.argv[0])
+    print("Usage: {} [-h|--help] [-s|--speed <seconds>] "
+          "[files or directories]".format(myname))
+    print("\nYou can find definition files at https://www.conwaylife.com/")
+
+
 if __name__ == '__main__':
     # Get the terminal size
     rows, cols = os.popen('stty size', 'r').read().split()
     rows = int(rows)
     cols = int(cols)
 
+    speed = 0.5  # seconds
+
+    # Command line processing
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hs:', ['help', 'speed='])
+    except getopt.GetoptError as err:
+        print(err)
+        usage()
+        sys.exit(2)
+
+    for o, a in opts:
+        if o in ('-h', '--help'):
+            usage()
+            sys.exit()
+        elif o in ('-s', '--speed'):
+            try:
+                speed = float(a)
+            except Exception as e:
+                print(e)
+                usage()
+                sys.exit(3)
+
     # Create the petri dish
     life = Life(rows, cols)
 
-    if len(sys.argv) == 2:
-        if os.path.isfile(sys.argv[1]):
-            process_file(life, sys.argv[1])
-        elif os.path.isdir(sys.argv[1]):
-            pick_random_file(life, sys.argv[1])
-        else:
-            # No need to test for the -h or --help flags
-            print("Usage: {} [-h|--help] [<file>|<directory>]"
-                  .format(os.path.basename(sys.argv[0])))
-            sys.exit("\nYou can find definition files at "
-                     "https://www.conwaylife.com/")
+    if len(args) == 0:
+        pick_builtin_sim(life, (rows//2-10), (cols//2-10))
     else:
-        initialise_life(life, (rows//2-10), (cols//2-10))
+        # TODO(mrda): Right now this just takes the first filename,
+        # or finds a randomfile in directory and uses that.  What we
+        # should do instead is build a list of files to use, and each
+        # NUM_ITERATIONS move to the next one.  But if no files are
+        # specified, justr randomly choose out of the built-in
+        # simulations.
+        for ford in args:
+            if os.path.isfile(ford):
+                process_file(life, ford)
+            elif os.path.isdir(ford):
+                pick_random_file(life, ford)
+            else:
+                sys.exit("Unexpected param, exiting...")
+
+    # TODO(mrda): We should check to see that the petri dish is large
+    # enough for the simulation that we're prepopulating.
 
     # Design shouts Designer
     exit = False
@@ -430,6 +466,6 @@ if __name__ == '__main__':
             print(life)
             life.tick()
             n += 1
-            exit = time_to_exit()
+            exit = time_to_exit(speed)
         life.clear_board()
-        initialise_life(life, (rows//2-10), (cols//2-10))
+        pick_builtin_sim(life, (rows//2-10), (cols//2-10))
