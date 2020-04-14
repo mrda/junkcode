@@ -21,6 +21,8 @@
 # 02111-1307, USA.
 #
 from select import select
+
+import glob
 import os
 import random
 import sys
@@ -301,6 +303,28 @@ def build_randomised(life, base_row=0, base_col=0):
                 life.create(row, col)
 
 
+def process_file(life, filename, base_row=40, base_col=12):
+    # Note(mrda): Blank lines are important
+    with open(filename) as f:
+        row = 0
+        for line in f:
+            length = len(line)
+
+            # Skip comment lines
+            if line[0] == '!':
+                continue
+
+            for col, ch in enumerate(line):
+                if ch == 'O':
+                    life.create(base_row+row, base_col+col)
+            row += 1
+
+
+def pick_random_file(life, directory):
+    process_file(life,
+                 random.choice(glob.glob(os.path.join(directory, "*.cells"))))
+
+
 def initialise_life(life, x, y):
     # Randomly generate the initial life layout
     dispatch = [
@@ -349,8 +373,19 @@ if __name__ == '__main__':
     # Create the petri dish
     life = Life(rows, cols)
 
-    # Give an approximate starting location
-    initialise_life(life, (rows//2-10), (cols//2-10))
+    if len(sys.argv) == 2:
+        if os.path.isfile(sys.argv[1]):
+            process_file(life, sys.argv[1])
+        elif os.path.isdir(sys.argv[1]):
+            pick_random_file(life, sys.argv[1])
+        else:
+            # No need to test for the 0-h or --help flags
+            print("Usage: {} [-h|--help] [<file>|<directory>]"
+                  .format(os.path.basename(sys.argv[0])))
+            sys.exit("\nYou can find definition files at "
+                     "https://www.conwaylife.com/")
+    else:
+        initialise_life(life, (rows//2-10), (cols//2-10))
 
     # Design shouts Designer
     exit = False
