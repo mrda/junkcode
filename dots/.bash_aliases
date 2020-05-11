@@ -55,7 +55,13 @@ export EDITOR=vim
 export VISUAL=vim
 #No longer needed export ACK_OPTIONS="--color" # so we get color
 export CDPATH=.:~:~/src
+
+# Take control of your history
 export HISTCONTROL="ignoreboth"
+export HISTTIMEFORMAT="[%F %T] "
+export HISTSIZE=-1
+export HISTFILESIZE=-1
+shopt -s histappend
 
 # Deal with Centos 7 being broken
 if [[ "z${DISTRO}" == "zCentOS" ]]; then
