@@ -28,32 +28,37 @@ exit_with_usage() {
 re='^[0-9]+$'
 [[ ! $1 =~ $re ]] && exit_with_usage
 
-TOTSECS=$(( $1 * 60 ))
-MINS=$(($1-1))
-LEN=30
 
-for m in $(seq $MINS -1 0) ; do
-    for s in $(seq 59 -1 0) ; do
+progress() {
+    TOTSECS=$(( $1 * 60 ))
+    MINS=$(($1-1))
+    LEN=30
 
-        SECS_REMAINING=$(( $m*60 + $s ))
-        PERCENT=$(bc <<< "scale=0; ($TOTSECS - $SECS_REMAINING) * 100 / $TOTSECS")
-        NUMHASHES=$( bc <<< "scale=0; (($LEN * $PERCENT) / 100)" )
-        NUMDOTS=$( bc <<< "scale=0; $LEN - $NUMHASHES" )
+    for m in $(seq $MINS -1 0) ; do
+        for s in $(seq 59 -1 0) ; do
 
-        HASHES=""
-        if [ $NUMHASHES -ne 0 ]; then
-            HASHES=$( printf "%-${NUMHASHES}s" "#" )
-            HASHES=${HASHES// /#}
-        fi
+            SECS_REMAINING=$(( $m*60 + $s ))
+            PERCENT=$(bc <<< "scale=0; ($TOTSECS - $SECS_REMAINING) * 100 / $TOTSECS")
+            NUMHASHES=$( bc <<< "scale=0; (($LEN * $PERCENT) / 100)" )
+            NUMDOTS=$( bc <<< "scale=0; $LEN - $NUMHASHES" )
 
-        DOTS=""
-        if [ $NUMDOTS -ne 0 ]; then
-            DOTS=$( printf "%-${NUMDOTS}s" "." )
-            DOTS=${DOTS// /.}
-        fi
+            HASHES=""
+            if [ $NUMHASHES -ne 0 ]; then
+                HASHES=$( printf "%-${NUMHASHES}s" "#" )
+                HASHES=${HASHES// /#}
+            fi
 
-        printf "\rTime Remaining: %02d:%02d [ %s%s ] %01d%% " $m $s "$HASHES" "$DOTS" $PERCENT
-        sleep 1s
-    done 
-done
-echo ""
+            DOTS=""
+            if [ $NUMDOTS -ne 0 ]; then
+                DOTS=$( printf "%-${NUMDOTS}s" "." )
+                DOTS=${DOTS// /.}
+            fi
+
+            printf "\rTime Remaining: %02d:%02d [ %s%s ] %01d%% " $m $s "$HASHES" "$DOTS" $PERCENT
+            sleep 1s
+        done
+    done
+    echo ""
+}
+
+progress $1

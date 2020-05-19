@@ -19,18 +19,24 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+PAD=15
 [[ -r /etc/redhat-release ]]  && \
-  printf "%13s %s\n" "RHEL:" "$(cat /etc/redhat-release)"
+  printf "%${PAD}s %s\n" "RHEL:" "$(cat /etc/redhat-release)"
 
 [[ -r /etc/rhosp-release ]] && \
-  printf "%13s %s\n" "RHOS:" "$(cat /etc/rhosp-release)"
+  printf "%${PAD}s %s\n" "RHOS:" "$(cat /etc/rhosp-release)"
 
 [[ -r /var/lib/rhos-release/latest-installed ]] && \
-  printf "%13s %s\n" "RHOS Puddle:" \
+  printf "%${PAD}s %s\n" "RHOS Puddle:" \
          "$(cat /var/lib/rhos-release/latest-installed)"
 
 if command -v "rhos-release" &> /dev/null; then
-  printf "%13s %s\n" "Yum Repos:" \
+  printf "%${PAD}s %s\n" "Yum Repos:" \
          "$(rhos-release -L | tail -n +2 | tr -d '\n' | \
   sed -e 's/^[[:space:]]*//')"
+fi
+
+if command -v "loginctl" &> /dev/null; then
+    printf "%${PAD}s %s\n" "Display Server:" \
+           "$(loginctl show-session 2 -p Type | cut -f2 -d'=')"
 fi
