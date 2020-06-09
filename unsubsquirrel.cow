@@ -1,0 +1,17 @@
+##
+## From the Red Hat unsubsquirrel thread
+## Specify via cowsay -f ./unsubsquirrel.cow message
+## or copy to /usr/share/cowsay/
+##
+$the_cow = <<EOC;
+  $thoughts
+   $thoughts                .-'` `}
+         _./)   /       }
+        .'o   \ |       }
+        '.___.'`.\    {`
+        /`\\_/  , `.    }
+        \\=' .-'   _`\  {
+          `'`;/      `,  }
+            _\\       ;  }
+  jgs      /__`;-...'--'
+EOC
