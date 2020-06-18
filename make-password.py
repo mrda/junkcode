@@ -57,10 +57,10 @@ def generate_password(num_words, max_word_len, max_digits):
 
 
 def _print_usage_and_exit(code):
-        msg = ("Usage: %s [number-of-passwords-to-be-generated]"
-               % os.path.basename(sys.argv[0]))
-        print(msg, file=sys.stderr)
-        sys.exit(code)
+    msg = ("Usage: %s [number-of-passwords-to-be-generated]" %
+           os.path.basename(sys.argv[0]))
+    print(msg, file=sys.stderr)
+    sys.exit(code)
 
 
 if __name__ == '__main__':
@@ -81,10 +81,10 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         try:
             num_passwds = int(sys.argv[1])
-        except:
+        except Exception as e:
             _print_usage_and_exit(1)
     elif len(sys.argv) > 2:
         _print_usage_and_exit(2)
 
-    for i in xrange(num_passwds):
+    for i in range(num_passwds):
         print(generate_password(num_words, word_length, max_number))
