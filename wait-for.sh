@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# progress.sh <mins> - Print a  progress bar for <mins> minutes
+# wait-for.sh <mins> - Print a  progress bar, waiting for <mins> minutes
 #
 # Copyright (C) 2020 Michael Davies <michael@the-davies.net>
 #
@@ -19,17 +19,23 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-exit_with_usage() {
-    printf "Usage: $(basename $0) <mins>, where <mins> is an integer\n"
-    exit -1
-}
 
-[ $# -ne 1 ] && exit_with_usage
-re='^[0-9]+$'
-[[ ! $1 =~ $re ]] && exit_with_usage
+waitfor() {
 
+    # Allow the subshell to cause program exit
+    set -E
+    trap '[ "$?" -ne 66 ] || exit 66' ERR
 
-progress() {
+    (
+        exit_with_usage() {
+            printf "Error: $(basename $0):wait for <mins>, where <mins> is an integer\n"
+            exit 66
+        }
+        [ $# -ne 1 ] && exit_with_usage
+        re='^[0-9]+$'
+        [[ ! $1 =~ $re ]] && exit_with_usage
+    )
+
     TOTSECS=$(( $1 * 60 ))
     MINS=$(($1-1))
     LEN=30
@@ -61,4 +67,5 @@ progress() {
     echo ""
 }
 
-progress $1
+# Only call waitfor if this script isn't being sourced
+[[ "${BASH_SOURCE[0]}" == "${0}" ]] && waitfor $1
