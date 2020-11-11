@@ -44,9 +44,10 @@ waitfor() {
         for s in $(seq 59 -1 0) ; do
 
             SECS_REMAINING=$(( $m*60 + $s ))
-            PERCENT=$(bc <<< "scale=0; ($TOTSECS - $SECS_REMAINING) * 100 / $TOTSECS")
-            NUMHASHES=$( bc <<< "scale=0; (($LEN * $PERCENT) / 100)" )
-            NUMDOTS=$( bc <<< "scale=0; $LEN - $NUMHASHES" )
+
+            PERCENT=$(( ($TOTSECS - $SECS_REMAINING) * 100 / $TOTSECS ))
+            NUMHASHES=$(( ($LEN * $PERCENT) / 100 ))
+            NUMDOTS=$(( $LEN - $NUMHASHES ))
 
             HASHES=""
             if [ $NUMHASHES -ne 0 ]; then
