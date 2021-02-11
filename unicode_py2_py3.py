@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # unicode_py2_py3.py - example code on handling unicode across py2/py3
 #

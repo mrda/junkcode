@@ -1,4 +1,4 @@
-#!/usr/bin/env py3
+#!/usr/bin/env python
 #
 # abstract_methods.py - example code on how to write an abstract methods.
 #                       (lifted from http://norvig.com/python-iaq.html)

@@ -1,4 +1,4 @@
-#!/usr/bin/env py3
+#!/usr/bin/env python
 #
 # roman.py - Convert to/from Roman Digits.  Another little programming
 #            hiring challenge.

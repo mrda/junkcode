@@ -1,4 +1,4 @@
-#!/usr/bin/env py3
+#!/usr/bin/env python
 #
 # phonetic.py - Spell out the input string to the NATO phoentic alphabet,
 #               or do the inverse
