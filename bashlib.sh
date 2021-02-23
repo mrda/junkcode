@@ -20,23 +20,36 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 #
 
-#set -xev
+# Turn on debugging if requested
+DEBUG="${DEBUG:-0}"
+[[ $DEBUG -eq 1 ]] && set -xev
+
+# Check to see if this library is being sourced
+IS_SOURCED=1
+SCRIPTNAME=unknown
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    SCRIPTNAME=$(basename $0)
+    IS_SOURCED=0
+fi
+
+# Check to see if this is an interactive shell
+IS_INTERACTIVE=0
+if [[ $- == *i* ]]; then
+  IS_INTERACTIVE=1
+fi
 
 # Ensure a certain command is available, exit if it doesn't
 # $1: the command to test for
 ensure_cmd() {
     if ! command -v "$1" &> /dev/null; then
         echo "*** Required command "$1" doesn't exist"
-        exit 3
+        [[ $IS_SOURCED -ne 1 ]] && exit 3
     fi
 }
 
 ensure_cmd basename
 ensure_cmd id
 ensure_cmd stat
-
-# What the invoking script name is
-SCRIPTNAME=$(basename $0)
 
 # Get a non-empty string and store it in the provided variable
 # $1: variable to update
