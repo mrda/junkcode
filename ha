@@ -24,6 +24,11 @@ declare -a VALID_STATES=('on' 'off')
 
 BASENAME=$(basename $0)
 
+# Include bash library
+command -v bashlib.sh &> /dev/null || \
+{ echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
+. bashlib.sh
+
 # The base URL and authentication token can be either in the
 # environment, or in a file.  Either way, we need to retrieve this
 # information from somewhere.  Fail otherwise.
@@ -106,10 +111,17 @@ set_state() {
   local CMD=$(curl -s -X POST -H "$AUTH" -H "$CONTENT" -d "$ENTITY" ${HA_BASE_URL}/api/services/switch/turn_$STATE)
 }
 
+is_available jq
+if [ $? -eq 1 ]; then
+    PIPECMD=jq
+else
+    PIPECMD=cat
+fi
+
 # cmdline processing
 if [ "$#" -eq 1 ]; then
   check_switch $1 "${KNOWN_SWITCHES[@]}"
-  get_state $1
+  get_state $1 | $PIPECMD
 elif [ "$#" -eq 2 ]; then
   check_switch $1 "${KNOWN_SWITCHES[@]}"
   check_states $2 "${VALID_STATES[@]}"

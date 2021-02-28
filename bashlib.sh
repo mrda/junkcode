@@ -38,6 +38,15 @@ if [[ $- == *i* ]]; then
   IS_INTERACTIVE=1
 fi
 
+# See if a certain command is available
+is_available() {
+    if ! command -v "$1" &> /dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Ensure a certain command is available, exit if it doesn't
 # $1: the command to test for
 ensure_cmd() {
