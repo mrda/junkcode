@@ -22,38 +22,28 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 
-PHRASES=("Aye aye, captain!" \
-         "Yes Sir, right away!" \
-         "One is pleased to be of service" \
-         "Everything is impossible until somebody does it" \
-         )
+WARM_UP=1 #5   # mins
+TURN_OFF=1 #0  # mins
 
-CHOICE=$((RANDOM % ${#PHRASES[@]}))
-# Just to acknowledge we've done something
-DTS=$(datetimestr)
-printf "%s\n" "$DTS: ${PHRASES[$CHOICE]}"
+# Include bash library
+command -v bashlib.sh &> /dev/null || \
+{ echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
+. bashlib.sh
 
-# Nice little trick to cause this script to put itself in the background
-PASS="startinbackground"
-if [ "$SCB" != "$PASS" ]; then
-  export SCB="$PASS"
-  nohup "$0" "$@" </dev/null >/dev/null 2>&1 &
-  exit
-fi
-
-WARM_UP=900   # 15 mins
-TURN_OFF=600  # 10 mins
+ensure_cmd ha
+ensure_cmd beep
+ensure_cmd play
+ensure_cmd timebar
+ensure_cmd dialogbox
 
 ha switch.coffee_machine on
-sleep $WARM_UP
+timebar $WARM_UP "Warming up coffee machine for"
 
-echo -en "\007"
-
+beep
 if [ -r ${HOME}/sounds/coffee-time.mp3 ]; then
     play -q ${HOME}/sounds/coffee-time.mp3
 fi
-zenity --info --text="It\'s time for a coffee break\!" --title="Serious Cybernetics Corporation" --width=300 --height=200 >& /dev/null
+dialogbox "Serious Cybernetics Corporation" "It\'s time for a coffee break\!"
 
-sleep $TURN_OFF
-
+timebar $TURN_OFF "Turning off coffee machine in"
 ha switch.coffee_machine off

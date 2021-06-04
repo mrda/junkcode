@@ -59,6 +59,7 @@ ensure_cmd() {
 ensure_cmd basename
 ensure_cmd id
 ensure_cmd stat
+ensure_cmd zenity
 
 # Get a non-empty string and store it in the provided variable
 # $1: variable to update
@@ -229,4 +230,66 @@ print_message_box ()
         printf "${CHAR} %-${MAXLEN}s ${CHAR}\n" "${ELEM}"
     done
     print_line ${CHAR} ${BOXLEN}
+}
+
+# Busy-wait for $1 minutes, using $2 as a title (optional)
+# If $2 isn't supplied, "Time Remaining:" is used
+# This relies on having a smart tty device that can handle line redraws
+timebar() {
+    TOTSECS=$(( $1 * 60 ))
+    MINS=$(($1-1))
+    LEN=30
+
+    TITLE=${2:-"Time Remaining:"}
+
+    for m in $(seq $MINS -1 0) ; do
+        for s in $(seq 59 -1 0) ; do
+            SECS_REMAINING=$(( $m*60 + $s ))
+            PERCENT=$(bc <<< "scale=0; ($TOTSECS - $SECS_REMAINING) * 100 / $TOTSECS")
+            NUMHASHES=$( bc <<< "scale=0; (($LEN * $PERCENT) / 100)" )
+            NUMDOTS=$( bc <<< "scale=0; $LEN - $NUMHASHES" )
+
+            HASHES=""
+            if [ $NUMHASHES -ne 0 ]; then
+                HASHES=$( printf "%-${NUMHASHES}s" "#" )
+                HASHES=${HASHES// /#}
+            fi
+
+            DOTS=""
+            if [ $NUMDOTS -ne 0 ]; then
+                DOTS=$( printf "%-${NUMDOTS}s" "." )
+                DOTS=${DOTS// /.}
+            fi
+            printf "\r%s %02d:%02d [ %s%s ] %01d%% " "$TITLE" $m $s "$HASHES" "$DOTS" $PERCENT
+            sleep 1s
+        done
+    done
+    echo ""
+}
+
+beep ()
+{
+    echo -en "\007"
+}
+
+# Display a modal dialog box, blocking until the user acks
+# $1 is the title
+# $2 is the message to display
+dialogbox ()
+{
+    TITLE=${1:-"Title goes here"}
+    BODY=${2:-"Message goes here"}
+    zenity --info --text="$BODY" --title="$TITLE" --width=300 --height=200 >& /dev/null
+}
+
+# Re-run this script in the background in a seamless way
+# Note that you lose stdin and stdout as a result
+backgroundme ()
+{
+    PASS="startinthebackground"
+    if [ "$SCB" != "$PASS" ]; then
+        export SCB="$PASS"
+        nohup "$0" "$@" </dev/null >/dev/null 2>&1 &
+        exit
+    fi
 }
