@@ -20,6 +20,9 @@
 # 02111-1307, USA.
 #
 PAD=15
+
+printf "%${PAD}s %s\n" "Architecture:" "$(LD_SHOW_AUXV=1 /bin/true | grep AT_PLATFORM | cut -f2 -d':' | tr -d '[:blank:]')"
+
 [[ -r /etc/redhat-release ]]  && \
   printf "%${PAD}s %s\n" "RHEL:" "$(cat /etc/redhat-release)"
 
@@ -36,7 +39,12 @@ if command -v "rhos-release" &> /dev/null; then
   sed -e 's/^[[:space:]]*//')"
 fi
 
+if command -v "oc" &> /dev/null; then
+    printf "%${PAD}s %s\n" "OCP Version:" \
+           "$(oc version 2>/dev/null | grep Server | cut -f2 -d':' | tr -d '[:blank:]')"
+fi
+
 if command -v "loginctl" &> /dev/null; then
     printf "%${PAD}s %s\n" "Display Server:" \
-           "$(loginctl show-session 2 -p Type | cut -f2 -d'=')"
+           "$(loginctl show-session 2 -p Type 2>/dev/null | cut -f2 -d'=')"
 fi
