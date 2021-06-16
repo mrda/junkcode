@@ -21,7 +21,11 @@
 #
 PAD=15
 
-printf "%${PAD}s %s\n" "Architecture:" "$(LD_SHOW_AUXV=1 /bin/true | grep AT_PLATFORM | cut -f2 -d':' | tr -d '[:blank:]')"
+ARCH=$(arch)
+EXTRA=""
+[[ $ARCH != "x86_64" ]] && EXTRA=" ($(LD_SHOW_AUXV=1 /bin/true | grep AT_PLATFORM | cut -f2 -d':' | tr -d '[:blank:]')) "
+
+printf "%${PAD}s %s%s\n" "Architecture:" "$ARCH" "$EXTRA"
 
 [[ -r /etc/redhat-release ]]  && \
   printf "%${PAD}s %s\n" "RHEL:" "$(cat /etc/redhat-release)"
@@ -40,11 +44,11 @@ if command -v "rhos-release" &> /dev/null; then
 fi
 
 if command -v "oc" &> /dev/null; then
-    printf "%${PAD}s %s\n" "OCP Version:" \
-           "$(oc version 2>/dev/null | grep Server | cut -f2 -d':' | tr -d '[:blank:]')"
+    OCP_VERSION="$(oc version 2>/dev/null | grep Server | cut -f2 -d':' | tr -d '[:blank:]')"
+    [[ "$OCP_VERSION" != "" ]] && printf "%${PAD}s %s\n" "OCP Version:" "$OCP_VERSION"
 fi
 
 if command -v "loginctl" &> /dev/null; then
-    printf "%${PAD}s %s\n" "Display Server:" \
-           "$(loginctl show-session 2 -p Type 2>/dev/null | cut -f2 -d'=')"
+    DISPLAY_SERVER="$(loginctl show-session 2 -p Type 2>/dev/null | cut -f2 -d'=')"
+    [[ "$DISPLAY_SERVER" != "" ]] && printf "%${PAD}s %s\n" "Display Server:" "$DISPLAY_SERVER"
 fi
