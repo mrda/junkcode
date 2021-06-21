@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# openstack-get-src.sh - grab all the openstack code from github
-#                        so you can hack on all the things while
-#                        traveling on a plane :)
+# openstack-clone.sh - grab all the openstack code from github
+#                      so you can hack on all the things while
+#                      traveling on a plane :)
 #
 # Original author unknown
 #
@@ -19,4 +19,3 @@ for repo in `ssh review.openstack.org gerrit ls-projects` ; do
         (cd $repo; git remote update)
     fi
 done
-
