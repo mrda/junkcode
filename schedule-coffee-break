@@ -5,7 +5,7 @@
 #                         to make a coffee, gives them time to make a coffee,
 #                         then turns the machine off again.
 #
-# Copyright (C) 2019 Michael Davies <michael@the-davies.net>
+# Copyright (C) 2019, 2021 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,8 +22,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 
-WARM_UP=1 #5   # mins
-TURN_OFF=1 #0  # mins
+#WARM_UP=15   # mins for the Rancillio Silvia
+WARM_UP=20   # mins for the Lelit Bianca and other E61 groups
+TURN_OFF=10  # mins
 
 # Include bash library
 command -v bashlib.sh &> /dev/null || \
