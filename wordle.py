@@ -47,11 +47,20 @@ def contains_all(strng, setofchars):
             return 0
     return 1
 
+def contains_any(strng, setofchars):
+    """Does strng contain any of the chars in setofchars?"""
+    for char in setofchars:
+        if char in strng:
+            return 1
+    return 0
+
 parser = argparse.ArgumentParser(
     description='Find possible matches for wordle.',
     epilog='You can find Wordle here: https://www.powerlanguage.co.uk/wordle/')
 parser.add_argument('--letters', type=str, dest='letters',
                     help="Known letters")
+parser.add_argument('--excluded', type=str, dest='excluded',
+                    help="Letters to be excluded")
 parser.add_argument('--matches', type=str, dest='matches',
                     help="Known letter positions, e.g. ....t is a 5 letter"
                          " word ending in 't'")
@@ -64,15 +73,21 @@ args = parser.parse_args()
 load_dict()
 thedict = list(set(thedict))  # Remove dups because there's a bug in my code
 
-if args.letters is None and args.matches is None:
+if (args.letters is None and
+    args.matches is None and
+    args.excluded is None):
     for entry in thedict:
         print(entry)
 else:
 
-    # We have a couple of options:
+    # We have a few options:
     #  --letters xyz
     #  --matches ..x..
+    #  --exclude abc
     #  --letters xyz --matches ..x..
+    #  --letters xyz --exclude abc
+    #  --matches ..x.. --exclude abc
+    #  --letters xyz --matches ..x.. --exclude abc
 
     # Let's try the regex first, from --matches
     if args.matches is not None:
@@ -115,6 +130,21 @@ else:
             print(f"Checking required letters '{args.letters}' reduces possible "
                   f"matches down to {COUNT} matches.")
 
+    # And finally, let's remove words with --excluded letters
+    if args.excluded is not None:
+        excluded_matches = []
+        COUNT = 0
+        for entry in thedict:
+            if not contains_any(entry, args.excluded):
+                excluded_matches.append(entry)
+                COUNT += 1
+        thedict = excluded_matches
+        if args.verbose:
+            print(f"Removing possible matches that contain letters "
+                  f"'{args.excluded}' reduces possible matches down to "
+                  f"{COUNT} matches.")
+
+    # Finally print out the candidates
     if args.verbose:
         print("Candidate words:")
     for possibility in thedict:
