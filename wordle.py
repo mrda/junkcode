@@ -57,10 +57,10 @@ def contains_any(strng, setofchars):
 parser = argparse.ArgumentParser(
     description='Find possible matches for wordle.',
     epilog='You can find Wordle here: https://www.powerlanguage.co.uk/wordle/')
-parser.add_argument('--letters', type=str, dest='letters',
-                    help="Known letters")
 parser.add_argument('--excluded', type=str, dest='excluded',
                     help="Letters to be excluded")
+parser.add_argument('--letters', type=str, dest='letters',
+                    help="Known letters")
 parser.add_argument('--matches', type=str, dest='matches',
                     help="Known letter positions, e.g. ....t is a 5 letter"
                          " word ending in 't'")
@@ -80,17 +80,37 @@ if (args.letters is None and
         print(entry)
 else:
 
-    # We have a few options:
-    #  --letters xyz
-    #  --matches ..x..
-    #  --exclude abc
-    #  --letters xyz --matches ..x..
-    #  --letters xyz --exclude abc
-    #  --matches ..x.. --exclude abc
-    #  --letters xyz --matches ..x.. --exclude abc
+    # Any or all of the --letters, --matches, and --excludes might be present
 
-    # Let's try the regex first, from --matches
-    if args.matches is not None:
+    # Let's remove words with --excluded letters
+    if args.excluded:
+        excluded_matches = []
+        COUNT = 0
+        for entry in thedict:
+            if not contains_any(entry, args.excluded):
+                excluded_matches.append(entry)
+                COUNT += 1
+        thedict = excluded_matches
+        if args.verbose:
+            print(f"Removing words that contain letters "
+                  f"'{args.excluded}' reduces possible matches down to "
+                  f"{COUNT} words.")
+
+    # Remove any entries that don't have all of the --letters
+    if args.letters:
+        restricted_matches = []
+        COUNT = 0
+        for entry in thedict:
+            if contains_all(entry, args.letters):
+                restricted_matches.append(entry)
+                COUNT += 1
+        thedict = restricted_matches
+        if args.verbose:
+            print(f"Requiring this set of letters '{args.letters}' reduces "
+                  f"possible matches down to {COUNT} words.")
+
+    # Try and find a regex match for correctly positioned letters
+    if args.matches:
 
         # Sanity
         if len(args.matches) != 5:
@@ -114,37 +134,10 @@ else:
                 COUNT += 1
         if args.verbose:
             print(f"Using regular expression '{MATCH_RE}' reduces possibile "
-                  f"matches down to {COUNT}.")
+                  f"matches down to {COUNT} words.")
         thedict = reduced_words
 
-    # Now let's remove any entries that don't have all of the --letters
-    if args.letters is not None:
-        restricted_matches = []
-        COUNT = 0
-        for entry in thedict:
-            if contains_all(entry, args.letters):
-                restricted_matches.append(entry)
-                COUNT += 1
-        thedict = restricted_matches
-        if args.verbose:
-            print(f"Checking required letters '{args.letters}' reduces possible "
-                  f"matches down to {COUNT} matches.")
-
-    # And finally, let's remove words with --excluded letters
-    if args.excluded is not None:
-        excluded_matches = []
-        COUNT = 0
-        for entry in thedict:
-            if not contains_any(entry, args.excluded):
-                excluded_matches.append(entry)
-                COUNT += 1
-        thedict = excluded_matches
-        if args.verbose:
-            print(f"Removing possible matches that contain letters "
-                  f"'{args.excluded}' reduces possible matches down to "
-                  f"{COUNT} matches.")
-
-    # Finally print out the candidates
+    # Print out the candidates
     if args.verbose:
         print("Candidate words:")
     for possibility in thedict:
