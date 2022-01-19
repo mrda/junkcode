@@ -51,6 +51,42 @@ def contains_any(strng, setofchars):
             return True
     return False
 
+def regex_reduce(matchstr, antimatch=False):
+    """ Return the dictionary based upon the supplied matchstr.
+        matchstr is a pseudo-regex, i.e. ..o.. is a 5 letter word with
+        an o in the 3rd spot.  antimatch determines whether this is a
+        pattern we want or not want"""
+
+    # Sanity check
+    if len(matchstr) != args.word_len:
+        print(f"Error: Match string must be {args.word_len} chars long. "
+              f"Exiting...")
+        sys.exit(1)
+
+    # Build up the match string
+    match_re = "^"
+    for char in matchstr:
+        if char == '.':
+            match_re += "[a-z]"
+        else:
+            if antimatch:
+                match_re += "[^"
+            match_re += char
+            if antimatch:
+                match_re += "]"
+    match_re += "$"
+
+    reduced_words = []
+    matches = 0
+    for possible_match in thedict:
+        if re.match(match_re, possible_match):
+            reduced_words.append(possible_match)
+            matches += 1
+    if args.verbose:
+        print(f"Using regular expression '{match_re}' reduces possibile "
+              f"matches down to {matches} words.")
+    return reduced_words
+
 def load_dict():
     """Load up the system dictionary"""
     num = 0
@@ -73,6 +109,9 @@ parser.add_argument('-i', '--include', type=str, dest='include',
 parser.add_argument('-m', '--match', type=str, dest='match',
                     help="known letter positions, e.g. ....t is a 5 letter"
                          " word ending in 't'")
+parser.add_argument('-a', '--antimatch', type=str, dest='antimatch',
+                    help="where certain letters aren't, e.g. ...o. is a 5 letter"
+                         " word, and the 4th letter isn't a 'o'")
 parser.add_argument('-n', '--numchars', type=int, dest='word_len',
                     default=DEFAULT_WORD_LEN,
                     help=f"word length to consider, "
@@ -88,6 +127,7 @@ thedict = list(set(thedict))  # Remove dups because there's a bug in my code
 
 if (args.include is None and
     args.match is None and
+    args.antimatch is None and
     args.exclude is None):
 
     thedict.sort()
@@ -95,7 +135,8 @@ if (args.include is None and
         print(entry)
 else:
 
-    # Any or all of the --include, --match, and --exclude might be present
+    # Any or all of the --include, --exclude, --match, and --antimatch
+    # might be present
 
     # Let's remove words with --exclude letters
     if args.exclude:
@@ -131,34 +172,13 @@ else:
             print(f"Requiring this set of letters '{args.include}' reduces "
                   f"possible matches down to {COUNT} words.")
 
-    # Try and find a regex match for correctly positioned letters
+    # Try and find a regex --match for correctly positioned letters
     if args.match:
+        thedict = regex_reduce(args.match, antimatch=False)
 
-        # Sanity check
-        if len(args.match) != args.word_len:
-            print(f"Error: Match string must be {args.word_len} chars long. "
-                  f"Exiting...")
-            sys.exit(1)
-
-        # Build up the match string
-        MATCH_RE = "^"
-        for ch in args.match:
-            if ch == '.':
-                MATCH_RE += "[a-z]"
-            else:
-                MATCH_RE += ch
-        MATCH_RE += "$"
-
-        reduced_words = []
-        COUNT = 0
-        for possibility in thedict:
-            if re.match(MATCH_RE, possibility):
-                reduced_words.append(possibility)
-                COUNT += 1
-        if args.verbose:
-            print(f"Using regular expression '{MATCH_RE}' reduces possibile "
-                  f"matches down to {COUNT} words.")
-        thedict = reduced_words
+    # Let's remove candidates according to the --antimatch regular expression
+    if args.antimatch:
+        thedict = regex_reduce(args.antimatch, antimatch=True)
 
     # Print out the candidates
     if args.verbose:
