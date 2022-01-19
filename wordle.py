@@ -27,6 +27,7 @@ import re
 import string
 import sys
 
+DEFAULT_WORD_LEN = 5
 thedict = []
 
 def only_az(word):
@@ -56,7 +57,7 @@ def load_dict():
     with open('/usr/share/dict/words', 'r', encoding="utf-8") as dictfile:
         for line in dictfile:
             word = line.strip().lower()
-            if len(word) == 5 and only_az(word):
+            if len(word) == args.word_len and only_az(word):
                 thedict.append(word)
                 num += 1
     if args.verbose:
@@ -65,13 +66,17 @@ def load_dict():
 parser = argparse.ArgumentParser(
     description='Find possible matches for wordle.',
     epilog='You can find Wordle here: https://www.powerlanguage.co.uk/wordle/')
-parser.add_argument('--exclude', type=str, dest='exclude',
+parser.add_argument('-e', '--exclude', type=str, dest='exclude',
                     help="letters to be excluded")
-parser.add_argument('--include', type=str, dest='include',
+parser.add_argument('-i', '--include', type=str, dest='include',
                     help="letters to be included")
-parser.add_argument('--match', type=str, dest='match',
+parser.add_argument('-m', '--match', type=str, dest='match',
                     help="known letter positions, e.g. ....t is a 5 letter"
                          " word ending in 't'")
+parser.add_argument('-n', '--numchars', type=int, dest='word_len',
+                    default=DEFAULT_WORD_LEN,
+                    help=f"word length to consider, "
+                         f"default to {DEFAULT_WORD_LEN}")
 parser.add_argument('-v', '--verbose',
                     action='store_true',
                     dest='verbose',
@@ -110,8 +115,9 @@ else:
     if args.include:
 
         # Sanity check
-        if len(args.include) > 5:
-            print("Error: You can't have more than 5 included letters. Exiting...")
+        if len(args.include) > args.word_len:
+            print(f"Error: You can't have more than {args.word_len} included "
+                  f"letters. Exiting...")
             sys.exit(1)
 
         restricted_matches = []
@@ -129,8 +135,9 @@ else:
     if args.match:
 
         # Sanity check
-        if len(args.match) != 5:
-            print("Error: Match string must be 5 chars long. Exiting...")
+        if len(args.match) != args.word_len:
+            print(f"Error: Match string must be {args.word_len} chars long. "
+                  f"Exiting...")
             sys.exit(1)
 
         # Build up the match string
@@ -139,7 +146,7 @@ else:
             if ch == '.':
                 MATCH_RE += "[a-z]"
             else:
-                MATCH_RE += "[" + ch + "]"
+                MATCH_RE += ch
         MATCH_RE += "$"
 
         reduced_words = []
