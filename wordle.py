@@ -50,17 +50,11 @@ def contains_any(strng, setofchars):
             return True
     return False
 
-def regex_reduce(mydict, matchstr, antimatch=False):
+def regex_reduce(mydict, matchstr, antimatch=False, verbose=False):
     """ Return the dictionary based upon the supplied matchstr.
         matchstr is a pseudo-regex, i.e. ..o.. is a 5 letter word with
         an o in the 3rd spot.  antimatch determines whether this is a
         pattern we want or not want"""
-
-    # Sanity check
-    if len(matchstr) != args.word_len:
-        print(f"Error: Match string must be {args.word_len} chars long. "
-              f"Exiting...")
-        sys.exit(1)
 
     # Build up the match string
     match_re = "^"
@@ -81,26 +75,26 @@ def regex_reduce(mydict, matchstr, antimatch=False):
         if re.match(match_re, possible_match):
             reduced_words.append(possible_match)
             matches += 1
-    if args.verbose:
+    if verbose:
         print(f"Using regular expression '{match_re}' reduces possibile "
               f"matches down to {matches} words.")
     return reduced_words
 
-def load_dict():
+def load_dict(word_len, verbose):
     """Load up the system dictionary"""
     num = 0
     thedict = []
     with open('/usr/share/dict/words', 'r', encoding="utf-8") as dictfile:
         for line in dictfile:
             word = line.strip().lower()
-            if len(word) == args.word_len and only_az(word):
+            if len(word) == word_len and only_az(word):
                 thedict.append(word)
                 num += 1
-    if args.verbose:
+    if verbose:
         print(f"Initial dictionary has a total of {num} five letter words")
     return thedict
 
-def wordle(mydict, include=None, exclude=None, match=None, antimatch=None):
+def wordle(mydict, include=None, exclude=None, match=None, antimatch=None, verbose=False):
     """ Find wordle candidate words, using the provided dictionary 'mydict'.
     include is a string of letters that must be in the word
     exclude is a string of letters that must NOT be in the word
@@ -118,19 +112,13 @@ def wordle(mydict, include=None, exclude=None, match=None, antimatch=None):
                 excluded_matches.append(entry)
                 count += 1
         mydict = excluded_matches
-        if args.verbose:
+        if verbose:
             print(f"Removing words that contain letters "
                   f"'{exclude}' reduces possible matches down to "
                   f"{count} words.")
 
     # Remove any entries that don't have all of the --include letters
     if include:
-        # Sanity check
-        if len(include) > args.word_len:
-            print(f"Error: You can't have more than {args.word_len} included "
-                  f"letters. Exiting...")
-            sys.exit(1)
-
         restricted_matches = []
         count = 0
         for entry in mydict:
@@ -138,20 +126,21 @@ def wordle(mydict, include=None, exclude=None, match=None, antimatch=None):
                 restricted_matches.append(entry)
                 count += 1
         mydict = restricted_matches
-        if args.verbose:
+        if verbose:
             print(f"Requiring this set of letters '{include}' reduces "
                   f"possible matches down to {count} words.")
 
     # Try and find a regex --match for correctly positioned letters
     if match:
-        mydict = regex_reduce(mydict, match, antimatch=False)
+        mydict = regex_reduce(mydict, match, antimatch=False, verbose=verbose)
 
     # Let's remove candidates according to the --antimatch regular expression
     if antimatch:
-        mydict = regex_reduce(mydict, antimatch, antimatch=True)
+        mydict = regex_reduce(mydict, antimatch, antimatch=True,
+                              verbose=verbose)
 
     # Print out the candidates
-    if args.verbose:
+    if verbose:
         print("Candidate words:")
     mydict.sort()
     return mydict
@@ -188,9 +177,25 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(0)
 
+    # Sanity checks
+
+    # If match and antimatch are provided, they need to be args.word_len long
+    if (args.match and len(args.match) != args.word_len or
+        args.antimatch and len(args.antimatch) != args.word_len):
+        print(f"Error: Match string must be {args.word_len} chars long. "
+              f"Exiting...")
+        sys.exit(1)
+
+    # Included letters msut be shorter than args.word_len
+    if args.include and len(args.include) > args.word_len:
+        print(f"Error: You can't have more than {args.word_len} included "
+              f"letters. Exiting...")
+        sys.exit(1)
+
+
     # TODO(mrda): Fix duplicate entry bug in load_dict
-    dictionary = list(set(load_dict()))
+    dictionary = list(set(load_dict(args.word_len, args.verbose)))
 
     for candidate in wordle(dictionary, args.include, args.exclude,
-                            args.match, args.antimatch):
+                            args.match, args.antimatch, args.verbose):
         print(candidate)
