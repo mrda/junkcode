@@ -23,11 +23,14 @@
 """ Provide potential solutions for Wordle """
 
 import argparse
+import os
 import re
 import string
 import sys
 
 DEFAULT_WORD_LEN = 5
+DEFAULT_DICT_FILE = "/usr/share/dict/words"
+MY_DICT_FILE = ".wordle/words"
 
 def only_az(word):
     """Does word only contain characters in [a..z]?"""
@@ -81,10 +84,20 @@ def regex_reduce(mydict, matchstr, antimatch=False, verbose=False):
     return reduced_words
 
 def load_dict(word_len, verbose):
-    """Load up the system dictionary"""
+    """Load up the dictionary.  Use ~/.wordle/words if exists,
+    otherwise use the system dictionary."""
+
+    # Prefer the user's private dictionary
+    dictionary_filename = DEFAULT_DICT_FILE
+    home = os.environ.get('HOME')
+    if home:
+        fname = f"{home}/{MY_DICT_FILE}"
+        if os.path.isfile(fname) and os.access(fname, os.R_OK):
+            dictionary_filename = fname
+
     num = 0
     thedict = []
-    with open('/usr/share/dict/words', 'r', encoding="utf-8") as dictfile:
+    with open(dictionary_filename, 'r', encoding="utf-8") as dictfile:
         for line in dictfile:
             word = line.strip().lower()
             if len(word) == word_len and only_az(word):
