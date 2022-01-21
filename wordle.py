@@ -182,11 +182,7 @@ if __name__ == '__main__':
                         help='display extra information')
     args = parser.parse_args()
 
-    if (args.include is None and
-        args.match is None and
-        args.antimatch is None and
-        args.exclude is None):
-
+    if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
 
