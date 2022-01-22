@@ -79,8 +79,8 @@ def regex_reduce(mydict, matchstr, antimatch=False, verbose=False):
             reduced_words.append(possible_match)
             matches += 1
     if verbose:
-        print(f"Using regular expression '{match_re}' reduces possibile "
-              f"matches down to {matches} words.")
+        print(f"Using regex '{match_re}' reduces possibilities "
+              f"to {matches} words.")
     return reduced_words
 
 def load_dict(word_len, verbose):
@@ -104,6 +104,7 @@ def load_dict(word_len, verbose):
                 thedict.append(word)
                 num += 1
     if verbose:
+        print(f"Using dictionary '{dictionary_filename}'.")
         print(f"Initial dictionary has a total of {num} five letter words")
     return thedict
 
@@ -126,8 +127,8 @@ def wordle(mydict, include=None, exclude=None, match=None, antimatch=None, verbo
                 count += 1
         mydict = excluded_matches
         if verbose:
-            print(f"Removing words that contain letters "
-                  f"'{exclude}' reduces possible matches down to "
+            print(f"Removing words that contain any of "
+                  f"[{exclude}] reduces candidates to "
                   f"{count} words.")
 
     # Remove any entries that don't have all of the --include letters
@@ -140,8 +141,8 @@ def wordle(mydict, include=None, exclude=None, match=None, antimatch=None, verbo
                 count += 1
         mydict = restricted_matches
         if verbose:
-            print(f"Requiring this set of letters '{include}' reduces "
-                  f"possible matches down to {count} words.")
+            print(f"Only including words that contain [{include}] reduces "
+                  f"candidates to {count} words.")
 
     # Try and find a regex --match for correctly positioned letters
     if match:
@@ -195,12 +196,21 @@ if __name__ == '__main__':
               f"Exiting...")
         sys.exit(1)
 
-    # Included letters msut be shorter than args.word_len
+    # Included letters must be shorter than args.word_len
     if args.include and len(args.include) > args.word_len:
         print(f"Error: You can't have more than {args.word_len} included "
               f"letters. Exiting...")
         sys.exit(1)
 
+    # Included letters and excluded letters must not overlap
+    if (args.include and args.exclude
+        and list(set(args.include) & set(args.exclude))):
+
+        print(f"Error: Included letters [{args.include}] and excluded "
+              f"letters [{args.exclude}] must not overlap. Exiting...")
+        sys.exit(1)
+
+    # Load dictionary and calculate candidate wordle words
 
     # TODO(mrda): Fix duplicate entry bug in load_dict
     dictionary = list(set(load_dict(args.word_len, args.verbose)))
