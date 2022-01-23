@@ -176,6 +176,22 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                 description='Find possible matches for wordle.',
                 epilog='You can find Wordle here: https://www.powerlanguage.co.uk/wordle/')
+    parser.add_argument('-f', '--frequency',
+                        action='store_true',
+                        dest='frequency_table',
+                        help="display a frequency table for your dictionary, then exit")
+    parser.add_argument('-g', '--guess',
+                        action='store_true',
+                        dest='guess',
+                        help="display a  good starting guess, then exit")
+    parser.add_argument('-D', '--system-dict',
+                        action='store_true',
+                        dest='use_system_dict',
+                        help="Use the system dictionary instead of ~/.wordle/words")
+    parser.add_argument('-v', '--verbose',
+                        action='store_true',
+                        dest='verbose',
+                        help='display extra information')
     parser.add_argument('-e', '--exclude', type=str, dest='exclude',
                         help="letters to be excluded")
     parser.add_argument('-i', '--include', type=str, dest='include',
@@ -190,22 +206,6 @@ if __name__ == '__main__':
                         default=DEFAULT_WORD_LEN,
                         help=f"word length to consider, "
                         f"default to {DEFAULT_WORD_LEN}")
-    parser.add_argument('-f', '--frequency',
-                        action='store_true',
-                        dest='frequency_table',
-                        help="display a frequency table for your dictionary")
-    parser.add_argument('-g', '--guess',
-                        action='store_true',
-                        dest='guess',
-                        help="display a  good starting guess")
-    parser.add_argument('-D', '--system-dict',
-                        action='store_true',
-                        dest='use_system_dict',
-                        help="Use the system dictionary instead of ~/.wordle/words")
-    parser.add_argument('-v', '--verbose',
-                        action='store_true',
-                        dest='verbose',
-                        help='display extra information')
     args = parser.parse_args()
 
     if len(sys.argv) == 1:
