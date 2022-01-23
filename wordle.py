@@ -83,17 +83,19 @@ def regex_reduce(mydict, matchstr, antimatch=False, verbose=False):
               f"to {matches} words.")
     return reduced_words
 
-def load_dict(word_len, verbose):
+def load_dict(word_len, use_system_dict, verbose):
     """Load up the dictionary.  Use ~/.wordle/words if exists,
-    otherwise use the system dictionary."""
+    otherwise use the system dictionary, unless use_system_dict
+    is specified."""
 
-    # Prefer the user's private dictionary
+    # Prefer the user's private dictionary, unless overriden
     dictionary_filename = DEFAULT_DICT_FILE
-    home = os.environ.get('HOME')
-    if home:
-        fname = f"{home}/{MY_DICT_FILE}"
-        if os.path.isfile(fname) and os.access(fname, os.R_OK):
-            dictionary_filename = fname
+    if not use_system_dict:
+        home = os.environ.get('HOME')
+        if home:
+            fname = f"{home}/{MY_DICT_FILE}"
+            if os.path.isfile(fname) and os.access(fname, os.R_OK):
+                dictionary_filename = fname
 
     num = 0
     thedict = []
@@ -105,8 +107,19 @@ def load_dict(word_len, verbose):
                 num += 1
     if verbose:
         print(f"Using dictionary '{dictionary_filename}'.")
-        print(f"Initial dictionary has a total of {num} five letter words")
+        print(f"Dictionary has a total of {num} five letter words")
     return thedict
+
+def build_freqtable(mydict):
+    """Build and return a sorted frequency table for the supplied dictionary"""
+    ftable = {}
+    for word in mydict:
+        for char in word:
+            if char in ftable:
+                ftable[char] += 1
+            else:
+                ftable[char] = 1
+    return ftable
 
 def wordle(mydict, include=None, exclude=None, match=None, antimatch=None, verbose=False):
     """ Find wordle candidate words, using the provided dictionary 'mydict'.
@@ -177,6 +190,18 @@ if __name__ == '__main__':
                         default=DEFAULT_WORD_LEN,
                         help=f"word length to consider, "
                         f"default to {DEFAULT_WORD_LEN}")
+    parser.add_argument('-f', '--frequency',
+                        action='store_true',
+                        dest='frequency_table',
+                        help="display a frequency table for your dictionary")
+    parser.add_argument('-g', '--guess',
+                        action='store_true',
+                        dest='guess',
+                        help="display a  good starting guess")
+    parser.add_argument('-D', '--system-dict',
+                        action='store_true',
+                        dest='use_system_dict',
+                        help="Use the system dictionary instead of ~/.wordle/words")
     parser.add_argument('-v', '--verbose',
                         action='store_true',
                         dest='verbose',
@@ -186,6 +211,7 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
+
 
     # Sanity checks
 
@@ -210,11 +236,32 @@ if __name__ == '__main__':
               f"letters [{args.exclude}] must not overlap. Exiting...")
         sys.exit(1)
 
-    # Load dictionary and calculate candidate wordle words
-
     # TODO(mrda): Fix duplicate entry bug in load_dict
-    dictionary = list(set(load_dict(args.word_len, args.verbose)))
+    dictionary = list(set(load_dict(args.word_len, args.use_system_dict,
+                                    args.verbose)))
+    freqtable = build_freqtable(dictionary)
 
+    # Print a frequency table and exit
+    if args.frequency_table:
+        if args.verbose:
+            print("Dictionary frequency table:")
+        for fchar in sorted(freqtable, key=freqtable.get, reverse=True):
+            print(f"'{fchar}' appears {freqtable[fchar]} times")
+        sys.exit(0)
+
+    # print a good starting guess and exit
+    NUMTOPLETTERS = 4
+    if args.guess:
+        if args.verbose:
+            print(f"Starting words based on the {NUMTOPLETTERS} highest "
+                  f"frequency letters in your dictionary:")
+        sfreqtable = sorted(freqtable, key=freqtable.get, reverse=True)
+        TOPLETTERS = "".join(x for x in sfreqtable)[0:NUMTOPLETTERS]
+        for guessword in wordle(dictionary, TOPLETTERS, None, None, None, False):
+            print(guessword)
+        sys.exit(0)
+
+    # Find matching wordle words
     for candidate in wordle(dictionary, args.include, args.exclude,
                             args.match, args.antimatch, args.verbose):
         print(candidate)
