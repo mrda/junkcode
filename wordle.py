@@ -245,8 +245,11 @@ if __name__ == '__main__':
     if args.frequency_table:
         if args.verbose:
             print("Dictionary frequency table:")
+        total = 0
+        for fchar in freqtable:
+            total += int(freqtable[fchar])
         for fchar in sorted(freqtable, key=freqtable.get, reverse=True):
-            print(f"'{fchar}' appears {freqtable[fchar]} times")
+            print(f"'{fchar}' appears {freqtable[fchar]} times ({freqtable[fchar]/total:.2%})")
         sys.exit(0)
 
     # print a good starting guess and exit
