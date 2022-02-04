@@ -19,6 +19,12 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+
+# Include bash library
+command -v bashlib.sh &> /dev/null || \
+{ echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
+. bashlib.sh
+
 exit_with_usage() {
     printf "Usage: $(basename $0) <mins>, where <mins> is an integer\n"
     exit -1
@@ -28,37 +34,4 @@ exit_with_usage() {
 re='^[0-9]+$'
 [[ ! $1 =~ $re ]] && exit_with_usage
 
-
-progress() {
-    TOTSECS=$(( $1 * 60 ))
-    MINS=$(($1-1))
-    LEN=30
-
-    for m in $(seq $MINS -1 0) ; do
-        for s in $(seq 59 -1 0) ; do
-
-            SECS_REMAINING=$(( $m*60 + $s ))
-            PERCENT=$(bc <<< "scale=0; ($TOTSECS - $SECS_REMAINING) * 100 / $TOTSECS")
-            NUMHASHES=$( bc <<< "scale=0; (($LEN * $PERCENT) / 100)" )
-            NUMDOTS=$( bc <<< "scale=0; $LEN - $NUMHASHES" )
-
-            HASHES=""
-            if [ $NUMHASHES -ne 0 ]; then
-                HASHES=$( printf "%-${NUMHASHES}s" "#" )
-                HASHES=${HASHES// /#}
-            fi
-
-            DOTS=""
-            if [ $NUMDOTS -ne 0 ]; then
-                DOTS=$( printf "%-${NUMDOTS}s" "." )
-                DOTS=${DOTS// /.}
-            fi
-
-            printf "\rTime Remaining: %02d:%02d [ %s%s ] %01d%% " $m $s "$HASHES" "$DOTS" $PERCENT
-            sleep 1s
-        done
-    done
-    echo ""
-}
-
-progress $1
+timebar $1 "Time Remaining:"
