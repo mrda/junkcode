@@ -41,7 +41,7 @@ if [[ "$INACTIVES" == "0" ]]; then
     exit 0
 else  # "$INACTIVES" == "1"
 
-    timebar 1 "Sleeping to give VMs time to rehydrate"
+    timebar 1 "Waiting for VMs to rehydrate"
 
     virsh -c "${CONNECT}" list --all | grep "$USER"
 
