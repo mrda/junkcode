@@ -26,10 +26,26 @@ command -v bashlib.sh &> /dev/null || \
 { echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
 . bashlib.sh
 
-# We always want to make sure some things are running
-if ! check_process_running poll-internet ; then
-    print_message_box $'\n  poll-internet is not running  \n'
-fi
+# There are some things we always want running
+declare -a REQDPROGS=( poll-internet slack )
+for PROG in "${REQDPROGS[@]}"; do
+    if ! check_process_running ${PROG} ; then
+        print_message_box "The program \"${PROG}\" is not running"
+    fi
+done
 
 # Reauthenticate if we can
 run_if_avail rhauth.sh
+
+# See if there's any software updates
+if [ -f /etc/redhat-release ]; then
+    if is_available dnf ; then
+        if ! dnf check-update >& /dev/null ; then
+            echo "There are software updates available via dnf"
+        fi
+    else
+        echo "There's no 'dnf' available"
+    fi
+else
+    echo "You're not using a supported operating system, so I can't check for available updates"
+fi
