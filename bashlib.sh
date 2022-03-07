@@ -40,10 +40,13 @@ fi
 
 # See if a certain command is available
 is_available() {
-    if ! command -v "$1" &> /dev/null; then
-        return 0
-    else
-        return 1
+    command -v "$1" &> /dev/null
+}
+
+# Run command, including it's parms, if available
+run_if_avail() {
+    if is_available "$1" ; then
+        $@
     fi
 }
 
@@ -60,6 +63,11 @@ ensure_cmd basename
 ensure_cmd id
 ensure_cmd stat
 ensure_cmd zenity
+
+# See if a process is running
+check_process_running() {
+    $(ps aux | grep "$1" | grep -v grep >& /dev/null);
+}
 
 # Get a non-empty string and store it in the provided variable
 # $1: variable to update
