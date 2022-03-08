@@ -30,6 +30,8 @@ _check_cmd_avail neofetch
 _check_cmd_avail dnf
 
 neofetch
+printf "\nSystem Info:\n"
+sudo dmidecode -t system
 printf "\nUptime:\n"
 uptime
 printf "\nMeminfo:\n"
