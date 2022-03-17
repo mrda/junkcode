@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # periodictable.py - Display a simplistic periodic table
 #
@@ -253,4 +253,4 @@ def get_periodic_table():
 
 if __name__ == '__main__':
     p = get_periodic_table()
-    print p
+    print(p)

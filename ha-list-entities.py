@@ -1,4 +1,4 @@
-#!/usr/bin/env py3
+#!/usr/bin/env python3
 #
 # ha-list-entities.py - List all the available entities from Home Assistant
 #                       Depends the following environment variables:
