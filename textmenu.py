@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # textmenu.py - simple textmenu utility library
 #
@@ -45,7 +45,7 @@ class TextMenu:
         self.options[key] = (msg, func)
 
     def _print_options(self):
-        print "\n" + self.title + "\n"
+        print("\n" + self.title + "\n")
         if self.exit is not None and self.exit_at_top:
             print("'%s' : %s" % (self.exit[0], self.exit[1]))
 
@@ -59,22 +59,22 @@ class TextMenu:
         while True:
             self._print_options()
             print("\n")
-            raw = raw_input('Please enter your selection: ')
+            raw = input('Please enter your selection: ')
             if len(raw) == 1:
 
                 if raw == self.exit[0]:
                     return
 
                 if raw in self.options:
-                    print "You selected '%s'" % raw
+                    print("You selected '%s'" % raw)
                     option = self.options[raw][1]
                     if hasattr(option, '__call__'):
                         return option()
                     else:
                         return option
 
-            print "\n*** %s is not a valid option\n" % raw
+            print("\n*** %s is not a valid option\n" % raw)
 
 
 if __name__ == '__main__':
-    print 'TODO(mrda): Please add tests to textmenu.py here'
+    print('TODO(mrda): Please add tests to textmenu.py here')

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # ollehto.py - play the game of ollehto
 #
@@ -316,8 +316,8 @@ class Human(Player):
         possibility_board = board.build_possibilities_board(valid_moves)
         valid_move = False
         while not valid_move:
-            print possibility_board
-            raw_move = raw_input(input_str).upper()
+            print(possibility_board)
+            raw_move = input(input_str).upper()
             if raw_move is None or raw_move == '':
                 continue
 
@@ -338,7 +338,7 @@ class Human(Player):
             if board.is_valid_move(row, col, self.colour):
                 valid_move = True
             else:
-                print "Sorry, '%s' is an invalid move" % raw_move
+                print("Sorry, '%s' is an invalid move" % raw_move)
         return row, col
 
 
@@ -419,7 +419,7 @@ class Game(object):
 
     def end_of_game_message(self, winner, player1_score, player2_score,
                             number_of_moves):
-        print "\n***** GAME OVER *****"
+        print("\n***** GAME OVER *****")
         s1 = max(player1_score, player2_score)
         s2 = min(player1_score, player2_score)
         if winner is not None:
@@ -463,9 +463,9 @@ class Game(object):
         winner = self.determine_winner(player1_score, player2_score)
 
         if self.output:
-            print self.end_of_game_message(winner, player1_score,
-                                           player2_score, number_of_moves)
-            print self.b.__str__(include_score=False)
+            print(self.end_of_game_message(winner, player1_score,
+                                           player2_score, number_of_moves))
+            print(self.b.__str__(include_score=False))
 
         return winner, player1_score, player2_score, number_of_moves
 
@@ -473,7 +473,7 @@ class Game(object):
 def play_single_player_game():
     print("\nStarting a one player game\n")
     while True:
-        name = raw_input("Please enter your name: ")
+        name = input("Please enter your name: ")
         if name is not None or name != "":
             break
 
@@ -486,11 +486,11 @@ def play_single_player_game():
 def play_two_player_game():
     print("\nStarting a two player game\n")
     while True:
-        name_1 = raw_input("Please enter the name of player 1: ")
+        name_1 = input("Please enter the name of player 1: ")
         if name_1 is not None or name_1 != "":
             break
     while True:
-        name_2 = raw_input("Please enter the name of player 2: ")
+        name_2 = input("Please enter the name of player 2: ")
         if name_2 is not None or name_2 != "":
             break
 
