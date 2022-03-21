@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # maze.py - create a simple maze, using binary tree
 #
@@ -105,4 +105,4 @@ if __name__ == '__main__':
                  progname)
 
     maze = build_maze(size)
-    print maze
+    print(maze)

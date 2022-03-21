@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # maze_binary.py <nums rows> <num cols> - build a maze using binary tree
 #
@@ -79,4 +79,4 @@ if __name__ == '__main__':
                  progname)
 
     maze = create_binary_maze(rows, cols)
-    print maze
+    print(maze)

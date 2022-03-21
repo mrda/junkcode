@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # maze_sidewinder.py <nums rows> <num cols> - build a maze following the
 #                                             sidewinder algorithm
@@ -77,4 +77,4 @@ if __name__ == '__main__':
                  progname)
 
     maze = create_sidewinder_maze(rows, cols)
-    print maze
+    print(maze)
