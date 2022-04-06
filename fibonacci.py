@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # fibonacci.py - standard fibonacci number generator
-# Copyright (C) 2005 Michael Davies <michael@the-davies.net>
+# Copyright (C) 2005, 2022 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 import sys
 from os.path import basename
 
+
 def fibonacci(n):
     results = []
     x, y = 0, 1
@@ -29,9 +30,10 @@ def fibonacci(n):
         x, y = y, x+y
     return results
 
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print ("%s: Please specify the number of fibonacci numbers "
-               "you require" % basename(sys.argv[0]))
+        print("%s: Please specify the number of fibonacci numbers "
+              "you require" % basename(sys.argv[0]))
     else:
         print(" ".join(str(x) for x in fibonacci(int(sys.argv[1]))))
