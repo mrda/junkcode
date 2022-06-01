@@ -145,7 +145,7 @@ confirm_continue ()
     while [[ ${EXIT_LOOP} -ne 1 ]]; do
         read -p "${1}" -r
         if [[ ${REPLY} =~ ^[Nn]$ ]]; then
-            echo "*** Exiting..."
+            echo "Exiting..."
             exit 6
         fi
         if [[ ${REPLY} =~ ^[Yy]$ ]]; then
@@ -288,6 +288,24 @@ dialogbox ()
     TITLE=${1:-"Title goes here"}
     BODY=${2:-"Message goes here"}
     zenity --info --text="$BODY" --title="$TITLE" --width=300 --height=200 >& /dev/null
+}
+
+# Guess which family of operating system we're running on
+# Possible return values are "Red Hat" or "Ubuntu"
+guess_os ()
+{
+    if [ -f /etc/os-release ]; then
+        OS=$(grep ^NAME= /etc/os-release | cut -f2 -d=)
+    fi
+
+    if [ "$OS" = "\"Fedora Linux\"" ] || \
+       [ "$OS" = "\"Red Hat Enterprise Linux\"" ]; then
+        echo "Red Hat"
+    elif [ "$OS" = "Ubuntu" ]; then
+        echo "Ubuntu"
+    else
+        echo "Unknown"
+    fi
 }
 
 # Re-run this script in the background in a seamless way

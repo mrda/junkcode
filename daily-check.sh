@@ -34,18 +34,47 @@ for PROG in "${REQDPROGS[@]}"; do
     fi
 done
 
-# Reauthenticate if we can
-run_if_avail rhauth.sh
-
-# See if there's any software updates
-if [ -f /etc/redhat-release ]; then
+update_dnf ()
+{
     if is_available dnf ; then
         if ! dnf check-update >& /dev/null ; then
-            echo "There are software updates available via dnf"
+            confirm_continue "Do you want to install software updates? "
+            sudo dnf update -y
         fi
     else
         echo "There's no 'dnf' available"
     fi
+}
+
+update_flatpak ()
+{
+    # flatpak
+    if is_available flatpak ; then
+        sudo flatpak update --noninteractive >& /dev/null
+    else
+        echo "There's no 'flatpak' available"
+    fi
+}
+
+update_snap ()
+{
+    # flatpak
+    if is_available snap ; then
+        sudo snap refresh >& /dev/null
+    else
+        echo "There's no 'snap' available"
+    fi
+}
+
+# Reauthenticate if we can
+run_if_avail rhauth.sh
+
+# See if there's any software updates
+OSTYPE=$( guess_os )
+if [ "${OSTYPE}" = "Red Hat" ]; then
+    update_dnf
+    update_flatpak
+    update_snap  # ...even though this isn't really a thing on Red Hat
 else
     echo "You're not using a supported operating system, so I can't check for available updates"
 fi
