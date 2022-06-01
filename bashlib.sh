@@ -24,6 +24,38 @@
 DEBUG="${DEBUG:-0}"
 [[ $DEBUG -eq 1 ]] && set -xev
 
+# Control codes to change colour on the terminal
+FG_CLEAR="\033[0m"
+FG_BLACK="\033[0;30m"
+FG_RED="\033[0;31m"
+FG_GREEN="\033[0;32m"
+FG_YELLOW="\033[0;33m"
+FG_BLUE="\033[0;34m"
+FG_MAGNETA="\033[0;35m"
+FG_CYAN="\033[0;36m"
+FG_WHITE="\033[0;37m"
+
+colourprintchar () {
+    LETTER_COLOUR=$FG_WHITE
+    UPPER_COLOUR=$FG_YELLOW
+    NUMBER_COLOUR=$FG_GREEN
+    SYMBOL_COLOUR=$FG_RED
+    case "$1" in
+        [a-z]) echo -ne "${LETTER_COLOUR}${1}${FG_CLEAR}";;
+        [A-Z]) echo -ne "${UPPER_COLOUR}${1}${FG_CLEAR}";;
+        [0-9]) echo -ne "${NUMBER_COLOUR}${1}${FG_CLEAR}";;
+        *)     echo -ne "${SYMBOL_COLOUR}${1}${FG_CLEAR}";;
+    esac
+}
+
+colourprint () {
+    str=$1
+    for ((i=0; i<${#str}; i++)); do
+        colourprintchar ${str:$i:1}
+    done
+    echo ""
+}
+
 # Check to see if this library is being sourced
 IS_SOURCED=1
 SCRIPTNAME=unknown

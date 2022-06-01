@@ -1,4 +1,4 @@
-#~/bin/sh
+#!/bin/sh
 #
 # daily-check.sh - make sure things are running, reauthentication
 #                  is done, things that you want to do everyday

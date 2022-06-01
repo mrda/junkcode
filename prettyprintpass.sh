@@ -59,3 +59,15 @@ while [ -z $PARAM1 ]; do
 done
 
 colourprint $PARAM1
+
+# If we can print things phonetically, and speak it out, do that as well
+PHONETIC='phonetic.py'
+SAY='espeak'
+SAY_PARAMS='-ven -s 100'
+if hash $PHONETIC &> /dev/null; then
+    $PHONETIC $PARAM1
+    if hash $SAY &> /dev/null; then
+        $PHONETIC $PARAM1 | $SAY $SAY_PARAMS
+    fi
+fi
+
