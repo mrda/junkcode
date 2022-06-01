@@ -65,11 +65,12 @@ FG_WHITE="\033[0;37m"
 
 colourprintchar () {
     LETTER_COLOUR=$FG_WHITE
+    UPPER_COLOUR=$FG_YELLOW
     NUMBER_COLOUR=$FG_GREEN
     SYMBOL_COLOUR=$FG_RED
     case "$1" in
         [a-z]) echo -ne "${LETTER_COLOUR}${1}${FG_CLEAR}";;
-        [A-Z]) echo -ne "${LETTER_COLOUR}${1}${FG_CLEAR}";;
+        [A-Z]) echo -ne "${UPPER_COLOUR}${1}${FG_CLEAR}";;
         [0-9]) echo -ne "${NUMBER_COLOUR}${1}${FG_CLEAR}";;
         *)     echo -ne "${SYMBOL_COLOUR}${1}${FG_CLEAR}";;
     esac
@@ -85,8 +86,14 @@ colourprint () {
 
 colourprint $PARAM1
 
-# If we can print things phonetically, do that as well
+# If we can print things phonetically, and speak it out, do that as well
 PHONETIC='phonetic.py'
+#SAY='espeak'
+#SAY_PARAMS='-ven -s 100'
 if hash $PHONETIC &> /dev/null; then
     $PHONETIC $PARAM1
+#    if hash $SAY &> /dev/null; then
+#        $PHONETIC $PARAM1 | $SAY $SAY_PARAMS
+#    fi
 fi
+
