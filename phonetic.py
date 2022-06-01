@@ -3,7 +3,7 @@
 # phonetic.py - Spell out the input string to the NATO phoentic alphabet,
 #               or do the inverse
 #
-# Copyright (C) 2007,2019 Michael Davies (michael@the-davies.net)
+# Copyright (C) 2007,2019,2022 Michael Davies (michael@the-davies.net)
 #
 # e.g. Encoding example:
 # mrda@carbon:~/src/python$ ./phonetic.py vc107
@@ -117,6 +117,70 @@ def __enc(ch):
         return 'zero'
     elif (ch) == ' ':
         return 'space'
+    elif (ch) == '[':
+        return 'left-square-bracket'
+    elif (ch) == ']':
+        return 'right-square-bracket'
+    elif (ch) == '{':
+        return 'left-curly-bracket'
+    elif (ch) == '}':
+        return 'right-curly-bracket'
+    elif (ch) == '(':
+        return 'left-bracket'
+    elif (ch) == ')':
+        return 'right-bracket'
+    elif (ch) == '!':
+        return 'bang'
+    elif (ch) == '@':
+        return 'at'
+    elif (ch) == '#':
+        return 'hash'
+    elif (ch) == '$':
+        return 'dollar'
+    elif (ch) == '%':
+        return 'percent'
+    elif (ch) == '^':
+        return 'caret'
+    elif (ch) == '&':
+        return 'ampersand'
+    elif (ch) == '*':
+        return 'star'
+    elif (ch) == '`':
+        return 'left-tick'
+    elif (ch) == '~':
+        return 'tilde'
+    elif (ch) == '|':
+        return 'pipe'
+    elif (ch) == '\\':
+        return 'backslash'
+    elif (ch) == '/':
+        return 'slash'
+    elif (ch) == ';':
+        return 'semi-colon'
+    elif (ch) == ':':
+        return 'colon'
+    elif (ch) == '\'':
+        return 'quote'
+    elif (ch) == '\"':
+        return 'double-quote'
+    elif (ch) == ',':
+        return 'comma'
+    elif (ch) == '.':
+        return 'full-stop'
+    elif (ch) == '<':
+        return 'less-than'
+    elif (ch) == '>':
+        return 'greater-than'
+    elif (ch) == '?':
+        return 'question-mark'
+    elif (ch) == '_':
+        return 'underscore'
+    elif (ch) == '+':
+        return 'plus'
+    elif (ch) == '-':
+        return 'minus'
+    elif (ch) == '=':
+        return 'equals'
     else:
         return ch
 
