@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# make-password-grid.sh - build a grid of 8x4 16 character passwords
+# make-password-grid.sh - build a grid of 8x4 16 character passwords,
+#                         and optionally send them to the printer
 #
 # Copyright (C) 2022 Michael Davies <michael@the-davies.net>
 #
@@ -30,11 +31,51 @@ random_password ()
     echo $(LC_ALL=C tr -dc '[:alnum:]@#$%^()[]{};:",.<>?' </dev/urandom | head -c $1)
 }
 
-for LINES in $(seq 1 8); do
-    for PASSWORDS in $(seq 1 4); do
-        PASS="$(random_password 16)"
-        COLOURISED=$(colourprint "$PASS")
-        echo -n "$COLOURISED  "
+make_password_grid ()
+{
+    TMPFILE=$1
+    for LINES in $(seq 1 8); do
+        for PASSWORDS in $(seq 1 4); do
+            PASS="$(random_password 16)"
+            COLOURISED=$(colourprint "$PASS")
+            echo -n "$COLOURISED  " | tee -a $TMPFILE
+        done
+        echo "" | tee -a $TMPFILE
     done
-    echo ""
+}
+
+display_usage ()
+{
+    printf "%s [-h] [-p]\n" $(basename $0)
+    printf "  -h  display this help\n"
+    printf "  -p  send output to the default printer\n"
+}
+
+PRINT=0
+for ARG in "$@"; do
+    case $ARG in
+        -h)
+            display_usage
+            exit 0
+            ;;
+        -p)
+            PRINT=1
+            ensure_cmd aha
+            ensure_cmd wkhtmltopdf
+            ;;
+        *)
+            display_usage
+            echo "Unknown option, exiting..."
+            exit 1
+            ;;
+    esac
 done
+
+OUTPUTFILE=$(mktemp "${TMPDIR:-/tmp/}$(basename $0).XXXXXXXXXXXX")
+make_password_grid $OUTPUTFILE
+
+if [ $PRINT -eq 1 ]; then
+    $(cat $OUTPUTFILE  | aha | wkhtmltopdf -q - - | lpr) &> /dev/null
+fi
+
+rm $OUTPUTFILE
