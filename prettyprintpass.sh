@@ -41,9 +41,9 @@ command -v bashlib.sh &> /dev/null || \
 . bashlib.sh
 
 # Exec ourselves, storing the cmdline params in a subshell env var
-BGSECRET="startinbackground"
-if [ "$BGS" != "$BGSECRET" ]; then
-    export BGS="$BGSECRET"
+BGS="startinbackground"
+if [ "$BGS" != "$BGS" ]; then
+    export BGS="$BGS"
     export PARAM1=$1
     if [ ! -z $PARAM1 ]; then
         echo "WARNING: Passwords provided on the command-line are not"
