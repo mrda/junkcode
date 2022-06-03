@@ -28,7 +28,7 @@ command -v bashlib.sh &> /dev/null || \
 
 random_password ()
 {
-    echo $(LC_ALL=C tr -dc '[:alnum:]@#$%^()[]{};:",.<>?' </dev/urandom | head -c $1)
+    echo $(LC_ALL=C tr -dc '[:alnum:]~`!@#$%^&()_=+[]{}|;:",./<>?' </dev/urandom | head -c $1)
 }
 
 make_password_grid ()
