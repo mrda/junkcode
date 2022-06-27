@@ -171,7 +171,7 @@ class PeriodicTable(object):
             output += secondline + '\n'
 
         # Fix up the last row
-        # The last row might not start with a box, so be add padding if necessary
+        # The last row might not start with a box, so add padding if necessary
         padcol = self.maxcol - firstcolinrow
 
         output += '        ' * firstcolinrow + '+-------' * padcol + '+'
