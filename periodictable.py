@@ -30,7 +30,7 @@ class Element(object):
 
 class PeriodicTable(object):
 
-    def __init__(self, maxrow=7, maxcol=18):
+    def __init__(self, maxrow=10, maxcol=18):
         self.maxrow = maxrow
         self.maxcol = maxcol
         self.table = [[None for c in range(maxcol)]
@@ -88,12 +88,28 @@ class PeriodicTable(object):
 
     def __str__(self):
         output = ''
+        lastrow = -1
+
         for r in range(self.maxrow):
             topline = ''
             firstline = ''
             secondline = ''
+            firstcolinrow = -1
+
             for c in range(self.maxcol):
                 e = self.table[r][c]
+
+                # Keep track of the first column occupied in a row
+                firstcellinrow = False
+                if self.is_cell_occupied(r, c):
+                    if lastrow != r:
+                        # This is the first cell occupied in the row
+                        firstcellinrow = True
+                        #print(f"lastrow was {lastrow}, now {r}")
+                        lastrow = r
+                        #print(f"firstcolinrow was {firstcolinrow}, now {c}")
+                        firstcolinrow = c
+
                 # Work out the topline first
                 if (self.is_cell_occupied(r, c) or
                    self.is_cell_above_occupied(r, c) or
@@ -114,7 +130,6 @@ class PeriodicTable(object):
                    not self.is_right_cell_occupied(r, c)):
                     topline += '+'
 
-                # Work out the cell itself
                 if self.is_cell_occupied(r, c):
                     if self.is_leftmost_cell(r, c):
                         firstline += '|'
@@ -124,6 +139,7 @@ class PeriodicTable(object):
                 else:
                     firstline += self.SPACING
                     secondline += self.SPACING
+
                 # Work out the right edge
                 if (self.is_right_cell_occupied(r, c) or
                    self.is_rightmost_cell(r, c) or
@@ -140,7 +156,10 @@ class PeriodicTable(object):
             output += secondline + '\n'
 
         # Fix up the last row
-        output += '+-------' * self.maxcol + '+'
+        # The last row might not start with a box, so be add padding if necessary
+        padcol = self.maxcol - firstcolinrow
+
+        output += '        ' * firstcolinrow + '+-------' * padcol + '+'
         output += '\n'
 
         return output
@@ -238,15 +257,46 @@ def get_periodic_table():
     p.add_element('Damstadium', 'Ds', 110, 7, 10)
     p.add_element('Roentgenium', 'Rg', 111, 7, 11)
     p.add_element('Copernicium', 'Cn', 112, 7, 12)
-    p.add_element('Ununtrium', 'Uut', 113, 7, 13)
+    p.add_element('Nihonium', 'Nh', 113, 7, 13)
     p.add_element('Flerovium', 'Fl', 114, 7, 14)
-    p.add_element('Ununpentium', 'Uup', 115, 7, 15)
-    p.add_element('Livermonium', 'Uup', 116, 7, 16)
-    p.add_element('Ununseptium', 'Uus', 117, 7, 17)
-    p.add_element('Ununoctium', 'Uuo', 118, 7, 18)
+    p.add_element('Moscovium', 'Mc', 115, 7, 15)
+    p.add_element('Livermonium', 'Lv', 116, 7, 16)
+    p.add_element('Tennessine', 'Ts', 117, 7, 17)
+    p.add_element('Organesson', 'Og', 118, 7, 18)
 
-    #TODO(mrda): Need to add support for the Lanthanoids and Actinoids
-    #            via a second table underneath
+    # Lanthanoids
+    p.add_element('Lanthanum', 'La', 57, 9, 4)
+    p.add_element('Cerium', 'Ce', 58, 9, 5)
+    p.add_element('Praeseodymium', 'Pr', 59, 9, 6)
+    p.add_element('Neodymium', 'Nd', 60, 9, 7)
+    p.add_element('Promethium', 'Pm', 61, 9, 8)
+    p.add_element('Samarium', 'Sm', 62, 9, 9)
+    p.add_element('Europium', 'Eu', 63, 9, 10)
+    p.add_element('Gadolinium', 'Gd', 64, 9, 11)
+    p.add_element('Terbium', 'Tb', 65, 9, 12)
+    p.add_element('Dysprosium', 'Dy', 66, 9, 13)
+    p.add_element('Holmium', 'Ho', 67, 9, 14)
+    p.add_element('Erbium', 'Er', 68, 9, 15)
+    p.add_element('Thulium', 'Tm', 69, 9, 16)
+    p.add_element('Ytterbium', 'Yb', 70, 9, 17)
+    p.add_element('Lutetium', 'Lu', 71, 9, 18)
+
+    # Actinoids
+    p.add_element('Actinium', 'Ac', 89, 10, 4)
+    p.add_element('Thorium', 'Th', 90, 10, 5)
+    p.add_element('Protactinium', 'Pa', 91, 10, 6)
+    p.add_element('Uranium', 'U', 92, 10, 7)
+    p.add_element('Neptunium', 'Np', 93, 10, 8)
+    p.add_element('Plutonium', 'Pu', 94, 10, 9)
+    p.add_element('Americium', 'Am', 95, 10, 10)
+    p.add_element('Curium', 'Cm', 96, 10, 11)
+    p.add_element('Berkelium', 'Bk', 97, 10, 12)
+    p.add_element('Californium', 'Cf', 98, 10, 13)
+    p.add_element('Einsteinium', 'Es', 99, 10, 14)
+    p.add_element('Fermium', 'Fm', 100, 10, 15)
+    p.add_element('Mendelevium', 'Md', 101, 10, 16)
+    p.add_element('Nobelium', 'No', 102, 10, 17)
+    p.add_element('Lawrencium', 'Lr', 103, 10, 18)
 
     return p.__str__()
 
