@@ -98,16 +98,16 @@ class PeriodicTable(object):
 
             for c in range(self.maxcol):
                 e = self.table[r][c]
+                anycellsinrow = False
 
-                # Keep track of the first column occupied in a row
                 firstcellinrow = False
+                # Keep track of the first column occupied in a row
                 if self.is_cell_occupied(r, c):
+                    anycellsinrow = True
                     if lastrow != r:
                         # This is the first cell occupied in the row
                         firstcellinrow = True
-                        #print(f"lastrow was {lastrow}, now {r}")
                         lastrow = r
-                        #print(f"firstcolinrow was {firstcolinrow}, now {c}")
                         firstcolinrow = c
 
                 # Work out the topline first
@@ -126,10 +126,15 @@ class PeriodicTable(object):
                 else:
                     topline += self.SPACING
 
+                # Add in '+' on the top right corner where no right cell
                 if (self.is_cell_occupied(r, c) and
                    not self.is_right_cell_occupied(r, c)):
                     topline += '+'
+                # Or if there are no cells underneath, ie. a blank line
+                if c == self.maxcol-1 and not anycellsinrow:
+                    topline += '+'
 
+                # Add in the left-most '|' for this cell
                 if self.is_cell_occupied(r, c):
                     if self.is_leftmost_cell(r, c):
                         firstline += '|'
@@ -137,6 +142,11 @@ class PeriodicTable(object):
                     firstline += self._centre(str(e.atomic_number))
                     secondline += self._centre(str(e.symbol))
                 else:
+                    # If we're in the first col, but the cell isn't occupied,
+                    # we need an extra space
+                    if c == 0:
+                        firstline += ' '
+                        secondline += ' '
                     firstline += self.SPACING
                     secondline += self.SPACING
 
@@ -145,8 +155,13 @@ class PeriodicTable(object):
                    self.is_rightmost_cell(r, c) or
                    (self.is_cell_occupied(r, c) and
                        not self.is_right_cell_occupied(r, c))):
-                    firstline += '|'
-                    secondline += '|'
+                    # Need to exclude the right-most '|' for blank rows
+                    if not anycellsinrow and c == self.maxcol-1:
+                        firstline += ' '
+                        secondline += ' '
+                    else:
+                        firstline += '|'
+                        secondline += '|'
                 else:
                     firstline += ' '
                     secondline += ' '
