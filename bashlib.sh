@@ -82,11 +82,54 @@ run_if_avail() {
     fi
 }
 
+# Guess which family of operating system we're running on
+# Possible return values are "Red Hat" or "Ubuntu"
+guess_os ()
+{
+    if [ -f /etc/os-release ]; then
+        OS=$(grep ^NAME= /etc/os-release | cut -f2 -d=)
+    fi
+
+    if [ "$OS" = "\"Fedora Linux\"" ] || \
+       [ "$OS" = "\"Red Hat Enterprise Linux\"" ]; then
+        echo "Red Hat"
+    elif [ "$OS" = "Ubuntu" ]; then
+        echo "Ubuntu"
+    else
+        echo "Unknown"
+    fi
+}
+
+# Find a operating system package for $1
+find_pkg() {
+    # Let's see if we can find out what package we need
+    OS=$(guess_os)
+    if [ "$OS" = "Red Hat" ]; then
+        # Can't use ensure_cmd because of circular dependencies
+        if is_available "dnf" ; then
+            DNF_OUTPUT=$(dnf whatprovides "$1" 2> /dev/null)
+            DNF_RET_CODE=$?
+            if [ $DNF_RET_CODE -eq 0 ]; then
+                printf "To resolve this you need to install one of these:\n"
+                printf "${DNF_OUTPUT}\n"
+            fi
+        else
+            echo "You need to install \"dnf\" first"
+        fi
+        if [ $DNF_RET_CODE -ne 0 ]; then
+            echo "Could not find an operating system package for \"$1\""
+        fi
+    # TODO: Add support for debian/ubuntu
+    #elif [ "$OS" = "Ubuntu" ]; then
+    fi
+}
+
 # Ensure a certain command is available, exit if it doesn't
 # $1: the command to test for
 ensure_cmd() {
     if ! command -v "$1" &> /dev/null; then
-        echo "*** Required command "$1" doesn't exist"
+        echo "*** Required command \"$1\" doesn't exist"
+        find_pkg $1
         [[ $IS_SOURCED -ne 1 ]] && exit 3
     fi
 }
@@ -320,24 +363,6 @@ dialogbox ()
     TITLE=${1:-"Title goes here"}
     BODY=${2:-"Message goes here"}
     zenity --info --text="$BODY" --title="$TITLE" --width=300 --height=200 >& /dev/null
-}
-
-# Guess which family of operating system we're running on
-# Possible return values are "Red Hat" or "Ubuntu"
-guess_os ()
-{
-    if [ -f /etc/os-release ]; then
-        OS=$(grep ^NAME= /etc/os-release | cut -f2 -d=)
-    fi
-
-    if [ "$OS" = "\"Fedora Linux\"" ] || \
-       [ "$OS" = "\"Red Hat Enterprise Linux\"" ]; then
-        echo "Red Hat"
-    elif [ "$OS" = "Ubuntu" ]; then
-        echo "Ubuntu"
-    else
-        echo "Unknown"
-    fi
 }
 
 # Re-run this script in the background in a seamless way
