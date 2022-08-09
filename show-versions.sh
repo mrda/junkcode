@@ -19,13 +19,21 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-PAD=15
+PAD=20
 
 ARCH=$(arch)
 EXTRA=""
 [[ $ARCH != "x86_64" ]] && EXTRA=" ($(LD_SHOW_AUXV=1 /bin/true | grep AT_PLATFORM | cut -f2 -d':' | tr -d '[:blank:]')) "
 
+# Auth up front
+sudo -s /bin/true
+
 printf "%${PAD}s %s%s\n" "Architecture:" "$ARCH" "$EXTRA"
+
+if command -v "dmidecode" &> /dev/null; then
+  printf "%${PAD}s %s\n" "System Manufacturer:" "$(sudo dmidecode -s system-manufacturer)"
+  printf "%${PAD}s %s\n" "System Product Name:" "$(sudo dmidecode -s system-product-name)"
+fi
 
 [[ -r /etc/redhat-release ]]  && \
   printf "%${PAD}s %s\n" "RHEL:" "$(cat /etc/redhat-release)"
