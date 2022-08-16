@@ -67,7 +67,7 @@ update_snap ()
 }
 
 # Reauthenticate if we can
-run_if_avail rhauth.sh
+run_if_avail auth.sh
 
 # See if there's any software updates
 OSTYPE=$( guess_os )

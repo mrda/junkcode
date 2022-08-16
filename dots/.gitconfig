@@ -3,10 +3,16 @@
     email = michael@the-davies.net
     name = Michael Davies
 [gitreview]
-    username = mrda
+    username = midavies
 [alias]
     lol = log --graph --decorate --pretty=oneline --abbrev-commit
     unstage = reset HEAD --
     last = log -1 HEAD
     unstash = stash pop
     gru = remote update
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential

@@ -1,7 +1,7 @@
 #
 # Michael's bash profile/aliases
 #
-# Copyright (C) 1989-2019 Michael Davies <michael@the-davies.net>
+# Copyright (C) 1989-2022 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -56,12 +56,26 @@ export VISUAL=vim
 #No longer needed export ACK_OPTIONS="--color" # so we get color
 export CDPATH=.:~:~/src
 
+# User things
+export MYUSER="midavies"
+export VPNENDPOINT="Brisbane (BNE)"
+export IPA1="${MYUSER}@IPA.REDHAT.COM"
+export IPA2="${MYUSER}@REDHAT.COM"
+
 # Take control of your history
 export HISTCONTROL="ignoreboth"
 export HISTTIMEFORMAT="[%F %T] "
-export HISTSIZE=-1
-export HISTFILESIZE=-1
-shopt -s histappend
+export HISTSIZE=1048576
+export HISTFILESIZE=1048576
+export HIST_SYNC_SECS=60
+#set histappend=true
+LAST_HISTORY_WRITE=$SECONDS
+function prompt_command {
+    if [ $(($SECONDS - $LAST_HISTORY_WRITE)) -gt $HIST_SYNC_SECS ]; then
+        history -a && history -c && history -r
+        LAST_HISTORY_WRITE=$SECONDS
+    fi
+}
 
 # Deal with Centos 7 being broken
 if [[ "z${DISTRO}" == "zCentOS" ]]; then
@@ -128,8 +142,11 @@ alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.p
 # Ansible things
 export ANSIBLE_NOCOWS=1
 
+# libvirt needs a little help sometimes
+export LIBVIRT_DEFAULT_URI="${LIBVIRT_DEFAULT_URI:=qemu:///system}"
+
 # Paranoid things :)
-alias whoislistening='for IP in $(netstat -an | grep tcp | cut -c45- | grep -v \* | cut -f1 -d" " | cut -f1,2,3,4 -d\. | sort | uniq); do echo -n $IP; whois $IP | grep OrgName | cut -c16-; done'
+alias whoislistening='for IP in $(netstat -an | grep tcp | cut -c45- | grep -v \* | cut -f1 -d" " | cut -f1,2,3,4 -d\. | sort | uniq); do echo -n "$IP "; whois $IP | grep OrgName | cut -c16-; done'
 
 # Virtualenvwrapper
 if test -x /usr/local/bin/virtualenvwrapper.sh; then
@@ -164,8 +181,8 @@ alias gitcleanup="git status --porcelain | cut -f 2 -d ' ' | xargs rm -rf"
 export PATH=${HOME}/bin/noarch:/usr/local/bin:${HOME}/bin/`arch`/`uname`:${PATH}:${JAVA_HOME}/bin:${GOROOT}/bin:${HOME}/apps/PhpStorm/bin:${HOME}/apps/freeplane/freeplane:${HOME}/apps/intelliJ/idea/bin:${HOME}/apps/packer
 
 # Go things
-export GOROOT=${HOME}/src/go
-export GOPATH=${HOME}/src/gocode
+#export GOROOT=${HOME}/src/go
+#export GOPATH=${HOME}/src/gocode
 
 # Perl things
 function profile-perl()
@@ -270,6 +287,9 @@ alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | eg
 # Find things in my history
 alias gh='history|grep'
 
+# When you need to know what your architecture is specifically
+alias archplus='ARCH=$(arch); BASE_PLATFORM=$(LD_SHOW_AUXV=1 /bin/true | grep AT_PLATFORM | cut -f2 -d: | tr -d "[:space:]"); printf "$ARCH ($BASE_PLATFORM)\n"'
+
 # Auto-tmux ssh
 function tssh ()
 {
@@ -296,6 +316,8 @@ function _b ()
 }
 alias boff="_b --off"
 
+alias rot13="tr 'A-Za-z' 'N-ZA-Mn-za-m'"
+
 # Protect my work machine from devstack
 touch $HOME/.no-devstack
 
@@ -313,6 +335,11 @@ touch $HOME/.no-devstack
 #function fix-HDMI-1080 {
 #    xrandr --output HDMI1 --mode 1920x1080
 #}
+
+# Home assistant turn on/off screen
+RASPBERRYPI=192.168.1.32
+alias screenoff="ssh root@$RASPBERRYPI -p 22222 'echo 1 > /sys/class/backlight/rpi_backlight/bl_power'"
+alias screenon="ssh root@$RASPBERRYPI -p 22222 'echo 0 > /sys/class/backlight/rpi_backlight/bl_power'"
 
 # Anything after here was probably automagically added,
 # and should be re-categorised
