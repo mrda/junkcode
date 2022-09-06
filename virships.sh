@@ -20,7 +20,7 @@
 # 02111-1307, USA.
 #
 
-#CONNECT="-c 'qemu:///system'"
+#CONNECT='-c qemu:///system'
 CONNECT=
 
 VM_NAMES=( $(virsh ${CONNECT} list | awk 'NR>2 { print $2 }') )
