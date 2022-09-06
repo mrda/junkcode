@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# virships.sh - perint ip addresses associated with virsh vms
+# virships.sh - print ip addresses associated with virsh vms
 #
 # Copyright (C) 2022 Michael Davies <michael@the-davies.net>
 #
@@ -25,6 +25,7 @@ CONNECT=
 
 VM_NAMES=( $(virsh ${CONNECT} list | awk 'NR>2 { print $2 }') )
 for VM in ${VM_NAMES[*]}; do
-    IPADDRS=( $(virsh ${CONNECT} domifaddr ${VM} | awk 'NR>2 { print $4 }' | cut -f1 -d'/') )
+    IPADDRS=( $(virsh ${CONNECT} domifaddr ${VM} |\
+        awk 'NR>2 { split($4, ip, "/"); print ip[1] }' ) )
     printf "${VM} ${IPADDRS[*]}\n"
 done
