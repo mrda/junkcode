@@ -26,7 +26,7 @@ if ! klist -s ; then
     echo -n "$PASS" | kinit -r 7d ${IPA1}
     echo -n "$PASS" | kinit -r 7d ${IPA2}
     # Seed sudo while we're at it
-    echo -e "$PASS" | sudo -s /bin/true
+    echo -e "$PASS" | sudo -S /bin/true
 else
     kinit -R
 fi
