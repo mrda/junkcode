@@ -376,3 +376,15 @@ backgroundme ()
         exit
     fi
 }
+
+# Print the time elapsed for the supplied commands presented as arguments
+timeelapsed()
+{
+    STARTTS=$(date "+%s")
+    bash -c "$@"
+    ENDTS=$(date "+%s")
+    DIFF=$(( $ENDTS - $STARTTS ))
+    echo -n "Time Taken: $(( $DIFF /3600 )) hours, "
+    echo "$(( $DIFF /60 )) minutes, and $(( $DIFF % 60 )) seconds"
+}
+
