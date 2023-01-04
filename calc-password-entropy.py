@@ -27,6 +27,7 @@ import sys
 
 
 min_entropy = 100  # Seems like a reasonable value in 2023
+min_pw_len = 16    # Seems like a reasonable value in 2023
 
 
 def calc_entropy(pw):
@@ -63,7 +64,14 @@ def calc_entropy(pw):
             return 0
 
     entropy = len(pw) * math.log2(poolsize)
-    return entropy
+    return entropy, used_lower, used_upper, used_digits, used_punctuation
+
+
+def yes_no(b):
+    if b:
+        return "yes"
+    else:
+        return "no"
 
 
 if __name__ == '__main__':
@@ -80,10 +88,20 @@ if __name__ == '__main__':
         print(f"Usage: {os.path.basename(sys.argv[0])} [password]")
         sys.exit(1)
 
-    entropy = calc_entropy(pw)
+    entropy, used_lower, used_upper, used_digits, used_punctuation = \
+        calc_entropy(pw)
 
     print(f"Password length is {len(pw)}")
+    print(f"Character classes used:")
+    print(f"  - lowercase characters? {yes_no(used_lower)}")
+    print(f"  - uppercase characters? {yes_no(used_upper)}")
+    print(f"  - digits? {yes_no(used_digits)}")
+    print(f"  - punctuation? {yes_no(used_punctuation)}")
     print(f"Calculated entropy is {entropy:.2f}")
+    if len(pw) < min_pw_len:
+        print("WARNING: Your password is too short. "
+              f"Choose a password longer than {min_pw_len} characters.")
     if entropy < min_entropy:
-        print("WARNING: Your password hasn't enough entropy. "
-              "Choose a longer, more random password")
+        print("WARNING: Your password hasn't enough entropy "
+              f"(want > {min_entropy})\n"
+              "Choose a longer password with all characters classes.")
