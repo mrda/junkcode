@@ -68,10 +68,7 @@ def calc_entropy(pw):
 
 
 def yes_no(b):
-    if b:
-        return "yes"
-    else:
-        return "no"
+    return "yes" if b else "no"
 
 
 if __name__ == '__main__':
