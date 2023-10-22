@@ -25,8 +25,15 @@ if ! klist -s ; then
     PASS=$(zenity --title "Kerberos Password" --password 2> /dev/null)
     echo -n "$PASS" | kinit -r 7d ${IPA1}
     echo -n "$PASS" | kinit -r 7d ${IPA2}
-    # Seed sudo while we're at it
-    echo -e "$PASS" | sudo -S /bin/true
 else
     kinit -R
+fi
+
+# Seed sudo while we're at it
+$(sudo -n /bin/true >& /dev/null)
+if [ $? -eq 1 ]; then
+    if [ -z $PASS ]; then
+        PASS=$(zenity --title "Kerberos Password" --password 2> /dev/null)
+    fi
+    echo -n "$PASS" | sudo -S /usr/bin/true >& /dev/null
 fi
