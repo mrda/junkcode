@@ -58,7 +58,7 @@ export CDPATH=.:~:~/src
 
 # User things
 export MYUSER="midavies"
-export VPNENDPOINT="Brisbane (BNE)"
+export VPNENDPOINT="1 - Red Hat Global VPN"
 export IPA1="${MYUSER}@IPA.REDHAT.COM"
 export IPA2="${MYUSER}@REDHAT.COM"
 
@@ -132,6 +132,7 @@ alias pycheck="python -m py_compile $@"
 alias tox="check-status.sh \tox $@"
 alias jsondecode='python -mjson.tool'
 #export PIP_REQUIRE_VIRTUALENV=true    # Ensure pip only runs in virtualenvs
+# Or do this: 'pip config set global.require-virtualenv true' which you can override with PIP_REQUIRE_VENV=0 if needed
 
 # XML things
 alias xmldecode='python -c "import sys, xml.dom.minidom; print xml.dom.minidom.parseString(sys.stdin.read()).toprettyxml()"'
@@ -340,6 +341,12 @@ touch $HOME/.no-devstack
 RASPBERRYPI=192.168.1.32
 alias screenoff="ssh root@$RASPBERRYPI -p 22222 'echo 1 > /sys/class/backlight/rpi_backlight/bl_power'"
 alias screenon="ssh root@$RASPBERRYPI -p 22222 'echo 0 > /sys/class/backlight/rpi_backlight/bl_power'"
+
+# JIRA
+alias jira="xdg-open https://issues.redhat.com/issues/?filter=-1 >& /dev/null"
+
+# De-stress
+alias bunner="python ~/src/Code-the-Classics/bunner-master/bunner.py"
 
 # Anything after here was probably automagically added,
 # and should be re-categorised
