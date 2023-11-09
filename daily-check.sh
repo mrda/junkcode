@@ -26,6 +26,18 @@ command -v bashlib.sh &> /dev/null || \
 { echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
 . bashlib.sh
 
+# Command line argument processing
+NOASK=0
+for ARG in "$@"; do
+    case $ARG in
+        -y)
+            NOASK=1
+            ;;
+        *)
+            ;;
+    esac
+done
+
 # There are some things we always want running
 declare -a REQDPROGS=( poll-internet slack )
 for PROG in "${REQDPROGS[@]}"; do
@@ -38,7 +50,9 @@ update_dnf ()
 {
     if is_available dnf ; then
         if ! dnf check-update >& /dev/null ; then
-            confirm_continue "Do you want to install software updates? "
+            if [ $NOASK -eq 0 ]; then
+                confirm_continue "Do you want to install software updates? "
+            fi
             sudo dnf update -y
         fi
     else
