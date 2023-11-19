@@ -2,7 +2,7 @@
 #
 # auth.sh - authenticate against all the things
 #
-# Copyright (C) 2022 Michael Davies <michael@the-davies.net>
+# Copyright (C) 2022,2023 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,7 +20,10 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 #
 
+# Ensure VPN is up
 $(nmcli connection show --active | grep -q "${VPNENDPOINT}") || nmcli connection up "${VPNENDPOINT}" > /dev/null
+
+# Authenticate via Kerberos
 if ! klist -s ; then
     PASS=$(zenity --title "Kerberos Password" --password 2> /dev/null)
     echo -n "$PASS" | kinit -r 7d ${IPA1}
@@ -30,7 +33,7 @@ else
 fi
 
 # Seed sudo while we're at it
-$(sudo -n /bin/true >& /dev/null)
+sudo -n /bin/true >& /dev/null
 if [ $? -eq 1 ]; then
     if [ -z $PASS ]; then
         PASS=$(zenity --title "Kerberos Password" --password 2> /dev/null)
