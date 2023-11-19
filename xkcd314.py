@@ -29,7 +29,10 @@ def exit_with_usage():
 
 
 if len(sys.argv) == 1:
-    age = int(input("Enter your age: "))
+    try:
+        age = int(input("Enter your age: "))
+    except ValueError:
+        exit_with_usage()
 elif len(sys.argv) == 2:
     if sys.argv[1].isdigit():
         age = int(sys.argv[1])
@@ -41,5 +44,8 @@ except NameError:
 youngest = int((age / 2) + 7)
 oldest = (age - 7) * 2
 
-print(f"As a {age} year-old, you can date people between {youngest}"
-      f" and {oldest} without it being creepy")
+if oldest < youngest:
+    print("You shouldn't be dating, you're too young.")
+else:
+    print(f"As a {age} year-old, you can date people between {youngest}"
+          f" and {oldest} without it being creepy")
