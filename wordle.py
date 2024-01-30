@@ -2,7 +2,7 @@
 #
 # wordle.py - find possible wordle matches
 #
-# Copyright (C) 2022.  All Rights Reserved.
+# Copyright (C) 2022,2024.  All Rights Reserved.
 # Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
@@ -175,7 +175,7 @@ def wordle(mydict, include=None, exclude=None, match=None, antimatch=None, verbo
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                 description='Find possible matches for wordle.',
-                epilog='You can find Wordle here: https://www.powerlanguage.co.uk/wordle/')
+                epilog='You can find Wordle here: https://www.nytimes.com/games/wordle/index.html')
     parser.add_argument('-f', '--frequency',
                         action='store_true',
                         dest='frequency_table',
