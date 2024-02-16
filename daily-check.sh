@@ -30,7 +30,13 @@ command -v bashlib.sh &> /dev/null || \
 NOASK=0
 for ARG in "$@"; do
     case $ARG in
-        -y)
+        -h)
+            echo >&2 "Usage: $(basename $0) [-h] [-n]"
+            echo >&2 "  -h display this help"
+            echo >&2 "  -n ask before applying updates"
+            exit 1
+            ;;
+        -n)
             NOASK=1
             ;;
         *)
@@ -50,7 +56,7 @@ update_dnf ()
 {
     if is_available dnf ; then
         if ! dnf check-update >& /dev/null ; then
-            if [ $NOASK -eq 0 ]; then
+            if [ $NOASK -eq 1 ]; then
                 confirm_continue "Do you want to install software updates? "
             fi
             sudo dnf update -y
@@ -66,7 +72,10 @@ update_flatpak ()
     if is_available flatpak ; then
         sudo flatpak update --noninteractive >& /dev/null
     else
-        echo "There's no 'flatpak' available"
+        if [ ! -e ${HOME}/.flatpak ]; then
+            echo "There's no 'flatpak' available"
+            touch ${HOME}/.flatpak
+        fi
     fi
 }
 
@@ -76,7 +85,10 @@ update_snap ()
     if is_available snap ; then
         sudo snap refresh >& /dev/null
     else
-        echo "There's no 'snap' available"
+	if [ ! -e ${HOME}/.snap ]; then
+            echo "There's no 'snap' available"
+            touch ${HOME}/.snap
+        fi
     fi
 }
 
