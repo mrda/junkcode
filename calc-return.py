@@ -43,10 +43,8 @@ if start_date > end_date:
     start_date, end_date = end_date, start_date
 delta = end_date - start_date
 
-tot = input("Enter total return (0.3 = 30%): ")
-tot = float(tot)
-
-annual_return = (((float(tot))**(365/delta.days)) - 1)
+tot = float(input("Enter total return (0.3 = 30%): "))
+annual_return = ((1 + tot)**(365/delta.days)) - 1
 
 print(f"Time period is {delta.days} days, which is {delta.days/365:.2f} years")
 print(f"Annualised return is {(annual_return*100):.2f}%")
