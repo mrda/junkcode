@@ -55,8 +55,11 @@ def get_data(authfile, urlpath):
         HA_TOKEN = os.environ[HA_TOKEN]
     else:
         cp = configparser.ConfigParser()
-        with open(authfile) as stream:
-            cp.read_string("[top]\n" + stream.read())
+        try:
+            with open(authfile) as stream:
+                cp.read_string("[top]\n" + stream.read())
+        except:
+            exit("HA_BASE_URL and HA_TOKEN must be defined in your environment")
         HA_BASE_URL = dequote(cp['top'][HA_BASE_URL])
         HA_TOKEN = dequote(cp['top'][HA_TOKEN])
     if HA_BASE_URL == HA_BASE_URL_ORIG or HA_TOKEN == HA_TOKEN_ORIG:
