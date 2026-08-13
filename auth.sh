@@ -20,14 +20,31 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 #
 
-# Ensure VPN is up
-$(nmcli connection show --active | grep -q "${VPNENDPOINT}") || nmcli connection up "${VPNENDPOINT}" > /dev/null
+NETBIRD_DISCONNECTED=$(if [[ $(netbird status | grep ^Signal | cut -f2 -d:) = " Disconnected" ]] ; then echo "1"; else echo "0"; fi)
+NETBIRD_NEEDSLOGIN=$(if [[ $(netbird status | grep ^'Daemon status' | cut -f2 -d:) = " NeedsLogin" ]] ; then echo "1"; else echo "0"; fi)
+
+if [ ${NETBIRD_NEEDSLOGIN} = "1" ]; then
+    echo "Reauthing"
+    netbird up
+    # To prevent "kinit: Cannot contact any KDC for realm 'IPA.REDHAT.COM'
+    # while renewing credentials" Also need to allow for a webbrowser
+    # prompt and password entry
+    # TODO: Parsing `netbird status -d` would be better
+    sleep 10
+elif [ ${NETBIRD_DISCONNECTED} = "1" ]; then
+    echo "Connecting to VPN"
+    netbird up
+    # To prevent "kinit: Cannot contact any KDC for realm 'IPA.REDHAT.COM'
+    # while renewing credentials"
+    # TODO: Parsing `netbird status -d` would be better
+    sleep 5
+fi
 
 # Authenticate via Kerberos
 if ! klist -s ; then
     PASS=$(zenity --title "Kerberos Password" --password 2> /dev/null)
-    echo -n "$PASS" | kinit -r 7d ${IPA1}
-    echo -n "$PASS" | kinit -r 7d ${IPA2}
+    echo -n "$PASS" | kinit -r 7d ${IPA1} >& /dev/null
+    echo -n "$PASS" | kinit -r 7d ${IPA2} >& /dev/null
 else
     kinit -R
 fi
