@@ -20,6 +20,11 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 #
 
+# Include bash library
+command -v bashlib.sh &> /dev/null || \
+{ echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
+. bashlib.sh
+
 NETBIRD_DISCONNECTED=$(if [[ $(netbird status | grep ^Signal | cut -f2 -d:) = " Disconnected" ]] ; then echo "1"; else echo "0"; fi)
 NETBIRD_NEEDSLOGIN=$(if [[ $(netbird status | grep ^'Daemon status' | cut -f2 -d:) = " NeedsLogin" ]] ; then echo "1"; else echo "0"; fi)
 
@@ -57,3 +62,6 @@ if [ $? -eq 1 ]; then
     fi
     echo -n "$PASS" | sudo -S /usr/bin/true >& /dev/null
 fi
+
+# Now open up BitWarden
+source_if_avail bw.sh

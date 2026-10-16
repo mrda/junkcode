@@ -82,6 +82,14 @@ run_if_avail() {
     fi
 }
 
+# Source script, if available
+source_if_avail() {
+    local file_path="$HOME/bin/noarch/$1"
+    if [ -n "$1" ] && [ -r "$file_path" ]; then
+        . "$file_path"
+    fi
+}
+
 # Guess which family of operating system we're running on
 # Possible return values are "Red Hat" or "Ubuntu"
 guess_os ()
