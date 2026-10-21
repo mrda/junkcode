@@ -5,7 +5,7 @@
 #                         to make a coffee, gives them time to make a coffee,
 #                         then turns the machine off again.
 #
-# Copyright (C) 2019, 2021 Michael Davies <michael@the-davies.net>
+# Copyright (C) 2019, 2021, 2026 Michael Davies <michael@the-davies.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -38,13 +38,18 @@ ensure_cmd timebar
 ensure_cmd dialogbox
 
 ha switch.coffee_machine on
-timebar $WARM_UP "Warming up coffee machine for"
+
+# Wait until temperature is stable
+coffee-machine-temp-stable.sh
+
+#timebar $WARM_UP "Warming up coffee machine for"
 
 beep
 if [ -r ${HOME}/sounds/coffee-time.mp3 ]; then
     play -q ${HOME}/sounds/coffee-time.mp3
 fi
+
 dialogbox "Serious Cybernetics Corporation" "It\'s time for a coffee break\!"
 
-timebar $TURN_OFF "Turning off coffee machine in"
-ha switch.coffee_machine off
+#timebar $TURN_OFF "Turning off coffee machine in"
+#ha switch.coffee_machine off
