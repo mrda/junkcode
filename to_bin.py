@@ -28,4 +28,4 @@ def to_bin(strings):
     return ''.join(format(ord(ch), '08b') for ch in inp)
 
 if __name__ == "__main__":
-    print to_bin(sys.argv[1:])
+    print(to_bin(sys.argv[1:]))

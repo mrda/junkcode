@@ -113,7 +113,7 @@ declare -a IP_ADDR_LIST
 for NAME in ${HOSTS_TO_CHECK[*]}; do
     IP_ADDR=( $(dig +short $NAME | head -n 1) )
     if [[ -z ${IP_ADDR} ]]; then
-        printf "%s: Unable to resolve hostname. Exiting...\n" $(basename $0)
+        printf "%s: Unable to resolve hostname %s. Exiting...\n" $(basename $0) $NAME
         exit 1
     fi
     IP_ADDR_LIST+=( $IP_ADDR )

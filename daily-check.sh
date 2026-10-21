@@ -21,6 +21,8 @@
 # Or try here: http://www.fsf.org/copyleft/gpl.html
 #
 
+#set -ev
+
 # Include bash library
 command -v bashlib.sh &> /dev/null || \
 { echo >&2 "$(basename $0): Can't find bashlib.sh.  Aborting."; exit 1; }
@@ -55,7 +57,7 @@ done
 update_dnf ()
 {
     if is_available dnf ; then
-        if ! dnf check-update >& /dev/null ; then
+        if ! dnf check-update < /dev/null >& /dev/null ; then
             if [ $NOASK -eq 1 ]; then
                 confirm_continue "Do you want to install software updates? "
             fi
@@ -85,7 +87,7 @@ update_snap ()
     if is_available snap ; then
         sudo snap refresh >& /dev/null
     else
-	if [ ! -e ${HOME}/.snap ]; then
+    if [ ! -e ${HOME}/.snap ]; then
             echo "There's no 'snap' available"
             touch ${HOME}/.snap
         fi
@@ -100,7 +102,12 @@ OSTYPE=$( guess_os )
 if [ "${OSTYPE}" = "Red Hat" ]; then
     update_dnf
     update_flatpak
-    update_snap  # ...even though this isn't really a thing on Red Hat
+#    update_snap  # ...even though this isn't really a thing on Red Hat
 else
     echo "You're not using a supported operating system, so I can't check for available updates"
 fi
+
+# Grab the EnMaaS credentials if we can
+source_if_avail enmaas.sh
+
+

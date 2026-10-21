@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # is-it-up.py - verify the DNS entries for a wesite are still valid
 #               and as an added bonus, verify that the website is up
@@ -6,7 +6,6 @@
 # Copyright (C) 2018 Michael Davies <michael@the-davies.net>
 #
 
-from __future__ import print_function
 import csv
 import dns.resolver
 import getopt
@@ -14,7 +13,7 @@ import IPy
 import os
 import sys
 import traceback
-import urllib2
+import urllib3
 
 
 debug = False

@@ -22,9 +22,9 @@
 
 # Set IPADDRS and DEFAULT_IF in your environment if you want something else
 #
-# These are my default IPs for OCP libvirt VMs
-IPADDRS=${IPADDRS:-192.168.131.11 192.168.131.12 192.168.131.13 192.168.131.51 192.168.131.52}
-DEFAULT_IF=${DEFAULT_IF:-enc2}  # Default network interface for rhel8
+# These are my default IPs for netsim libvirt VMs
+IPADDRS=${IPADDRS:-192.168.122.10 192.168.122.11 192.168.122.12}
+DEFAULT_IF=${DEFAULT_IF:-enp1s0}  # Default network interface for F36
 
 display_usage ()
 {
@@ -46,7 +46,6 @@ for ARG in "$@"; do
     esac
 done
 
-clear
 echo -n 'My IP Address: '
 ip addr show $DEFAULT_IF | grep 'inet ' | awk -F'[: /]+' '{ print $3 }'
 for IP in $IPADDRS; do
