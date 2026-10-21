@@ -70,11 +70,11 @@ def abstract():
 
 class Timer:
     def __enter__(self):
-        self.start = time.clock()
+        self.start = time.process_time()
         return self
 
     def __exit__(self, *args):
-        self.end = time.clock()
+        self.end = time.process_time()
         self.interval = self.end - self.start
 
 
@@ -293,21 +293,21 @@ class Board:
 
     def print_board(self, with_zeros=False):
         segment = '+' + '-' * 7
-        print segment + segment + segment + '+'
+        print (segment + segment + segment + '+')
         for row in range(SIZE):
             for col in range(SIZE):
                 if col % 3 == 0:
-                    print '|',
+                    print ('|', end="")
                 if self.board[row][col] == 0:
                     if with_zeros:
-                        print self.board[row][col],
+                        print (self.board[row][col], end="")
                     else:
-                        print ' ',
+                        print (' ', end="")
                 else:
-                    print self.board[row][col],
+                    print (self.board[row][col], end="")
             print('|')
             if row % 3 == 2:
-                print segment + segment + segment + '+'
+                print (segment + segment + segment + '+')
 
     def _find_segment(self, val):
         if val < 3:
@@ -453,7 +453,7 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
             if brute_solver.find_solution(brute_b, verbose):
                 brute_b.print_board()
             else:
-                print "No solution found"
+                print ("No solution found")
         if verbose >= 1:
             print('That took %.03f seconds' % t.interval)
 
@@ -466,7 +466,7 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
             if poss_solver.find_solution(poss_b, verbose):
                 poss_b.print_board()
             else:
-                print "No solution found"
+                print ("No solution found")
         if verbose >= 1:
             print('That took %.03f seconds' % t.interval)
 
@@ -479,7 +479,7 @@ def solve_sudoku_from_filename(filename, algorithm, verbose):
             if rand_solver.find_solution(rand_b, verbose):
                 rand_b.print_board()
             else:
-                print "No solution found"
+                print ("No solution found")
         if verbose >= 1:
             print('That took %.03f seconds' % t.interval)
 
@@ -488,7 +488,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='count',
-                        help='Increase verbosity')
+                        help='Increase verbosity',
+                        default=False)
 
     parser.add_argument('-d', '--difficulty',
                         choices=['easy', 'medium', 'hard'],
